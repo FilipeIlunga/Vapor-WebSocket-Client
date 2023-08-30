@@ -1,0 +1,588 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2300CD182A9FA80600CA1807 /* Vapor_SocketsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD172A9FA80600CA1807 /* Vapor_SocketsApp.swift */; };
+		2300CD1A2A9FA80600CA1807 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD192A9FA80600CA1807 /* ContentView.swift */; };
+		2300CD1C2A9FA80800CA1807 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2300CD1B2A9FA80800CA1807 /* Assets.xcassets */; };
+		2300CD1F2A9FA80800CA1807 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2300CD1E2A9FA80800CA1807 /* Preview Assets.xcassets */; };
+		2300CD292A9FA80800CA1807 /* Vapor_SocketsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD282A9FA80800CA1807 /* Vapor_SocketsTests.swift */; };
+		2300CD332A9FA80800CA1807 /* Vapor_SocketsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD322A9FA80800CA1807 /* Vapor_SocketsUITests.swift */; };
+		2300CD352A9FA80800CA1807 /* Vapor_SocketsUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD342A9FA80800CA1807 /* Vapor_SocketsUITestsLaunchTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		2300CD252A9FA80800CA1807 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2300CD0C2A9FA80600CA1807 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2300CD132A9FA80600CA1807;
+			remoteInfo = "Vapor-Sockets";
+		};
+		2300CD2F2A9FA80800CA1807 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2300CD0C2A9FA80600CA1807 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2300CD132A9FA80600CA1807;
+			remoteInfo = "Vapor-Sockets";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		2300CD142A9FA80600CA1807 /* Vapor-Sockets.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Vapor-Sockets.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2300CD172A9FA80600CA1807 /* Vapor_SocketsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vapor_SocketsApp.swift; sourceTree = "<group>"; };
+		2300CD192A9FA80600CA1807 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		2300CD1B2A9FA80800CA1807 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2300CD1E2A9FA80800CA1807 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		2300CD242A9FA80800CA1807 /* Vapor-SocketsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Vapor-SocketsTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2300CD282A9FA80800CA1807 /* Vapor_SocketsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vapor_SocketsTests.swift; sourceTree = "<group>"; };
+		2300CD2E2A9FA80800CA1807 /* Vapor-SocketsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Vapor-SocketsUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2300CD322A9FA80800CA1807 /* Vapor_SocketsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vapor_SocketsUITests.swift; sourceTree = "<group>"; };
+		2300CD342A9FA80800CA1807 /* Vapor_SocketsUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vapor_SocketsUITestsLaunchTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2300CD112A9FA80600CA1807 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2300CD212A9FA80800CA1807 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2300CD2B2A9FA80800CA1807 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2300CD0B2A9FA80600CA1807 = {
+			isa = PBXGroup;
+			children = (
+				2300CD162A9FA80600CA1807 /* Vapor-Sockets */,
+				2300CD272A9FA80800CA1807 /* Vapor-SocketsTests */,
+				2300CD312A9FA80800CA1807 /* Vapor-SocketsUITests */,
+				2300CD152A9FA80600CA1807 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2300CD152A9FA80600CA1807 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2300CD142A9FA80600CA1807 /* Vapor-Sockets.app */,
+				2300CD242A9FA80800CA1807 /* Vapor-SocketsTests.xctest */,
+				2300CD2E2A9FA80800CA1807 /* Vapor-SocketsUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2300CD162A9FA80600CA1807 /* Vapor-Sockets */ = {
+			isa = PBXGroup;
+			children = (
+				2300CD172A9FA80600CA1807 /* Vapor_SocketsApp.swift */,
+				2300CD192A9FA80600CA1807 /* ContentView.swift */,
+				2300CD1B2A9FA80800CA1807 /* Assets.xcassets */,
+				2300CD1D2A9FA80800CA1807 /* Preview Content */,
+			);
+			path = "Vapor-Sockets";
+			sourceTree = "<group>";
+		};
+		2300CD1D2A9FA80800CA1807 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				2300CD1E2A9FA80800CA1807 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		2300CD272A9FA80800CA1807 /* Vapor-SocketsTests */ = {
+			isa = PBXGroup;
+			children = (
+				2300CD282A9FA80800CA1807 /* Vapor_SocketsTests.swift */,
+			);
+			path = "Vapor-SocketsTests";
+			sourceTree = "<group>";
+		};
+		2300CD312A9FA80800CA1807 /* Vapor-SocketsUITests */ = {
+			isa = PBXGroup;
+			children = (
+				2300CD322A9FA80800CA1807 /* Vapor_SocketsUITests.swift */,
+				2300CD342A9FA80800CA1807 /* Vapor_SocketsUITestsLaunchTests.swift */,
+			);
+			path = "Vapor-SocketsUITests";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2300CD132A9FA80600CA1807 /* Vapor-Sockets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2300CD382A9FA80800CA1807 /* Build configuration list for PBXNativeTarget "Vapor-Sockets" */;
+			buildPhases = (
+				2300CD102A9FA80600CA1807 /* Sources */,
+				2300CD112A9FA80600CA1807 /* Frameworks */,
+				2300CD122A9FA80600CA1807 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Vapor-Sockets";
+			productName = "Vapor-Sockets";
+			productReference = 2300CD142A9FA80600CA1807 /* Vapor-Sockets.app */;
+			productType = "com.apple.product-type.application";
+		};
+		2300CD232A9FA80800CA1807 /* Vapor-SocketsTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2300CD3B2A9FA80800CA1807 /* Build configuration list for PBXNativeTarget "Vapor-SocketsTests" */;
+			buildPhases = (
+				2300CD202A9FA80800CA1807 /* Sources */,
+				2300CD212A9FA80800CA1807 /* Frameworks */,
+				2300CD222A9FA80800CA1807 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2300CD262A9FA80800CA1807 /* PBXTargetDependency */,
+			);
+			name = "Vapor-SocketsTests";
+			productName = "Vapor-SocketsTests";
+			productReference = 2300CD242A9FA80800CA1807 /* Vapor-SocketsTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		2300CD2D2A9FA80800CA1807 /* Vapor-SocketsUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2300CD3E2A9FA80800CA1807 /* Build configuration list for PBXNativeTarget "Vapor-SocketsUITests" */;
+			buildPhases = (
+				2300CD2A2A9FA80800CA1807 /* Sources */,
+				2300CD2B2A9FA80800CA1807 /* Frameworks */,
+				2300CD2C2A9FA80800CA1807 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2300CD302A9FA80800CA1807 /* PBXTargetDependency */,
+			);
+			name = "Vapor-SocketsUITests";
+			productName = "Vapor-SocketsUITests";
+			productReference = 2300CD2E2A9FA80800CA1807 /* Vapor-SocketsUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2300CD0C2A9FA80600CA1807 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1430;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					2300CD132A9FA80600CA1807 = {
+						CreatedOnToolsVersion = 14.3.1;
+					};
+					2300CD232A9FA80800CA1807 = {
+						CreatedOnToolsVersion = 14.3.1;
+						TestTargetID = 2300CD132A9FA80600CA1807;
+					};
+					2300CD2D2A9FA80800CA1807 = {
+						CreatedOnToolsVersion = 14.3.1;
+						TestTargetID = 2300CD132A9FA80600CA1807;
+					};
+				};
+			};
+			buildConfigurationList = 2300CD0F2A9FA80600CA1807 /* Build configuration list for PBXProject "Vapor-Sockets" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 2300CD0B2A9FA80600CA1807;
+			productRefGroup = 2300CD152A9FA80600CA1807 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2300CD132A9FA80600CA1807 /* Vapor-Sockets */,
+				2300CD232A9FA80800CA1807 /* Vapor-SocketsTests */,
+				2300CD2D2A9FA80800CA1807 /* Vapor-SocketsUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2300CD122A9FA80600CA1807 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2300CD1F2A9FA80800CA1807 /* Preview Assets.xcassets in Resources */,
+				2300CD1C2A9FA80800CA1807 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2300CD222A9FA80800CA1807 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2300CD2C2A9FA80800CA1807 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2300CD102A9FA80600CA1807 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2300CD1A2A9FA80600CA1807 /* ContentView.swift in Sources */,
+				2300CD182A9FA80600CA1807 /* Vapor_SocketsApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2300CD202A9FA80800CA1807 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2300CD292A9FA80800CA1807 /* Vapor_SocketsTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2300CD2A2A9FA80800CA1807 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2300CD352A9FA80800CA1807 /* Vapor_SocketsUITestsLaunchTests.swift in Sources */,
+				2300CD332A9FA80800CA1807 /* Vapor_SocketsUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2300CD262A9FA80800CA1807 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2300CD132A9FA80600CA1807 /* Vapor-Sockets */;
+			targetProxy = 2300CD252A9FA80800CA1807 /* PBXContainerItemProxy */;
+		};
+		2300CD302A9FA80800CA1807 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2300CD132A9FA80600CA1807 /* Vapor-Sockets */;
+			targetProxy = 2300CD2F2A9FA80800CA1807 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		2300CD362A9FA80800CA1807 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		2300CD372A9FA80800CA1807 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		2300CD392A9FA80800CA1807 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Vapor-Sockets/Preview Content\"";
+				DEVELOPMENT_TEAM = TPM3CS87N5;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "filipeilunga.Vapor-Sockets";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2300CD3A2A9FA80800CA1807 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Vapor-Sockets/Preview Content\"";
+				DEVELOPMENT_TEAM = TPM3CS87N5;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "filipeilunga.Vapor-Sockets";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		2300CD3C2A9FA80800CA1807 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TPM3CS87N5;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "filipeilunga.Vapor-SocketsTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Vapor-Sockets.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Vapor-Sockets";
+			};
+			name = Debug;
+		};
+		2300CD3D2A9FA80800CA1807 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TPM3CS87N5;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "filipeilunga.Vapor-SocketsTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Vapor-Sockets.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Vapor-Sockets";
+			};
+			name = Release;
+		};
+		2300CD3F2A9FA80800CA1807 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TPM3CS87N5;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "filipeilunga.Vapor-SocketsUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "Vapor-Sockets";
+			};
+			name = Debug;
+		};
+		2300CD402A9FA80800CA1807 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TPM3CS87N5;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "filipeilunga.Vapor-SocketsUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "Vapor-Sockets";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2300CD0F2A9FA80600CA1807 /* Build configuration list for PBXProject "Vapor-Sockets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2300CD362A9FA80800CA1807 /* Debug */,
+				2300CD372A9FA80800CA1807 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2300CD382A9FA80800CA1807 /* Build configuration list for PBXNativeTarget "Vapor-Sockets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2300CD392A9FA80800CA1807 /* Debug */,
+				2300CD3A2A9FA80800CA1807 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2300CD3B2A9FA80800CA1807 /* Build configuration list for PBXNativeTarget "Vapor-SocketsTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2300CD3C2A9FA80800CA1807 /* Debug */,
+				2300CD3D2A9FA80800CA1807 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2300CD3E2A9FA80800CA1807 /* Build configuration list for PBXNativeTarget "Vapor-SocketsUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2300CD3F2A9FA80800CA1807 /* Debug */,
+				2300CD402A9FA80800CA1807 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2300CD0C2A9FA80600CA1807 /* Project object */;
+}
