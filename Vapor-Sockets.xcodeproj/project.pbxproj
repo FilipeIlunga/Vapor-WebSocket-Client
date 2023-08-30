@@ -14,6 +14,7 @@
 		2300CD292A9FA80800CA1807 /* Vapor_SocketsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD282A9FA80800CA1807 /* Vapor_SocketsTests.swift */; };
 		2300CD332A9FA80800CA1807 /* Vapor_SocketsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD322A9FA80800CA1807 /* Vapor_SocketsUITests.swift */; };
 		2300CD352A9FA80800CA1807 /* Vapor_SocketsUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD342A9FA80800CA1807 /* Vapor_SocketsUITestsLaunchTests.swift */; };
+		2300CD422A9FBEE900CA1807 /* websocketViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD412A9FBEE900CA1807 /* websocketViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +45,7 @@
 		2300CD2E2A9FA80800CA1807 /* Vapor-SocketsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Vapor-SocketsUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2300CD322A9FA80800CA1807 /* Vapor_SocketsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vapor_SocketsUITests.swift; sourceTree = "<group>"; };
 		2300CD342A9FA80800CA1807 /* Vapor_SocketsUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vapor_SocketsUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		2300CD412A9FBEE900CA1807 /* websocketViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = websocketViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,6 +100,7 @@
 				2300CD192A9FA80600CA1807 /* ContentView.swift */,
 				2300CD1B2A9FA80800CA1807 /* Assets.xcassets */,
 				2300CD1D2A9FA80800CA1807 /* Preview Content */,
+				2300CD412A9FBEE900CA1807 /* websocketViewModel.swift */,
 			);
 			path = "Vapor-Sockets";
 			sourceTree = "<group>";
@@ -259,6 +262,7 @@
 			files = (
 				2300CD1A2A9FA80600CA1807 /* ContentView.swift in Sources */,
 				2300CD182A9FA80600CA1807 /* Vapor_SocketsApp.swift in Sources */,
+				2300CD422A9FBEE900CA1807 /* websocketViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
