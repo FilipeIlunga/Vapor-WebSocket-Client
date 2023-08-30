@@ -15,6 +15,7 @@
 		2300CD332A9FA80800CA1807 /* Vapor_SocketsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD322A9FA80800CA1807 /* Vapor_SocketsUITests.swift */; };
 		2300CD352A9FA80800CA1807 /* Vapor_SocketsUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD342A9FA80800CA1807 /* Vapor_SocketsUITestsLaunchTests.swift */; };
 		2300CD422A9FBEE900CA1807 /* websocketViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD412A9FBEE900CA1807 /* websocketViewModel.swift */; };
+		2300CD442AA003F000CA1807 /* TypingAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD432AA003F000CA1807 /* TypingAnimationView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +47,8 @@
 		2300CD322A9FA80800CA1807 /* Vapor_SocketsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vapor_SocketsUITests.swift; sourceTree = "<group>"; };
 		2300CD342A9FA80800CA1807 /* Vapor_SocketsUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vapor_SocketsUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		2300CD412A9FBEE900CA1807 /* websocketViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = websocketViewModel.swift; sourceTree = "<group>"; };
+		2300CD432AA003F000CA1807 /* TypingAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingAnimationView.swift; sourceTree = "<group>"; };
+		2300CD452AA00AC000CA1807 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,11 +99,13 @@
 		2300CD162A9FA80600CA1807 /* Vapor-Sockets */ = {
 			isa = PBXGroup;
 			children = (
+				2300CD452AA00AC000CA1807 /* Info.plist */,
 				2300CD172A9FA80600CA1807 /* Vapor_SocketsApp.swift */,
 				2300CD192A9FA80600CA1807 /* ContentView.swift */,
 				2300CD1B2A9FA80800CA1807 /* Assets.xcassets */,
 				2300CD1D2A9FA80800CA1807 /* Preview Content */,
 				2300CD412A9FBEE900CA1807 /* websocketViewModel.swift */,
+				2300CD432AA003F000CA1807 /* TypingAnimationView.swift */,
 			);
 			path = "Vapor-Sockets";
 			sourceTree = "<group>";
@@ -262,6 +267,7 @@
 			files = (
 				2300CD1A2A9FA80600CA1807 /* ContentView.swift in Sources */,
 				2300CD182A9FA80600CA1807 /* Vapor_SocketsApp.swift in Sources */,
+				2300CD442AA003F000CA1807 /* TypingAnimationView.swift in Sources */,
 				2300CD422A9FBEE900CA1807 /* websocketViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -424,6 +430,7 @@
 				DEVELOPMENT_TEAM = TPM3CS87N5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Vapor-Sockets/Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -453,6 +460,7 @@
 				DEVELOPMENT_TEAM = TPM3CS87N5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Vapor-Sockets/Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
