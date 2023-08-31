@@ -17,6 +17,7 @@
 		2300CD422A9FBEE900CA1807 /* websocketViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD412A9FBEE900CA1807 /* websocketViewModel.swift */; };
 		2300CD442AA003F000CA1807 /* TypingAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD432AA003F000CA1807 /* TypingAnimationView.swift */; };
 		2300CD482AA00F0600CA1807 /* NIOWebSocket in Frameworks */ = {isa = PBXBuildFile; productRef = 2300CD472AA00F0600CA1807 /* NIOWebSocket */; };
+		2300CD4B2AA03E8400CA1807 /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = 2300CD4A2AA03E8400CA1807 /* Starscream */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +59,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2300CD482AA00F0600CA1807 /* NIOWebSocket in Frameworks */,
+				2300CD4B2AA03E8400CA1807 /* Starscream in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -155,6 +157,7 @@
 			name = "Vapor-Sockets";
 			packageProductDependencies = (
 				2300CD472AA00F0600CA1807 /* NIOWebSocket */,
+				2300CD4A2AA03E8400CA1807 /* Starscream */,
 			);
 			productName = "Vapor-Sockets";
 			productReference = 2300CD142A9FA80600CA1807 /* Vapor-Sockets.app */;
@@ -230,6 +233,7 @@
 			mainGroup = 2300CD0B2A9FA80600CA1807;
 			packageReferences = (
 				2300CD462AA00F0600CA1807 /* XCRemoteSwiftPackageReference "swift-nio" */,
+				2300CD492AA03E8400CA1807 /* XCRemoteSwiftPackageReference "Starscream" */,
 			);
 			productRefGroup = 2300CD152A9FA80600CA1807 /* Products */;
 			projectDirPath = "";
@@ -613,6 +617,14 @@
 				minimumVersion = 2.0.0;
 			};
 		};
+		2300CD492AA03E8400CA1807 /* XCRemoteSwiftPackageReference "Starscream" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/daltoniam/Starscream";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -620,6 +632,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2300CD462AA00F0600CA1807 /* XCRemoteSwiftPackageReference "swift-nio" */;
 			productName = NIOWebSocket;
+		};
+		2300CD4A2AA03E8400CA1807 /* Starscream */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2300CD492AA03E8400CA1807 /* XCRemoteSwiftPackageReference "Starscream" */;
+			productName = Starscream;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
