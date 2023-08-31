@@ -16,6 +16,7 @@
 		2300CD352A9FA80800CA1807 /* Vapor_SocketsUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD342A9FA80800CA1807 /* Vapor_SocketsUITestsLaunchTests.swift */; };
 		2300CD422A9FBEE900CA1807 /* websocketViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD412A9FBEE900CA1807 /* websocketViewModel.swift */; };
 		2300CD442AA003F000CA1807 /* TypingAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD432AA003F000CA1807 /* TypingAnimationView.swift */; };
+		2300CD482AA00F0600CA1807 /* NIOWebSocket in Frameworks */ = {isa = PBXBuildFile; productRef = 2300CD472AA00F0600CA1807 /* NIOWebSocket */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2300CD482AA00F0600CA1807 /* NIOWebSocket in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -151,6 +153,9 @@
 			dependencies = (
 			);
 			name = "Vapor-Sockets";
+			packageProductDependencies = (
+				2300CD472AA00F0600CA1807 /* NIOWebSocket */,
+			);
 			productName = "Vapor-Sockets";
 			productReference = 2300CD142A9FA80600CA1807 /* Vapor-Sockets.app */;
 			productType = "com.apple.product-type.application";
@@ -223,6 +228,9 @@
 				Base,
 			);
 			mainGroup = 2300CD0B2A9FA80600CA1807;
+			packageReferences = (
+				2300CD462AA00F0600CA1807 /* XCRemoteSwiftPackageReference "swift-nio" */,
+			);
 			productRefGroup = 2300CD152A9FA80600CA1807 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -595,6 +603,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2300CD462AA00F0600CA1807 /* XCRemoteSwiftPackageReference "swift-nio" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-nio.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2300CD472AA00F0600CA1807 /* NIOWebSocket */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2300CD462AA00F0600CA1807 /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOWebSocket;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 2300CD0C2A9FA80600CA1807 /* Project object */;
 }

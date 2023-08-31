@@ -25,33 +25,14 @@ struct Message: Hashable {
 
 
 struct ContentView: View {
-    @State var webSocketTask: URLSessionWebSocketTask?
-    @State var webSocketTaskIsTapping: URLSessionWebSocketTask?
-    
-    @State var selectedItems: [PhotosPickerItem] = []
-    @State var photoData: Data? = nil
-    
-    
-    @State var isAnotherUserTapping: Bool = false
-    
-    @State var newMessage: String = ""
-    @State var user = CurrentUser(userName: UUID().uuidString, message: "")
-    @State var chatMessage: [Message] = []
-    
-    @State var messageReceived = ""
-    
-    
-    @State private var isTyping = false
-    private let typingThreshold = 1.0  // Defina o limite de tempo para considerar que o usuário parou de digitar
-    @State private var typingTimer: Timer?
-    
+    @StateObject var viewModel: WebsocketViewModel = WebsocketViewModel()
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
         
             ScrollView(showsIndicators: false) {
                 
-                ForEach(chatMessage, id: \.self) { message in
+                ForEach(viewModel.chatMessage, id: \.self) { message in
                     HStack {
                         if message.isSentByUser {
                             Spacer()
@@ -62,67 +43,86 @@ struct ContentView: View {
                                 .cornerRadius(8)
                             
                         } else {
-                            Text(message.message)
-                                .padding(8)
-                                .background(message.isSentByUser ? Color.blue : Color.gray)
-                                .cornerRadius(8)
+                            if let data = message.data, let uiimage = UIImage(data: data) {
+                                Image(uiImage: uiimage)
+                                    .resizable()
+                            } else {
+                                Text(message.message)
+                                    .padding(8)
+                                    .background(message.isSentByUser ? Color.blue : Color.gray)
+                                    .cornerRadius(8)
+                            }
                             Spacer()
                         }
                     }
                 }.padding(.vertical)
             }
             
-            PhotosPicker(selection: $selectedItems) {
+            HStack {
+                Button {
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                } label: {
+                    Text("Fechar")
+                }
+                
+            
+                PhotosPicker(selection: $viewModel.selectedItems) {
                 Image(systemName: "square.and.arrow.up.fill")
-            }.onChange(of: selectedItems) { newValue in
-                guard let item = selectedItems.first else { return }
+                }.onChange(of: viewModel.selectedItems) { newValue in
+                    guard let item = viewModel.selectedItems.first else { return }
+                
                 
                 item.loadTransferable(type: Data.self) { result in
                     switch result {
                         
                     case .success(let data):
-                        self.photoData = data
+                        self.viewModel.photoData = UIImage(data: data!)?.jpegData(compressionQuality: 0.1)
+                     //   let img = UIImage(data: data!)?.jpegData(compressionQuality: 2)
                     case .failure(let error):
                         print("Error: \(error.localizedDescription)")
                     }
                 }
             }
+            }
+
             
         }.onDisappear {
-            send(newMessageToSend: "0", messageType: "0")
+            viewModel.send(newMessageToSend: "0", messageType: "0")
         }
+        
         .padding()
-        .onAppear {
-            setupWebSocket()
-        }.toolbar {
+        .toolbar {
             ToolbarItem(placement: .bottomBar) {
                 VStack {
-                    if isAnotherUserTapping {
-                        TypingAnimationView()
+                    HStack {
+                        if viewModel.isAnotherUserTapping {
+                            TypingAnimationView()
+                                .padding(.horizontal)
+                        }
                     }
                     
                     HStack {
-                        TextEditor(text: $newMessage)
+                        TextEditor(text: $viewModel.newMessage)
                         
                             .frame(width: UIScreen.main.bounds.width * 0.7, height: 50)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .padding(.horizontal).onChange(of: newMessage) { newText in
+                            .padding(.horizontal).onChange(of: viewModel.newMessage) { newText in
                                 if newText.isEmpty {
-                                    send(newMessageToSend: "0", messageType: "0")
+                                    viewModel.send(newMessageToSend: "0", messageType: "0")
                                 } else {
-                                    send(newMessageToSend: "1", messageType: "0")
+                                    viewModel.send(newMessageToSend: "1", messageType: "0")
                                 }
                             }
                         
                         Button {
-                            if newMessage.isEmpty {
-                                guard let data = photoData else {
+                            if viewModel.newMessage.isEmpty {
+                                guard let data = viewModel.photoData else {
                                     return
                                 }
-                                send(newMessageToSend: " ", messageType: "2", data: data)
+                                viewModel.send(newMessageToSend: " ", messageType: "2", data: data)
 
                             } else {
-                                send(newMessageToSend: newMessage, messageType: "1")
+                                viewModel.send(newMessageToSend: viewModel.newMessage, messageType: "1")
                             }
                         } label: {
                             Image(systemName: "arrowshape.turn.up.forward.circle.fill")
@@ -134,84 +134,8 @@ struct ContentView: View {
             }
         }
     }
-    
-    func setupWebSocket() {
-        let urlSession = URLSession(configuration: .default)
-        webSocketTask = urlSession.webSocketTask(with: URL(string: "ws://127.0.0.1:8080/toki")!)
-        webSocketTaskIsTapping = urlSession.webSocketTask(with: URL(string: "ws://127.0.0.1:8080/isTappingSocket")!)
-        webSocketTask?.resume()
-        send(newMessageToSend: " ", messageType: "3")
-        received()
-    }
-    
-    func send(newMessageToSend: String, messageType: String, data: Data? = nil) {
-        
-        let messageToSend = user.userName + "|" + newMessageToSend + "|" + messageType
-        
-        if messageType == "2" {
-            if let data = data {
-                let messageData = URLSessionWebSocketTask.Message.data(data)
-                
-                Task {
-                    do {
-                        try await webSocketTask?.send(messageData)
-                    } catch {
-                        print("Error on sendData")
-                    }
-                }
-            }
-        } else {
-            let message = URLSessionWebSocketTask.Message.string(messageToSend)
-            
-            Task {
-                do {
-                    try await  webSocketTask?.send(message)
-                    if messageType == "1" {
-                        self.chatMessage.append(Message(message: newMessage, isSentByUser: true, messageType: "1", data: nil))
-                        self.newMessage = ""
-                    }
-                } catch {
-                    print("Error \(error.localizedDescription)")
-                }
-            }
-            
-        }
-        
-        
-    }
-    
-    func received() {
-        let chatMessageThread = DispatchQueue(label: "chatMessageThread", qos: .background)
-        
-        chatMessageThread.async {
-            while(true) {
-                webSocketTask?.receive(completionHandler: { result in
-                    switch result {
-                    case .success(let message):
-                        switch message {
-                        case .data(let data):
-                            self.chatMessage.append(Message(message: "", isSentByUser: false, messageType: "3", data: data))
-                        case .string(let message):
-                            let messageSplited = message.split(separator: "|")
-                            let messageType = String(messageSplited[2])
-                            
-                            if messageType == "0" {
-                                self.isAnotherUserTapping = messageSplited[1] == "1"
-                            } else if messageType == "1" {
-                                self.chatMessage.append(Message(message: String(messageSplited[1]), isSentByUser: false, messageType: "0", data: nil))
-                            } else {
-                                self.chatMessage.append(Message(message: String(messageSplited[1]), isSentByUser: false, messageType: "0", data: nil))
-                            }
-                        @unknown default:
-                            print("unknown")
-                        }
-                    case .failure(let error):
-                        print("Error on \(error.localizedDescription)")
-                    }
-                })
-            }
-        }
-    }
+
+
 }
 
 struct User: Codable {
