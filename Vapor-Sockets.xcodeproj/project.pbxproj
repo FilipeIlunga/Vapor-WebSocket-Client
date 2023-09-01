@@ -18,6 +18,8 @@
 		2300CD442AA003F000CA1807 /* TypingAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD432AA003F000CA1807 /* TypingAnimationView.swift */; };
 		2300CD482AA00F0600CA1807 /* NIOWebSocket in Frameworks */ = {isa = PBXBuildFile; productRef = 2300CD472AA00F0600CA1807 /* NIOWebSocket */; };
 		2300CD4B2AA03E8400CA1807 /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = 2300CD4A2AA03E8400CA1807 /* Starscream */; };
+		2300CD4E2AA12A9E00CA1807 /* SpriteKitGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD4D2AA12A9E00CA1807 /* SpriteKitGame.swift */; };
+		2300CD502AA12AD500CA1807 /* RecycleGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD4F2AA12AD500CA1807 /* RecycleGameView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +53,8 @@
 		2300CD412A9FBEE900CA1807 /* websocketViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = websocketViewModel.swift; sourceTree = "<group>"; };
 		2300CD432AA003F000CA1807 /* TypingAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingAnimationView.swift; sourceTree = "<group>"; };
 		2300CD452AA00AC000CA1807 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		2300CD4D2AA12A9E00CA1807 /* SpriteKitGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpriteKitGame.swift; sourceTree = "<group>"; };
+		2300CD4F2AA12AD500CA1807 /* RecycleGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecycleGameView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +107,7 @@
 		2300CD162A9FA80600CA1807 /* Vapor-Sockets */ = {
 			isa = PBXGroup;
 			children = (
+				2300CD4C2AA12A8600CA1807 /* WebSocketWithGame */,
 				2300CD452AA00AC000CA1807 /* Info.plist */,
 				2300CD172A9FA80600CA1807 /* Vapor_SocketsApp.swift */,
 				2300CD192A9FA80600CA1807 /* ContentView.swift */,
@@ -137,6 +142,15 @@
 				2300CD342A9FA80800CA1807 /* Vapor_SocketsUITestsLaunchTests.swift */,
 			);
 			path = "Vapor-SocketsUITests";
+			sourceTree = "<group>";
+		};
+		2300CD4C2AA12A8600CA1807 /* WebSocketWithGame */ = {
+			isa = PBXGroup;
+			children = (
+				2300CD4D2AA12A9E00CA1807 /* SpriteKitGame.swift */,
+				2300CD4F2AA12AD500CA1807 /* RecycleGameView.swift */,
+			);
+			path = WebSocketWithGame;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -281,6 +295,8 @@
 				2300CD182A9FA80600CA1807 /* Vapor_SocketsApp.swift in Sources */,
 				2300CD442AA003F000CA1807 /* TypingAnimationView.swift in Sources */,
 				2300CD422A9FBEE900CA1807 /* websocketViewModel.swift in Sources */,
+				2300CD502AA12AD500CA1807 /* RecycleGameView.swift in Sources */,
+				2300CD4E2AA12A9E00CA1807 /* SpriteKitGame.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

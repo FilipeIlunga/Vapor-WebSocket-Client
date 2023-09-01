@@ -12,7 +12,7 @@ struct TypingAnimationView: View {
     
     var body: some View {
         VStack {
-            Text("Typing...")
+            Text("Digitando...")
                 .opacity(isTyping ? 1 : 0)
                 //.animation(Animation.easeInOut(duration: 0.5).repeatForever(autoreverses: true))
                 .onAppear {
@@ -27,7 +27,7 @@ struct TypingAnimationView: View {
         }
         
         // Simulate a delay and reset the animation
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             withAnimation {
                 isTyping.toggle()
             }

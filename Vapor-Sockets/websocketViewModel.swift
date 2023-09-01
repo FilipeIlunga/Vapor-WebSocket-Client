@@ -9,6 +9,10 @@ import SwiftUI
 import PhotosUI
 import Starscream
 
+enum APIKey: String {
+    case key = "https://f3e2-200-182-167-194.ngrok.io"
+}
+
 final class WebsocketViewModel: ObservableObject, WebSocketDelegate {
 
    // @Published var webSocketTask: URLSessionWebSocketTask?
@@ -30,8 +34,11 @@ final class WebsocketViewModel: ObservableObject, WebSocketDelegate {
         setupWebSocket()
     }
     
+    deinit {
+        socket?.disconnect(closeCode: 0)
+    }
     func setupWebSocket() {
-        var request = URLRequest(url: URL(string: "ws://127.0.0.1:8080/toki")!)
+        var request = URLRequest(url: URL(string: "\(APIKey.key.rawValue)/toki")!)
         request.timeoutInterval = 5
         socket = WebSocket(request: request)
         socket?.delegate = self
@@ -56,6 +63,22 @@ final class WebsocketViewModel: ObservableObject, WebSocketDelegate {
             })
         }
     }
+    
+    func sendButtonDidTapped() {
+        if newMessage.isEmpty {
+            guard let data = photoData else {
+                return
+            }
+            send(newMessageToSend: " ", messageType: "2", data: data)
+
+        } else {
+            let newMessageToSend = newMessage.trimmingCharacters(in: .whitespaces)
+            if !newMessageToSend.isEmpty {
+                send(newMessageToSend: newMessageToSend, messageType: "1")
+            }
+        }
+    }
+    
 }
 
 extension WebsocketViewModel {
