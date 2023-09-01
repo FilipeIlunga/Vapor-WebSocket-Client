@@ -10,7 +10,7 @@ import PhotosUI
 import Starscream
 
 enum APIKey: String {
-    case key = "https://f3e2-200-182-167-194.ngrok.io"
+    case key = "https://d09d-138-122-73-139.ngrok.io"
 }
 
 final class WebsocketViewModel: ObservableObject, WebSocketDelegate {
@@ -46,7 +46,11 @@ final class WebsocketViewModel: ObservableObject, WebSocketDelegate {
     }
     
     func send(newMessageToSend: String, messageType: String, data: Data? = nil) {
-        let messageToSend = user.userName + "|" + newMessageToSend + "|" + messageType
+        
+        let newMsgToSend = newMessageToSend.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        guard !newMsgToSend.isEmpty else {return}
+        let messageToSend = user.userName + "|" +  newMsgToSend + "|" + messageType
         
         if messageType == "2" {
             if let data = data {
@@ -56,7 +60,7 @@ final class WebsocketViewModel: ObservableObject, WebSocketDelegate {
             socket?.write(string: messageToSend, completion: {
                 if messageType == "1" {
                     DispatchQueue.main.async {
-                        self.chatMessage.append(Message(message: self.newMessage, isSentByUser: true, messageType: "1", data: nil))
+                        self.chatMessage.append(Message(message: newMsgToSend, isSentByUser: true, messageType: "1", data: nil))
                         self.newMessage = ""
                     }
                 }
