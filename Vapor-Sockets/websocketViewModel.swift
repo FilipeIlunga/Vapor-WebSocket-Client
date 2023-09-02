@@ -10,15 +10,16 @@ import PhotosUI
 import Starscream
 
 enum APIKey: String {
-    case key = "https://d09d-138-122-73-139.ngrok.io"
+    case key = "https://57e2-138-122-73-139.ngrok.io"
 }
 
 final class WebsocketViewModel: ObservableObject, WebSocketDelegate {
-
-   // @Published var webSocketTask: URLSessionWebSocketTask?
     
-    @Published var selectedItems: [PhotosPickerItem] = []
-    @Published var photoData: Data? = nil
+    @Published var isSockedConnected: Bool = false
+    
+    private var hasReceivedPong = false
+    private var isFirstPing = true
+    var timer: Timer?
     
     var socket: WebSocket?
     
@@ -32,17 +33,43 @@ final class WebsocketViewModel: ObservableObject, WebSocketDelegate {
     
     init() {
         setupWebSocket()
+        startPingTimer()
     }
     
     deinit {
         socket?.disconnect(closeCode: 0)
     }
+    
+    
     func setupWebSocket() {
         var request = URLRequest(url: URL(string: "\(APIKey.key.rawValue)/toki")!)
         request.timeoutInterval = 5
         socket = WebSocket(request: request)
         socket?.delegate = self
         socket?.connect()
+    }
+    
+    
+    func startPingTimer() {
+        timer =  Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { timer in
+            if self.isFirstPing {
+                self.socket?.write(ping: Data())
+                print("mandou")
+                self.hasReceivedPong = false
+                self.isFirstPing = false
+            } else if self.hasReceivedPong  {
+                    self.socket?.write(ping: Data())
+                    self.hasReceivedPong = false
+                    print("mandou")
+            } else if !self.isSockedConnected {
+                    self.setupWebSocket()
+                    print("Tentou conecao")
+            } else {
+                self.socket?.write(ping: Data())
+                self.hasReceivedPong = false
+                print("Mandou apos conexao")
+            }
+        }
     }
     
     func send(newMessageToSend: String, messageType: String, data: Data? = nil) {
@@ -69,20 +96,12 @@ final class WebsocketViewModel: ObservableObject, WebSocketDelegate {
     }
     
     func sendButtonDidTapped() {
-        if newMessage.isEmpty {
-            guard let data = photoData else {
-                return
-            }
-            send(newMessageToSend: " ", messageType: "2", data: data)
-
-        } else {
-            let newMessageToSend = newMessage.trimmingCharacters(in: .whitespaces)
-            if !newMessageToSend.isEmpty {
-                send(newMessageToSend: newMessageToSend, messageType: "1")
-            }
+        
+        let newMessageToSend = newMessage.trimmingCharacters(in: .whitespaces)
+        if !newMessageToSend.isEmpty {
+            send(newMessageToSend: newMessageToSend, messageType: "1")
         }
     }
-    
 }
 
 extension WebsocketViewModel {
@@ -90,17 +109,18 @@ extension WebsocketViewModel {
     func didReceive(event: Starscream.WebSocketEvent, client: Starscream.WebSocketClient) {
         switch event {
         case .connected(let headers):
-           // isConnected = true
+             isSockedConnected = true
+            send(newMessageToSend: "i am alive", messageType: "-1")
             print("websocket is connected: \(headers)")
         case .disconnected(let reason, let code):
-           // isConnected = false
+            // isConnected = false
             print("websocket is disconnected: \(reason) with code: \(code)")
         case .text(let message):
             handlerWebsocketMessage(message: message)
         case .binary(let data):
             self.chatMessage.append(Message(message: "", isSentByUser: false, messageType: "3", data: data))
         case .ping(_):
-          print("Received ping")
+            print("Received ping")
         case .pong(_):
             print("Received pong")
         case .viabilityChanged(_):
@@ -108,13 +128,13 @@ extension WebsocketViewModel {
         case .reconnectSuggested(_):
             break
         case .cancelled:
-          //  isConnected = false
+            isSockedConnected = false
             print("Cancelou")
         case .error(let error):
-          //  isConnected = false
+            isSockedConnected = false
             print("Error: \(String(describing: error?.localizedDescription))")
-            case .peerClosed:
-                   break
+        case .peerClosed:
+            break
         }
     }
 }
@@ -122,7 +142,7 @@ extension WebsocketViewModel {
 extension WebsocketViewModel {
     func handlerWebsocketMessage(message: String) {
         let messageComponents = message.components(separatedBy: "|")
-
+        
         guard messageComponents.count >= 3 else {
             return
         }
@@ -130,13 +150,13 @@ extension WebsocketViewModel {
         let messageType = messageComponents[2]
         let content = messageComponents[1]
         DispatchQueue.main.async {
-        if messageType == "0" {
-            self.isAnotherUserTapping = content == "1"
-        } else if messageType == "1" || messageType == "2" {
-            self.chatMessage.append(Message(message: content, isSentByUser: false, messageType: messageType, data: nil))
-        } else {
-            print("Unknown message type: \(messageType)")
+            if messageType == "0" {
+                self.isAnotherUserTapping = content == "1"
+            } else if messageType == "1" || messageType == "2" {
+                self.chatMessage.append(Message(message: content, isSentByUser: false, messageType: messageType, data: nil))
+            } else {
+                print("Unknown message type: \(messageType)")
+            }
         }
-    }
     }
 }

@@ -10,9 +10,48 @@ protocol ReceivedMessageProtocol: AnyObject {
 final class WebsocketGameViewModel: ObservableObject, WebSocketDelegate {
     
     @Published var user = CurrentUser(userName: UUID().uuidString, message: "")
+    
+    @Published var isSockedConnected: Bool = false
+    
+    private var hasReceivedPong = false
+    private var isFirstPing = true
+    var timer: Timer?
 
     init() {
+        
         setupWebSocket()
+
+    }
+    
+    
+    func startPingTimer() {
+        timer =  Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { timer in
+           
+            
+            if self.isFirstPing {
+                self.socket?.write(ping: Data())
+                print("mandou")
+                self.hasReceivedPong = false
+                self.isFirstPing = false
+            } else if self.hasReceivedPong  {
+                    self.socket?.write(ping: Data())
+                    self.hasReceivedPong = false
+                    print("mandou")
+            } else if !self.isSockedConnected {
+                    self.setupWebSocket()
+                    print("Tentou conecao")
+            } else {
+                self.socket?.write(ping: Data())
+                self.hasReceivedPong = false
+                print("Mandou apos conexao")
+            }
+        }
+    }
+    
+   
+    func minhaFuncao() {
+        // Coloque aqui o código da sua função
+        print("Minha função foi chamada!")
     }
     
     private var socket: WebSocket?
@@ -45,7 +84,10 @@ extension WebsocketGameViewModel {
         func didReceive(event: Starscream.WebSocketEvent, client: Starscream.WebSocketClient) {
             switch event {
             case .connected(let headers):
-               // isConnected = true
+                isSockedConnected = true
+                
+                    sendMessage(message: "\(user.userName)|0|0|null|1")
+                
                 print("websocket is connected: \(headers)")
             case .disconnected(let reason, let code):
                // isConnected = false
@@ -58,18 +100,19 @@ extension WebsocketGameViewModel {
             case .ping(_):
               print("Received ping")
             case .pong(_):
+                hasReceivedPong = true
                 print("Received pong")
             case .viabilityChanged(_):
                 break
             case .reconnectSuggested(_):
                 break
             case .cancelled:
-              //  isConnected = false
+                isSockedConnected = false
                 print("Cancelou")
             case .error(let error):
-              //  isConnected = false
+                isSockedConnected = false
                 print("Error: \(String(describing: error?.localizedDescription))")
-                case .peerClosed:
+            case .peerClosed:
                        break
             }
         }
@@ -118,14 +161,19 @@ class RecycleGame: SKScene, SKPhysicsContactDelegate, ReceivedMessageProtocol {
     func receivedMessage(message: String) {
         let splitedMessage = message.components(separatedBy: "|")
         
-        guard splitedMessage.count > 3 else {
+        guard splitedMessage.count > 4 else {
             return
         }
         
         let userID = splitedMessage[0]
         let nodeName = splitedMessage[1]
+        let messageType =  splitedMessage[4]
         guard let positionX = Double(splitedMessage[2]),
               let positionY = Double(splitedMessage[3]) else {
+            return
+        }
+        
+        guard messageType == "0" else {
             return
         }
         
@@ -245,17 +293,13 @@ class RecycleGame: SKScene, SKPhysicsContactDelegate, ReceivedMessageProtocol {
             return
         }
 
-        guard !["background", "paper", "plastic", "organic"].contains(selectedNodeName)  else {
-            return
-        }
-        
         selectedNode.position = CGPoint(x: position.x + translation.x, y: position.y + translation.y)
         let user = viewModel.user.userName
         let positionX = position.x
         let positionY = position.y
         guard let selectedNodeName = selectedNode.name else {return}
         
-        viewModel.sendMessage(message: "\(user)|\(selectedNodeName)|\(positionX)|\(positionY)")
+        viewModel.sendMessage(message: "\(user)|\(selectedNodeName)|\(positionX)|\(positionY)|0")
     }
 
     
