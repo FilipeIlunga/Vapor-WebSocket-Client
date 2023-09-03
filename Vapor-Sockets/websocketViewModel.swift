@@ -9,88 +9,53 @@ import SwiftUI
 import PhotosUI
 import Starscream
 
-enum APIKey: String {
-    case key = "https://6f13-2804-1814-8568-3500-ac6b-68e7-b7e8-b85d.ngrok.io"
-}
-
-final class WebsocketViewModel: ObservableObject, WebSocketDelegate {
+final class WebsocketViewModel: ObservableObject {
     
-    @Published var isSockedConnected: Bool = false
+    @AppStorage("userID") private var userID = ""
+    @Published var user: CurrentUser = CurrentUser(userName: UUID().uuidString)
     
-    @Published var hasReceivedPong = false
-    private var isFirstPing = true
-    var timer: Timer?
-    
-    var socket: WebSocket?
-    
-    @Published var isAnotherUserTapping: Bool = false
-    
-    @AppStorage("userID") var userID = ""
-    
-    @Published var newMessage: String = ""
-    @Published var user = CurrentUser(userName: UUID().uuidString)
     @Published var chatMessage: [WSMessage] = []
-    
+    @Published var newMessage: String = ""
     @Published var messageReceived = ""
     
+    @Published var isSockedConnected: Bool = false
+    @Published var isAnotherUserTapping: Bool = false
+
+    private var hasReceivedPong: Bool = false
+    private var isFirstPing: Bool = true
+
+    private var timer: Timer?
+    private var socket: WebSocket?
+    
     init() {
-        
-        if userID.isEmpty {
-            self.userID = UUID().uuidString
-            self.user = CurrentUser(userName: userID)
-        } else {
-            user = CurrentUser(userName: self.userID)
-        }
-       
-        setupWebSocket()
-        startPingTimer()
+        initWebSocket()
+        startHeartBeatController()
     }
     
     deinit {
         socket?.disconnect(closeCode: 0)
     }
     
+   private func setupUserInfo() {
+        if userID.isEmpty {
+            self.userID = UUID().uuidString
+            self.user = CurrentUser(userName: userID)
+        } else {
+            user = CurrentUser(userName: self.userID)
+        }
+    }
     
-    func setupWebSocket() {
-        var request = URLRequest(url: URL(string: "\(APIKey.key.rawValue)/chatWS")!)
+    private func initWebSocket() {
+        var request = URLRequest(url: URL(string: "\(APIKeys.websocketAddress.rawValue)/chatWS")!)
         request.setValue("chat", forHTTPHeaderField: "Sec-WebSocket-Protocol")
         request.timeoutInterval = 5
         socket = WebSocket(request: request)
-        socket?.callbackQueue = DispatchQueue(label: "com.vluxe.starscream.myapp")
+       // socket?.callbackQueue = DispatchQueue(label: "com.vluxe.starscream.myapp")
         socket?.delegate = self
         socket?.connect()
     }
     
-    
-    func startPingTimer() {
-        timer =  Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { timer in
-            if self.isFirstPing {
-                self.socket?.write(ping: Data())
-                print("mandou")
-                withAnimation {
-                    self.hasReceivedPong = false
-                }
-                self.isFirstPing = false
-            } else if self.hasReceivedPong  {
-                    self.socket?.write(ping: Data())
-                withAnimation {
-                    self.hasReceivedPong = false
-                }
-                    print("mandou")
-            } else if !self.isSockedConnected {
-                    self.setupWebSocket()
-                    print("Tentou conecao")
-            } else {
-                self.socket?.write(ping: Data())
-                withAnimation {
-                    self.hasReceivedPong = false
-                }
-                print("Mandou apos conexao")
-            }
-        }
-    }
-    
-    func send(newMessageToSend: String, messageType: MessageType) {
+     func send(newMessageToSend: String, messageType: MessageType) {
         
         let newMsgToSend = newMessageToSend.trimmingCharacters(in: .whitespacesAndNewlines)
         
@@ -119,7 +84,7 @@ final class WebsocketViewModel: ObservableObject, WebSocketDelegate {
     }
 }
 
-extension WebsocketViewModel {
+extension WebsocketViewModel: WebSocketDelegate {
     
     func didReceive(event: Starscream.WebSocketEvent, client: Starscream.WebSocketClient) {
         
@@ -152,7 +117,37 @@ extension WebsocketViewModel {
 }
 
 extension WebsocketViewModel {
-    func handlerWebsocketMessage(message: String) {
+    private func startHeartBeatController() {
+        timer =  Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { timer in
+            if self.isFirstPing {
+                self.socket?.write(ping: Data())
+                print("send Ping on start connection")
+                withAnimation {
+                    self.hasReceivedPong = false
+                }
+                self.isFirstPing = false
+            } else if self.hasReceivedPong  {
+                    self.socket?.write(ping: Data())
+                withAnimation {
+                    self.hasReceivedPong = false
+                }
+                    print("send ping")
+            } else if !self.isSockedConnected {
+                    self.initWebSocket()
+                    print("Websocket is disconnected, trying connection")
+            } else {
+                self.socket?.write(ping: Data())
+                withAnimation {
+                    self.hasReceivedPong = false
+                }
+                print("Mandou apos conexao")
+            }
+        }
+    }
+}
+
+extension WebsocketViewModel {
+    private func handlerWebsocketMessage(message: String) {
         let messageSplied = message.components(separatedBy: "|")
         
         guard messageSplied.count >= 4 else {
@@ -173,6 +168,7 @@ extension WebsocketViewModel {
 
         
         DispatchQueue.main.async {
+            
             if messageType == .typingStatus {
                 self.isAnotherUserTapping = messageContent == "1"
             } else if messageType == .chatMessage {
@@ -186,35 +182,37 @@ extension WebsocketViewModel {
         }
     }
     
-    func handlerPongMessage(data: Data?) {
+    private func handlerPongMessage(data: Data?) {
         withAnimation {
             hasReceivedPong = true
         }
         print("Received pong")
     }
     
-    func connectionConfirmMessage(headers: [String: String]) {
+    private func connectionConfirmMessage(headers: [String: String]) {
         self.isSockedConnected = true
         self.send(newMessageToSend: "i am alive", messageType: .alive)
         print("websocket is connected: \(headers)")
     }
     
-    func handlerDisconnectionsMessage(reason: String, code: UInt16) {
+    private func handlerDisconnectionsMessage(reason: String, code: UInt16) {
         self.isSockedConnected = false
         print("websocket is disconnected: \(reason) with code: \(code)")
     }
     
-    func handlerWebsocketMessage(message: Data) {
-        print("Chegou msg em binario \(message)")
+    private func handlerWebsocketMessage(message: Data) {
+        print("Received binary message: \(message)")
     }
     
-    func handlerErrorMessage(error: Error?) {
+    private func handlerErrorMessage(error: Error?) {
         isSockedConnected = false
         print("Error: \(String(describing: error?.localizedDescription))")
     }
     
-    func handlerCancelConectionMessage() {
+    private func handlerCancelConectionMessage() {
         isSockedConnected = false
-        print("Websocket cancelou conexão com o app")
+        print("Websocket canceled connection to app")
     }
 }
+
+

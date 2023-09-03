@@ -67,7 +67,7 @@ final class WebsocketGameViewModel: ObservableObject, WebSocketDelegate {
     weak var delegate: ReceivedMessageProtocol?
     
     func setupWebSocket() {
-        var request = URLRequest(url: URL(string: "\(APIKey.key.rawValue)/spriteKitGame")!)
+        var request = URLRequest(url: URL(string: "\(APIKeys.websocketAddress.rawValue)/spriteKitGame")!)
         request.timeoutInterval = 5
         socket = WebSocket(request: request)
         socket?.delegate = self
