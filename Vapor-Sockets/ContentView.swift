@@ -55,7 +55,8 @@ struct ContentView: View {
                 VStack {
                     
                     HStack {
-                        
+                        Image(systemName: "circle.circle.fill")
+                            .foregroundColor(viewModel.hasReceivedPong ? .green : .red)
                         ZStack {
                             RoundedRectangle(cornerRadius: 9)
                                 .frame(width: UIScreen.main.bounds.width * 0.75, height: calculatedHeight)

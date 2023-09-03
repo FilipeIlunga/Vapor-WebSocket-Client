@@ -10,7 +10,7 @@ import SwiftUI
 struct ChatBubbleView: View {
     @Binding var message: WSMessage
     var body: some View {
-        VStack(alignment: message.isSendByUser ? .trailing : .trailing) {
+        VStack(alignment: message.isSendByUser ? .trailing : .leading, spacing: 10) {
             Text(message.content)
             
             Text(dateFormatter.string(from: message.timestamp))
