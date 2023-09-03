@@ -121,7 +121,7 @@ extension WebsocketViewModel {
         timer =  Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { timer in
             if self.isFirstPing {
                 self.socket?.write(ping: Data())
-                print("send Ping on start connection")
+                print("Sending ping on start connection")
                 withAnimation {
                     self.hasReceivedPong = false
                 }
@@ -131,7 +131,7 @@ extension WebsocketViewModel {
                 withAnimation {
                     self.hasReceivedPong = false
                 }
-                    print("send ping")
+                    print("Sending ping")
             } else if !self.isSockedConnected {
                     self.initWebSocket()
                     print("Websocket is disconnected, trying connection")
@@ -140,7 +140,7 @@ extension WebsocketViewModel {
                 withAnimation {
                     self.hasReceivedPong = false
                 }
-                print("Mandou apos conexao")
+                print("Sending ping after reestablishing connection")
             }
         }
     }
@@ -166,18 +166,18 @@ extension WebsocketViewModel {
         
         let timestamp = Date(timeIntervalSince1970: timeInterval)
 
+        let messageReceived = WSMessage(senderID: userID, messageType: messageType, timestamp: timestamp, content: messageContent, isSendByUser: false)
         
         DispatchQueue.main.async {
-            
-            if messageType == .typingStatus {
-                self.isAnotherUserTapping = messageContent == "1"
-            } else if messageType == .chatMessage {
-                let messageReceived = WSMessage(senderID: userID, messageType: messageType, timestamp: timestamp, content: messageContent, isSendByUser: false)
-                withAnimation {
-                    self.chatMessage.append(messageReceived)
-                }
-            } else {
-                print("Unknown message type: \(messageType)")
+            switch messageType {
+            case .alive:
+                print("Received alive")
+            case .chatMessage:
+                self.handlerChatMessage(message: messageReceived)
+            case .disconnecting:
+                print("Received alive")
+            case .typingStatus:
+                self.handlerChatTypingMessage(message: messageReceived)
             }
         }
     }
@@ -215,4 +215,20 @@ extension WebsocketViewModel {
     }
 }
 
+extension WebsocketViewModel {
+    private func handlerChatMessage(message: WSMessage) {
+        withAnimation {
+            self.chatMessage.append(message)
+        }
+    }
+    
+    private func handlerChatTypingMessage(message: WSMessage) {
+        self.isAnotherUserTapping = message.content == "1"
+    }
+}
 
+extension  WebsocketViewModel {
+    private func decodeMessage(message: String) {
+        
+    }
+}
