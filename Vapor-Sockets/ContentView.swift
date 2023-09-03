@@ -12,12 +12,6 @@ struct CurrentUser: Codable {
     let userName: String
 }
 
-struct Message: Hashable {
-    let message: String
-    let isSentByUser: Bool
-    let messageType: String
-    let data: Data?
-}
 
 struct ContentView: View {
     @StateObject var viewModel: WebsocketViewModel = WebsocketViewModel()
@@ -27,25 +21,15 @@ struct ContentView: View {
     var body: some View {
             
             VStack(spacing: 0) {
-                List(viewModel.chatMessage, id: \.self) { message in
+                List(viewModel.chatMessage.sorted(by: { a, b in
+                    a.timestamp < b.timestamp
+                }), id: \.self) { message in
                     HStack {
-                        if message.isSentByUser {
+                        if message.isSendByUser {
                             Spacer()
-                            Text(message.message)
-                                .padding(8)
-                                .background(message.isSentByUser ? Color.blue : Color.gray)
-                                .cornerRadius(8)
-                            
+                            ChatBubbleView(message: .constant(message))
                         } else {
-                            if let data = message.data, let uiimage = UIImage(data: data) {
-                                Image(uiImage: uiimage)
-                                    .resizable()
-                            } else {
-                                Text(message.message)
-                                    .padding(8)
-                                    .background(message.isSentByUser ? Color.blue : Color.gray)
-                                    .cornerRadius(8)
-                            }
+                            ChatBubbleView(message: .constant(message))
                             Spacer()
                         }
                     }
@@ -94,9 +78,9 @@ struct ContentView: View {
                                 }
                                 .onChange(of: viewModel.newMessage) { newText in
                                     if newText.isEmpty {
-                                        viewModel.send(newMessageToSend: "0", messageType: "0")
+                                        viewModel.send(newMessageToSend: "0", messageType: .typingStatus)
                                     } else {
-                                        viewModel.send(newMessageToSend: "1", messageType: "0")
+                                        viewModel.send(newMessageToSend: "1", messageType: .typingStatus)
                                     }
                                    
                                 }
@@ -116,7 +100,7 @@ struct ContentView: View {
                 .padding(.vertical, 10)
                 .padding(.bottom, 10)
                 .onDisappear {
-                    viewModel.send(newMessageToSend: "0", messageType: "0")
+                    viewModel.send(newMessageToSend: "0", messageType: .disconnecting)
                 }
             }
         }

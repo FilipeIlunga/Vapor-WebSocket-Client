@@ -20,6 +20,9 @@
 		2300CD4B2AA03E8400CA1807 /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = 2300CD4A2AA03E8400CA1807 /* Starscream */; };
 		2300CD4E2AA12A9E00CA1807 /* SpriteKitGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD4D2AA12A9E00CA1807 /* SpriteKitGame.swift */; };
 		2300CD502AA12AD500CA1807 /* RecycleGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD4F2AA12AD500CA1807 /* RecycleGameView.swift */; };
+		23C855392AA437C600105B25 /* WSMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C855382AA437C600105B25 /* WSMessage.swift */; };
+		23C8553B2AA4413500105B25 /* MessageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C8553A2AA4413500105B25 /* MessageType.swift */; };
+		23C855402AA4487700105B25 /* ChatBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C8553F2AA4487700105B25 /* ChatBubbleView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +58,9 @@
 		2300CD452AA00AC000CA1807 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2300CD4D2AA12A9E00CA1807 /* SpriteKitGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpriteKitGame.swift; sourceTree = "<group>"; };
 		2300CD4F2AA12AD500CA1807 /* RecycleGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecycleGameView.swift; sourceTree = "<group>"; };
+		23C855382AA437C600105B25 /* WSMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WSMessage.swift; sourceTree = "<group>"; };
+		23C8553A2AA4413500105B25 /* MessageType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageType.swift; sourceTree = "<group>"; };
+		23C8553F2AA4487700105B25 /* ChatBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBubbleView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +113,7 @@
 		2300CD162A9FA80600CA1807 /* Vapor-Sockets */ = {
 			isa = PBXGroup;
 			children = (
+				23C855362AA437B400105B25 /* Chat */,
 				2300CD4C2AA12A8600CA1807 /* WebSocketWithGame */,
 				2300CD452AA00AC000CA1807 /* Info.plist */,
 				2300CD172A9FA80600CA1807 /* Vapor_SocketsApp.swift */,
@@ -151,6 +158,32 @@
 				2300CD4F2AA12AD500CA1807 /* RecycleGameView.swift */,
 			);
 			path = WebSocketWithGame;
+			sourceTree = "<group>";
+		};
+		23C855362AA437B400105B25 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				23C8553C2AA4480F00105B25 /* Components */,
+				23C855372AA437BC00105B25 /* Model */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
+		23C855372AA437BC00105B25 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				23C855382AA437C600105B25 /* WSMessage.swift */,
+				23C8553A2AA4413500105B25 /* MessageType.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		23C8553C2AA4480F00105B25 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				23C8553F2AA4487700105B25 /* ChatBubbleView.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -291,9 +324,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				23C855402AA4487700105B25 /* ChatBubbleView.swift in Sources */,
 				2300CD1A2A9FA80600CA1807 /* ContentView.swift in Sources */,
 				2300CD182A9FA80600CA1807 /* Vapor_SocketsApp.swift in Sources */,
 				2300CD442AA003F000CA1807 /* TypingAnimationView.swift in Sources */,
+				23C8553B2AA4413500105B25 /* MessageType.swift in Sources */,
+				23C855392AA437C600105B25 /* WSMessage.swift in Sources */,
 				2300CD422A9FBEE900CA1807 /* websocketViewModel.swift in Sources */,
 				2300CD502AA12AD500CA1807 /* RecycleGameView.swift in Sources */,
 				2300CD4E2AA12A9E00CA1807 /* SpriteKitGame.swift in Sources */,

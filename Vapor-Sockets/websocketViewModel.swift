@@ -10,7 +10,7 @@ import PhotosUI
 import Starscream
 
 enum APIKey: String {
-    case key = "https://033c-138-122-73-139.ngrok.io"
+    case key = "https://5a99-138-122-73-139.ngrok.io"
 }
 
 final class WebsocketViewModel: ObservableObject, WebSocketDelegate {
@@ -29,7 +29,7 @@ final class WebsocketViewModel: ObservableObject, WebSocketDelegate {
     
     @Published var newMessage: String = ""
     @Published var user = CurrentUser(userName: UUID().uuidString)
-    @Published var chatMessage: [Message] = []
+    @Published var chatMessage: [WSMessage] = []
     
     @Published var messageReceived = ""
     
@@ -52,7 +52,7 @@ final class WebsocketViewModel: ObservableObject, WebSocketDelegate {
     
     
     func setupWebSocket() {
-        var request = URLRequest(url: URL(string: "\(APIKey.key.rawValue)/toki")!)
+        var request = URLRequest(url: URL(string: "\(APIKey.key.rawValue)/chatWS")!)
         request.timeoutInterval = 5
         socket = WebSocket(request: request)
         socket?.delegate = self
@@ -82,34 +82,29 @@ final class WebsocketViewModel: ObservableObject, WebSocketDelegate {
         }
     }
     
-    func send(newMessageToSend: String, messageType: String, data: Data? = nil) {
+    func send(newMessageToSend: String, messageType: MessageType) {
         
         let newMsgToSend = newMessageToSend.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        guard !newMsgToSend.isEmpty else {return}
-        let messageToSend = user.userName + "|" +  newMsgToSend + "|" + messageType
+        let timestamp = Date.now
+        let message = WSMessage(senderID: user.userName,messageType: messageType, timestamp: timestamp, content: newMsgToSend, isSendByUser: true)
         
-        if messageType == "2" {
-            if let data = data {
-                socket?.write(data: data)
-            }
-        } else {
-            socket?.write(string: messageToSend, completion: {
-                if messageType == "1" {
+        socket?.write(string: message.description, completion: {
+            if messageType == .chatMessage {
                     DispatchQueue.main.async {
-                        self.chatMessage.append(Message(message: newMsgToSend, isSentByUser: true, messageType: "1", data: nil))
+                        self.chatMessage.append(message)
                         self.newMessage = ""
                     }
                 }
             })
-        }
+
     }
     
     func sendButtonDidTapped() {
         
         let newMessageToSend = newMessage.trimmingCharacters(in: .whitespaces)
         if !newMessageToSend.isEmpty {
-            send(newMessageToSend: newMessageToSend, messageType: "1")
+            send(newMessageToSend: newMessageToSend, messageType: MessageType.chatMessage)
         }
     }
 }
@@ -120,7 +115,7 @@ extension WebsocketViewModel {
         switch event {
         case .connected(let headers):
              isSockedConnected = true
-            send(newMessageToSend: "i am alive", messageType: "-1")
+            send(newMessageToSend: "i am alive", messageType: .alive)
             print("websocket is connected: \(headers)")
         case .disconnected(let reason, let code):
             // isConnected = false
@@ -128,7 +123,8 @@ extension WebsocketViewModel {
         case .text(let message):
             handlerWebsocketMessage(message: message)
         case .binary(let data):
-            self.chatMessage.append(Message(message: "", isSentByUser: false, messageType: "3", data: data))
+            print("Chegou msg em binario \(data)")
+            //self.chatMessage.append(Message(message: "", isSentByUser: false, messageType: "3", data: data))
         case .ping(_):
             print("Received ping")
         case .pong(_):
@@ -151,19 +147,31 @@ extension WebsocketViewModel {
 
 extension WebsocketViewModel {
     func handlerWebsocketMessage(message: String) {
-        let messageComponents = message.components(separatedBy: "|")
+        let messageSplied = message.components(separatedBy: "|")
         
-        guard messageComponents.count >= 3 else {
+        guard messageSplied.count >= 4 else {
+            print("Mensagem Invalida")
             return
         }
         
-        let messageType = messageComponents[2]
-        let content = messageComponents[1]
+        let userID = messageSplied[0]
+        let stringTimestamp = messageSplied[2]
+        let messageContent = messageSplied[3]
+        
+        guard let timeInterval = Double(stringTimestamp), let messageTypeRawValue = Int(messageSplied[1]), let messageType = MessageType(rawValue: messageTypeRawValue) else {
+            print("Erro ao converter timestamp")
+            return
+        }
+        
+        let timestamp = Date(timeIntervalSince1970: timeInterval)
+
+        
         DispatchQueue.main.async {
-            if messageType == "0" {
-                self.isAnotherUserTapping = content == "1"
-            } else if messageType == "1" || messageType == "2" {
-                self.chatMessage.append(Message(message: content, isSentByUser: false, messageType: messageType, data: nil))
+            if messageType == .typingStatus {
+                self.isAnotherUserTapping = messageContent == "1"
+            } else if messageType == .chatMessage {
+                let messageReceived = WSMessage(senderID: userID, messageType: messageType, timestamp: timestamp, content: messageContent, isSendByUser: false)
+                self.chatMessage.append(messageReceived)
             } else {
                 print("Unknown message type: \(messageType)")
             }
