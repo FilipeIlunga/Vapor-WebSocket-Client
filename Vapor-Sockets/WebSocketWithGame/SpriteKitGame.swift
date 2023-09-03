@@ -75,7 +75,7 @@ final class WebsocketGameViewModel: ObservableObject, WebSocketDelegate {
     }
     
     func sendAlive() {
-        socket?.write(string: "\(user.userName)|Hey socket i am alive|3")
+        socket?.write(string: "\(user.userName)Hey socket i am alive|3")
     }
     
     func sendMessage(message: String) {

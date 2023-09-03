@@ -120,7 +120,7 @@ final class WebsocketViewModel: ObservableObject {
         let header = WSMessageHeader(messageType: .Status, subMessageType: StatusMessageType.Alive)
         
         
-        let socketMessage = "\(header.wsEncode)|\(user.userName)|i am alive"
+        let socketMessage = "\(header.wsEncode)\(user.userName)|i am alive"
         
         socket?.write(string: socketMessage, completion: {
            print("Alive message was sent")
@@ -140,12 +140,12 @@ final class WebsocketViewModel: ObservableObject {
         case .Reply:
             break
         case .TypingStatus:
-            sendTypingStatus(header: header)
+            sendTypingStatus(header: header, message: message)
         }
     }
     #warning("Mudar o socketMessage criar funcao para i")
-    func sendTypingStatus(header: WSMessageHeader) {
-        let socketMessage = "\(header.wsEncode)1"
+    func sendTypingStatus(header: WSMessageHeader, message: String) {
+        let socketMessage = "\(header.wsEncode)\(user.userName)|\(message)"
 
         socket?.write(string: socketMessage, completion: {
             print("Typing message was sent")
@@ -276,22 +276,6 @@ extension WebsocketViewModel {
         case .Status:
             print("ola")
         }
-
-        
-//        let messageReceived = WSMessage(senderID: userID, messageType: messageType, timestamp: timestamp, content: messageContent, isSendByUser: false)
-        
-//        DispatchQueue.main.async {
-//            switch messageType {
-//            case .alive:
-//                print("Received alive")
-//            case .chatMessage:
-//                self.handlerChatMessage(type: <#ChatMessageType#>, message: messageReceived)
-//            case .disconnecting:
-//                print("Received alive")
-//            case .typingStatus:
-//                self.handlerChatTypingMessage(message: messageReceived)
-//            }
-//        }
     }
     
     
@@ -351,7 +335,7 @@ extension WebsocketViewModel {
         case .Reply:
             print("reply")
         case .TypingStatus:
-            print("typing")
+            handlerChatTypingMessage(message: message)
         }
     }
     
@@ -382,8 +366,18 @@ extension WebsocketViewModel {
         }
     }
     
-    private func handlerChatTypingMessage(message: WSMessage) {
-        self.isAnotherUserTapping = message.content == "1"
+    private func handlerChatTypingMessage(message: String) {
+        let messageSplited = message.components(separatedBy: "|")
+        
+        guard messageSplited.count >= 2 else {
+            print("Message not enough fields - Expected fiedls: \(3) but received: \(messageSplited.count) - message: \(message)")
+            return
+        }
+        
+        let userID = messageSplited[0]
+        let isTyping = messageSplited[1] == "1"
+        
+        self.isAnotherUserTapping = isTyping
     }
 }
 
