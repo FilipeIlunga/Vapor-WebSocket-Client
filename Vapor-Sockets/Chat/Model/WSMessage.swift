@@ -8,6 +8,7 @@
 import Foundation
 
 struct WSMessage: Hashable {
+    let messageID: String
     let senderID: String
     let timestamp: Date
     let content: String

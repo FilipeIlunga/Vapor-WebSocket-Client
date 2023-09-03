@@ -29,9 +29,3 @@ struct ChatBubbleView: View {
         return formatter
     }()
 }
-
-struct ChatBubbleView_Previews: PreviewProvider {
-    static var previews: some View {
-        ChatBubbleView(message: .constant(WSMessage(senderID: "312123", timestamp: Date.now, content: "Ola meu grande amigo como vai voce?", isSendByUser: true)))
-    }
-}

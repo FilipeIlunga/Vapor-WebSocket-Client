@@ -9,11 +9,6 @@ import SwiftUI
 
 @main
 struct Vapor_SocketsApp: App {
-    init() {
-        UITableView.appearance().separatorStyle = .none
-        UITableView.appearance().tableFooterView = UIView()
-        UITextView.appearance().backgroundColor = .clear
-    }
     var body: some Scene {
         WindowGroup {
             MainView()

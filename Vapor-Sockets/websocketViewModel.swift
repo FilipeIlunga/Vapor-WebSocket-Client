@@ -158,6 +158,7 @@ final class WebsocketViewModel: ObservableObject {
         let timestamp = Date.now
         
         let wsMessage = WSMessage(
+            messageID: UUID().uuidString,
             senderID: user.userName,
             timestamp: timestamp,
             content: messageContent,
@@ -342,14 +343,15 @@ extension WebsocketViewModel {
     private func handlerChatContentStringMessage(message: String) {
         let messageSplited = message.components(separatedBy: "|")
         
-        guard messageSplited.count >= 3 else {
+        guard messageSplited.count >= 4 else {
             print("Message not enough fields - Expected fiedls: \(3) but received: \(messageSplited.count) - message: \(message)")
             return
         }
         
-        let sendID = messageSplited[0]
-        let strTimeInterval = messageSplited[1]
-        let content = messageSplited[2]
+        let messageID = messageSplited[0]
+        let sendID = messageSplited[1]
+        let strTimeInterval = messageSplited[2]
+        let content = messageSplited[3]
         
         guard let timeInterval = Double(strTimeInterval) else {
             print("Erro ao converter timestamp value: \(strTimeInterval)")
@@ -359,7 +361,7 @@ extension WebsocketViewModel {
 
         let timestamp = Date(timeIntervalSince1970: timeInterval)
 
-        let wsMessage = WSMessage(senderID: sendID, timestamp: timestamp, content: content, isSendByUser: false)
+        let wsMessage = WSMessage(messageID: messageID, senderID: sendID, timestamp: timestamp, content: content, isSendByUser: false)
         
         withAnimation {
             self.chatMessage.append(wsMessage)
