@@ -16,6 +16,6 @@ struct WSMessage: Hashable {
 
     
     var description: String {
-        return "\(senderID)|\(timestamp.timeIntervalSince1970)|\(content)"
+        return "\(messageID)|\(senderID)|\(timestamp.timeIntervalSince1970)|\(content)"
     }
 }

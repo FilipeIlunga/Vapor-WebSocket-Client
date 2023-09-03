@@ -57,25 +57,11 @@ final class WebsocketViewModel: ObservableObject {
         socket?.delegate = self
         socket?.connect()
     }
+
     
-//    func sendMessage(newMessageToSend: String, messageType: MessageType) {
-//
-//        let newMsgToSend = newMessageToSend.trimmingCharacters(in: .whitespacesAndNewlines)
-//
-//        let timestamp = Date.now
-//        let message = WSMessage(senderID: user.userName,messageType: messageType, timestamp: timestamp, content: newMsgToSend, isSendByUser: true)
-//
-//        socket?.write(string: message.description, completion: {
-//            if messageType == .chatMessage {
-//                DispatchQueue.main.async {
-//                    withAnimation {
-//                        self.chatMessage.append(message)
-//                    }
-//                    self.newMessage = ""
-//                }
-//            }
-//        })
-//    }
+    func getWSMessage(header: WSMessageHeader, payload: String) -> String {
+        return "\(header.wsEncode)\(payload)"
+    }
     
     func sendMessage(messageHeader: WSMessageHeader, message: String) {
         switch messageHeader.messageType {
@@ -106,10 +92,11 @@ final class WebsocketViewModel: ObservableObject {
         }
     }
     
+    
     func sendDisconnected() {
         let header = WSMessageHeader(messageType: .Status, subMessageType: StatusMessageType.Disconnect)
         
-        let socketMessage = "\(header.wsEncode)|I am disconnecting"
+        let socketMessage = getWSMessage(header: header, payload: "\(user.userName)|i am disconnecting")
         
         socket?.write(string: socketMessage, completion: {
            print("Disconnecting message has sent")
@@ -119,8 +106,7 @@ final class WebsocketViewModel: ObservableObject {
     func sendAlive() {
         let header = WSMessageHeader(messageType: .Status, subMessageType: StatusMessageType.Alive)
         
-        
-        let socketMessage = "\(header.wsEncode)\(user.userName)|i am alive"
+        let socketMessage = getWSMessage(header: header, payload: "\(user.userName)|i am alive")
         
         socket?.write(string: socketMessage, completion: {
            print("Alive message was sent")
@@ -140,12 +126,13 @@ final class WebsocketViewModel: ObservableObject {
         case .Reply:
             break
         case .TypingStatus:
-            sendTypingStatus(header: header, message: message)
+            sendTypingStatus(typingStatus: message)
         }
     }
     #warning("Mudar o socketMessage criar funcao para i")
-    func sendTypingStatus(header: WSMessageHeader, message: String) {
-        let socketMessage = "\(header.wsEncode)\(user.userName)|\(message)"
+    func sendTypingStatus(typingStatus: String) {
+        let header = WSMessageHeader(messageType: .Chat, subMessageType: ChatMessageType.TypingStatus)
+        let socketMessage = getWSMessage(header: header, payload: "\(user.userName)|\(typingStatus)")
 
         socket?.write(string: socketMessage, completion: {
             print("Typing message was sent")
@@ -164,7 +151,7 @@ final class WebsocketViewModel: ObservableObject {
             content: messageContent,
             isSendByUser: true)
         
-        let socketMessage = "\(header.wsEncode)\(wsMessage.description)"
+        let socketMessage = getWSMessage(header: header, payload: wsMessage.description)
         
         socket?.write(string: socketMessage, completion: {
             DispatchQueue.main.async {
