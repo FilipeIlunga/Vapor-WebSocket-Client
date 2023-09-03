@@ -9,6 +9,9 @@ import SwiftUI
 import PhotosUI
 import Starscream
 
+
+//"Timestamp|messageType|subMessage|"
+
 final class WebsocketViewModel: ObservableObject {
     
     @AppStorage("userID") private var userID = ""
@@ -72,7 +75,51 @@ final class WebsocketViewModel: ObservableObject {
                     }
                 }
             })
-
+    }
+    
+    func sendMessage(message: String, messageHeader: WSMessageHeader) {
+        switch messageHeader.messageType {
+            
+        case .Chat:
+            guard let msgType = messageHeader.subMessageType as? ChatMessageType else {
+                print("Wrong format to chatMessageType, subMsgType: \(messageHeader.subMessageType)")
+                return
+            }
+            sendMessageChat(type: msgType)
+        case .Status:
+            guard let msgType = messageHeader.subMessageType as? StatusMessageType else {
+                print("Wrong format to statusMessageType, subMsgType: \(messageHeader.subMessageType)")
+                return
+            }
+            sendStatusMessage(type: msgType)
+            print("ola")
+        }
+    }
+    
+    func sendStatusMessage(type: StatusMessageType) {
+        let headMessageType = NewMessageType.Status
+        switch type {
+        case .Alive:
+            break
+        case .Disconnect:
+            break
+        }
+    }
+    
+    func sendMessageChat(type: ChatMessageType) {
+        let headMessageType = NewMessageType.Chat
+        switch type {
+        case .ContentString:
+            break
+        case .ContentData:
+            break
+        case .Reaction:
+            break
+        case .Reply:
+            break
+        case .TypingStatus:
+            break
+        }
     }
     
     func sendButtonDidTapped() {
