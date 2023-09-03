@@ -8,8 +8,8 @@ protocol ReceivedMessageProtocol: AnyObject {
 }
 
 final class WebsocketGameViewModel: ObservableObject, WebSocketDelegate {
-    
-    @Published var user = CurrentUser(userName: UUID().uuidString, message: "")
+    @AppStorage("userID") var userID = ""
+    @Published var user = CurrentUser(userName: UUID().uuidString)
     
     @Published var isSockedConnected: Bool = false
     
@@ -18,6 +18,14 @@ final class WebsocketGameViewModel: ObservableObject, WebSocketDelegate {
     var timer: Timer?
 
     init() {
+        
+        if userID.isEmpty {
+            self.userID = UUID().uuidString
+            self.user = CurrentUser(userName: userID)
+        } else {
+            self.user = CurrentUser(userName: self.userID)
+
+        }
         
         setupWebSocket()
 

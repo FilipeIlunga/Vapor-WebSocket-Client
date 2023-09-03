@@ -10,11 +10,10 @@ import PhotosUI
 
 struct CurrentUser: Codable {
     let userName: String
-    let message: String
 }
 
 struct Message: Hashable {
-    let  message: String
+    let message: String
     let isSentByUser: Bool
     let messageType: String
     let data: Data?

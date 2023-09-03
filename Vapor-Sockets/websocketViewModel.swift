@@ -10,7 +10,7 @@ import PhotosUI
 import Starscream
 
 enum APIKey: String {
-    case key = "https://57e2-138-122-73-139.ngrok.io"
+    case key = "https://033c-138-122-73-139.ngrok.io"
 }
 
 final class WebsocketViewModel: ObservableObject, WebSocketDelegate {
@@ -25,13 +25,23 @@ final class WebsocketViewModel: ObservableObject, WebSocketDelegate {
     
     @Published var isAnotherUserTapping: Bool = false
     
+    @AppStorage("userID") var userID = ""
+    
     @Published var newMessage: String = ""
-    @Published var user = CurrentUser(userName: UUID().uuidString, message: "")
+    @Published var user = CurrentUser(userName: UUID().uuidString)
     @Published var chatMessage: [Message] = []
     
     @Published var messageReceived = ""
     
     init() {
+        
+        if userID.isEmpty {
+            self.userID = UUID().uuidString
+            self.user = CurrentUser(userName: userID)
+        } else {
+            user = CurrentUser(userName: self.userID)
+        }
+       
         setupWebSocket()
         startPingTimer()
     }
