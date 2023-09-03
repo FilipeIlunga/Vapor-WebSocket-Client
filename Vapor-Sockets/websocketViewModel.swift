@@ -10,7 +10,7 @@ import PhotosUI
 import Starscream
 
 
-//"Timestamp|messageType|subMessage|"
+//"messageType*|*subMessage*|*"
 
 final class WebsocketViewModel: ObservableObject {
     
@@ -23,10 +23,10 @@ final class WebsocketViewModel: ObservableObject {
     
     @Published var isSockedConnected: Bool = false
     @Published var isAnotherUserTapping: Bool = false
-
+    
     private var hasReceivedPong: Bool = false
     private var isFirstPing: Bool = true
-
+    
     private var timer: Timer?
     private var socket: WebSocket?
     
@@ -39,7 +39,7 @@ final class WebsocketViewModel: ObservableObject {
         socket?.disconnect(closeCode: 0)
     }
     
-   private func setupUserInfo() {
+    private func setupUserInfo() {
         if userID.isEmpty {
             self.userID = UUID().uuidString
             self.user = CurrentUser(userName: userID)
@@ -53,31 +53,31 @@ final class WebsocketViewModel: ObservableObject {
         request.setValue("chat", forHTTPHeaderField: "Sec-WebSocket-Protocol")
         request.timeoutInterval = 5
         socket = WebSocket(request: request)
-       // socket?.callbackQueue = DispatchQueue(label: "com.vluxe.starscream.myapp")
+        // socket?.callbackQueue = DispatchQueue(label: "com.vluxe.starscream.myapp")
         socket?.delegate = self
         socket?.connect()
     }
     
-     func send(newMessageToSend: String, messageType: MessageType) {
-        
-        let newMsgToSend = newMessageToSend.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        let timestamp = Date.now
-        let message = WSMessage(senderID: user.userName,messageType: messageType, timestamp: timestamp, content: newMsgToSend, isSendByUser: true)
-        
-        socket?.write(string: message.description, completion: {
-            if messageType == .chatMessage {
-                    DispatchQueue.main.async {
-                        withAnimation {
-                            self.chatMessage.append(message)
-                        }
-                        self.newMessage = ""
-                    }
-                }
-            })
-    }
+//    func sendMessage(newMessageToSend: String, messageType: MessageType) {
+//
+//        let newMsgToSend = newMessageToSend.trimmingCharacters(in: .whitespacesAndNewlines)
+//
+//        let timestamp = Date.now
+//        let message = WSMessage(senderID: user.userName,messageType: messageType, timestamp: timestamp, content: newMsgToSend, isSendByUser: true)
+//
+//        socket?.write(string: message.description, completion: {
+//            if messageType == .chatMessage {
+//                DispatchQueue.main.async {
+//                    withAnimation {
+//                        self.chatMessage.append(message)
+//                    }
+//                    self.newMessage = ""
+//                }
+//            }
+//        })
+//    }
     
-    func sendMessage(message: String, messageHeader: WSMessageHeader) {
+    func sendMessage(messageHeader: WSMessageHeader, message: String) {
         switch messageHeader.messageType {
             
         case .Chat:
@@ -85,32 +85,54 @@ final class WebsocketViewModel: ObservableObject {
                 print("Wrong format to chatMessageType, subMsgType: \(messageHeader.subMessageType)")
                 return
             }
-            sendMessageChat(type: msgType)
+            sendMessageChat(type: msgType, message: message)
         case .Status:
             guard let msgType = messageHeader.subMessageType as? StatusMessageType else {
                 print("Wrong format to statusMessageType, subMsgType: \(messageHeader.subMessageType)")
                 return
             }
-            sendStatusMessage(type: msgType)
+            sendStatusMessage(type: msgType, message: message)
             print("ola")
         }
     }
     
-    func sendStatusMessage(type: StatusMessageType) {
+    func sendStatusMessage(type: StatusMessageType, message: String) {
         let headMessageType = NewMessageType.Status
         switch type {
         case .Alive:
-            break
+            sendAlive()
         case .Disconnect:
-            break
+            sendDisconnected()
         }
     }
     
-    func sendMessageChat(type: ChatMessageType) {
-        let headMessageType = NewMessageType.Chat
+    func sendDisconnected() {
+        let header = WSMessageHeader(messageType: .Status, subMessageType: StatusMessageType.Disconnect)
+        
+        let socketMessage = "\(header.wsEncode)|I am disconnecting"
+        
+        socket?.write(string: socketMessage, completion: {
+           print("Disconnecting message has sent")
+        })
+    }
+    
+    func sendAlive() {
+        let header = WSMessageHeader(messageType: .Status, subMessageType: StatusMessageType.Alive)
+        
+        
+        let socketMessage = "\(header.wsEncode)|\(user.userName)|i am alive"
+        
+        socket?.write(string: socketMessage, completion: {
+           print("Alive message was sent")
+        })
+    }
+        
+    func sendMessageChat(type: ChatMessageType, message: String) {
+        let header = WSMessageHeader(messageType: .Chat, subMessageType: type)
+
         switch type {
         case .ContentString:
-            break
+            sendContentString(header: header, message: message)
         case .ContentData:
             break
         case .Reaction:
@@ -118,15 +140,47 @@ final class WebsocketViewModel: ObservableObject {
         case .Reply:
             break
         case .TypingStatus:
-            break
+            sendTypingStatus(header: header)
         }
+    }
+    #warning("Mudar o socketMessage criar funcao para i")
+    func sendTypingStatus(header: WSMessageHeader) {
+        let socketMessage = "\(header.wsEncode)1"
+
+        socket?.write(string: socketMessage, completion: {
+            print("Typing message was sent")
+        })
+        
+    }
+    
+    func sendContentString(header: WSMessageHeader, message: String) {        
+        let messageContent = message.trimmingCharacters(in: .whitespacesAndNewlines)
+        let timestamp = Date.now
+        
+        let wsMessage = WSMessage(
+            senderID: user.userName,
+            timestamp: timestamp,
+            content: messageContent,
+            isSendByUser: true)
+        
+        let socketMessage = "\(header.wsEncode)\(wsMessage.description)"
+        
+        socket?.write(string: socketMessage, completion: {
+            DispatchQueue.main.async {
+                withAnimation {
+                    self.chatMessage.append(wsMessage)
+                }
+                self.newMessage = ""
+            }
+        })
     }
     
     func sendButtonDidTapped() {
         
         let newMessageToSend = newMessage.trimmingCharacters(in: .whitespaces)
         if !newMessageToSend.isEmpty {
-            send(newMessageToSend: newMessageToSend, messageType: MessageType.chatMessage)
+            let messageHeader = WSMessageHeader(messageType: .Chat, subMessageType: ChatMessageType.ContentString)
+            sendMessage(messageHeader: messageHeader, message: newMessageToSend)
         }
     }
 }
@@ -174,14 +228,14 @@ extension WebsocketViewModel {
                 }
                 self.isFirstPing = false
             } else if self.hasReceivedPong  {
-                    self.socket?.write(ping: Data())
+                self.socket?.write(ping: Data())
                 withAnimation {
                     self.hasReceivedPong = false
                 }
-                    print("Sending ping")
+                print("Sending ping")
             } else if !self.isSockedConnected {
-                    self.initWebSocket()
-                    print("Websocket is disconnected, trying connection")
+                self.initWebSocket()
+                print("Websocket is disconnected, trying connection")
             } else {
                 self.socket?.write(ping: Data())
                 withAnimation {
@@ -195,37 +249,58 @@ extension WebsocketViewModel {
 
 extension WebsocketViewModel {
     private func handlerWebsocketMessage(message: String) {
-        let messageSplied = message.components(separatedBy: "|")
+        let messageSplied = message.components(separatedBy: "*|")
         
-        guard messageSplied.count >= 4 else {
+        guard messageSplied.count >= 3 else {
             print("Mensagem Invalida")
             return
         }
         
-        let userID = messageSplied[0]
-        let stringTimestamp = messageSplied[2]
-        let messageContent = messageSplied[3]
-        
-        guard let timeInterval = Double(stringTimestamp), let messageTypeRawValue = Int(messageSplied[1]), let messageType = MessageType(rawValue: messageTypeRawValue) else {
-            print("Erro ao converter timestamp")
+        let payload = messageSplied[2]
+
+        guard let messageTypeCode = Int(messageSplied[0]),
+              let messageType = NewMessageType(rawValue: messageTypeCode),
+              let subMessageTypeCode = Int(messageSplied[1])
+        else {
             return
         }
         
-        let timestamp = Date(timeIntervalSince1970: timeInterval)
-
-        let messageReceived = WSMessage(senderID: userID, messageType: messageType, timestamp: timestamp, content: messageContent, isSendByUser: false)
-        
-        DispatchQueue.main.async {
-            switch messageType {
-            case .alive:
-                print("Received alive")
-            case .chatMessage:
-                self.handlerChatMessage(message: messageReceived)
-            case .disconnecting:
-                print("Received alive")
-            case .typingStatus:
-                self.handlerChatTypingMessage(message: messageReceived)
+        switch messageType {
+        case .Chat:
+            guard let chatMessageType = ChatMessageType(rawValue: subMessageTypeCode) else {
+                print("Invalid code to chat: \(subMessageTypeCode)")
+                return
             }
+            
+            handlerChatMessage(type: chatMessageType, message: payload)
+        case .Status:
+            print("ola")
+        }
+
+        
+//        let messageReceived = WSMessage(senderID: userID, messageType: messageType, timestamp: timestamp, content: messageContent, isSendByUser: false)
+        
+//        DispatchQueue.main.async {
+//            switch messageType {
+//            case .alive:
+//                print("Received alive")
+//            case .chatMessage:
+//                self.handlerChatMessage(type: <#ChatMessageType#>, message: messageReceived)
+//            case .disconnecting:
+//                print("Received alive")
+//            case .typingStatus:
+//                self.handlerChatTypingMessage(message: messageReceived)
+//            }
+//        }
+    }
+    
+    
+    private func handlerStatusMessage(type: StatusMessageType) {
+        switch type {
+        case .Alive:
+            print("")
+        case .Disconnect:
+            print("print")
         }
     }
     
@@ -238,7 +313,8 @@ extension WebsocketViewModel {
     
     private func connectionConfirmMessage(headers: [String: String]) {
         self.isSockedConnected = true
-        self.send(newMessageToSend: "i am alive", messageType: .alive)
+        let messageHeader = WSMessageHeader(messageType: .Status, subMessageType: StatusMessageType.Alive)
+        sendAlive()
         print("websocket is connected: \(headers)")
     }
     
@@ -263,9 +339,46 @@ extension WebsocketViewModel {
 }
 
 extension WebsocketViewModel {
-    private func handlerChatMessage(message: WSMessage) {
+    
+    private func handlerChatMessage(type: ChatMessageType, message: String) {
+        switch type {
+        case .ContentString:
+            handlerChatContentStringMessage(message: message)
+        case .ContentData:
+            print("contentData")
+        case .Reaction:
+            print("reaction")
+        case .Reply:
+            print("reply")
+        case .TypingStatus:
+            print("typing")
+        }
+    }
+    
+    private func handlerChatContentStringMessage(message: String) {
+        let messageSplited = message.components(separatedBy: "|")
+        
+        guard messageSplited.count >= 3 else {
+            print("Message not enough fields - Expected fiedls: \(3) but received: \(messageSplited.count) - message: \(message)")
+            return
+        }
+        
+        let sendID = messageSplited[0]
+        let strTimeInterval = messageSplited[1]
+        let content = messageSplited[2]
+        
+        guard let timeInterval = Double(strTimeInterval) else {
+            print("Erro ao converter timestamp value: \(strTimeInterval)")
+            return
+        }
+        
+
+        let timestamp = Date(timeIntervalSince1970: timeInterval)
+
+        let wsMessage = WSMessage(senderID: sendID, timestamp: timestamp, content: content, isSendByUser: false)
+        
         withAnimation {
-            self.chatMessage.append(message)
+            self.chatMessage.append(wsMessage)
         }
     }
     

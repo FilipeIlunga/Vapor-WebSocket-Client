@@ -32,6 +32,6 @@ struct ChatBubbleView: View {
 
 struct ChatBubbleView_Previews: PreviewProvider {
     static var previews: some View {
-        ChatBubbleView(message: .constant(WSMessage(senderID: "312123", messageType: MessageType.chatMessage, timestamp: Date.now, content: "Ola meu grande amigo como vai voce?", isSendByUser: true)))
+        ChatBubbleView(message: .constant(WSMessage(senderID: "312123", timestamp: Date.now, content: "Ola meu grande amigo como vai voce?", isSendByUser: true)))
     }
 }

@@ -17,32 +17,43 @@ enum MessageType: Int {
 }
 
 enum ChatMessageType: Int, SubMessageType {
+    
     case ContentString = 0
     case ContentData
     case Reaction
     case Reply
     case TypingStatus
     
-
+    var code: Int {
+        return self.rawValue
+    }
 }
+
 
 enum StatusMessageType: Int, SubMessageType {
-    case Alive
+    case Alive = 0
     case Disconnect
     
-
+    var code: Int {
+        return self.rawValue
+    }
 }
 
-enum NewMessageType {
-    case Chat
+enum NewMessageType: Int {
+    case Chat = 0
     case Status
 }
 
 protocol SubMessageType {
+    var code: Int { get }
 }
 
 struct WSMessageHeader {
     let messageType: NewMessageType
     let subMessageType: SubMessageType
+    
+    var wsEncode: String {
+        return "\(messageType.rawValue)*|\(subMessageType.code)*|"
+    }
 }
 

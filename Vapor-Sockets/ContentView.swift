@@ -79,11 +79,10 @@ struct ContentView: View {
                                 }
                                 .onChange(of: viewModel.newMessage) { newText in
                                     if newText.isEmpty {
-                                        viewModel.send(newMessageToSend: "0", messageType: .typingStatus)
+                                        viewModel.sendMessageChat(type: .TypingStatus, message: "0")
                                     } else {
-                                        viewModel.send(newMessageToSend: "1", messageType: .typingStatus)
+                                        viewModel.sendMessageChat(type: .TypingStatus, message: "1")
                                     }
-                                   
                                 }
                         }
                         
@@ -101,7 +100,7 @@ struct ContentView: View {
                 .padding(.vertical, 10)
                 .padding(.bottom, 10)
                 .onDisappear {
-                    viewModel.send(newMessageToSend: "0", messageType: .disconnecting)
+                    viewModel.sendDisconnected()
                 }
             }
         }
