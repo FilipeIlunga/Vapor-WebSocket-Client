@@ -41,38 +41,32 @@ enum NewMessageType: Int, WSCodable {
     case Status
 }
 
-struct WSMessageHeader {
-    let messageType: NewMessageType
-    let subMessageType: SubMessageType
-    
-    var wsEncode: String {
-        return "\(messageType.rawValue)*|\(subMessageType.code)*|"
-    }
-}
+//struct WSMessageHeader {
+//    let messageType: NewMessageType
+//    let subMessageType: SubMessageType
+//    
+//    var wsEncode: String {
+//        return "\(messageType.rawValue)*|\(subMessageType.code)*|"
+//    }
+//}
 
 protocol MessageHeader {
     associatedtype MessageType
     var messageType: MessageType { get set}
     var subMessageTypeCode: Int { get set }
     
-    func makeWSMessage() throws -> String
 }
 
 protocol SubMessageType: WSCodable {
     var code: Int { get }
 }
 
-struct WSMessage: WSCodable, MessageHeader {
+struct WSMessageHeader: WSCodable, MessageHeader {
     typealias MessageType = NewMessageType
     
     var messageType: MessageType
     var subMessageTypeCode: Int
     let payload: String
-    
-    func makeWSMessage() throws -> String {
-      let wsMessage = try self.encode()
-        return wsMessage
-    }
 }
 
 /*

@@ -23,6 +23,7 @@
 		2367C6A42AA4B015006DAEF9 /* APIKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2367C6A32AA4B015006DAEF9 /* APIKeys.swift */; };
 		2367C6A72AA550A9006DAEF9 /* WSCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2367C6A62AA550A9006DAEF9 /* WSCodable.swift */; };
 		2367C6A92AA567E1006DAEF9 /* TypingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2367C6A82AA567E0006DAEF9 /* TypingMessage.swift */; };
+		2367C6AB2AA59DBD006DAEF9 /* StatusMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2367C6AA2AA59DBD006DAEF9 /* StatusMessage.swift */; };
 		23C855392AA437C600105B25 /* WSChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C855382AA437C600105B25 /* WSChatMessage.swift */; };
 		23C8553B2AA4413500105B25 /* MessageCodables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C8553A2AA4413500105B25 /* MessageCodables.swift */; };
 		23C855402AA4487700105B25 /* ChatBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C8553F2AA4487700105B25 /* ChatBubbleView.swift */; };
@@ -64,6 +65,7 @@
 		2367C6A32AA4B015006DAEF9 /* APIKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeys.swift; sourceTree = "<group>"; };
 		2367C6A62AA550A9006DAEF9 /* WSCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WSCodable.swift; sourceTree = "<group>"; };
 		2367C6A82AA567E0006DAEF9 /* TypingMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingMessage.swift; sourceTree = "<group>"; };
+		2367C6AA2AA59DBD006DAEF9 /* StatusMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMessage.swift; sourceTree = "<group>"; };
 		23C855382AA437C600105B25 /* WSChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WSChatMessage.swift; sourceTree = "<group>"; };
 		23C8553A2AA4413500105B25 /* MessageCodables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCodables.swift; sourceTree = "<group>"; };
 		23C8553F2AA4487700105B25 /* ChatBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBubbleView.swift; sourceTree = "<group>"; };
@@ -171,6 +173,7 @@
 			isa = PBXGroup;
 			children = (
 				2367C6A62AA550A9006DAEF9 /* WSCodable.swift */,
+				2367C6AA2AA59DBD006DAEF9 /* StatusMessage.swift */,
 			);
 			path = WSCodable;
 			sourceTree = "<group>";
@@ -347,6 +350,7 @@
 				2300CD442AA003F000CA1807 /* TypingAnimationView.swift in Sources */,
 				23C8553B2AA4413500105B25 /* MessageCodables.swift in Sources */,
 				23C855392AA437C600105B25 /* WSChatMessage.swift in Sources */,
+				2367C6AB2AA59DBD006DAEF9 /* StatusMessage.swift in Sources */,
 				2367C6A42AA4B015006DAEF9 /* APIKeys.swift in Sources */,
 				2300CD422A9FBEE900CA1807 /* websocketViewModel.swift in Sources */,
 				2300CD502AA12AD500CA1807 /* RecycleGameView.swift in Sources */,

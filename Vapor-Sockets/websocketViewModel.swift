@@ -9,9 +9,6 @@ import SwiftUI
 import PhotosUI
 import Starscream
 
-
-//"messageType*|*subMessage*|*"
-
 final class WebsocketViewModel: ObservableObject {
     
     @AppStorage("userID") private var userID = ""
@@ -58,89 +55,49 @@ final class WebsocketViewModel: ObservableObject {
         socket?.connect()
     }
 
-    
-    func getWSMessage(header: WSMessageHeader, payload: String) -> String {
-        return "\(header.wsEncode)\(payload)"
-    }
-    
-    func sendMessage(messageHeader: WSMessageHeader, message: String) {
-        switch messageHeader.messageType {
-            
-        case .Chat:
-            guard let msgType = messageHeader.subMessageType as? ChatMessageType else {
-                print("Wrong format to chatMessageType, subMsgType: \(messageHeader.subMessageType)")
-                return
-            }
-            sendMessageChat(type: msgType, message: message)
-        case .Status:
-            guard let msgType = messageHeader.subMessageType as? StatusMessageType else {
-                print("Wrong format to statusMessageType, subMsgType: \(messageHeader.subMessageType)")
-                return
-            }
-            sendStatusMessage(type: msgType, message: message)
-            print("ola")
-        }
-    }
-    
-    func sendStatusMessage(type: StatusMessageType, message: String) {
-        let headMessageType = NewMessageType.Status
-        switch type {
-        case .Alive:
-            sendAlive()
-        case .Disconnect:
-            sendDisconnected()
-        }
-    }
-    
-    
-    func sendDisconnected() {
-        let header = WSMessageHeader(messageType: .Status, subMessageType: StatusMessageType.Disconnect)
+    func sendStatusMessage(type: StatusMessageType) {
+        let statusMessage = StatusMessage(userID: user.userName, type: type)
         
-        let socketMessage = getWSMessage(header: header, payload: "\(user.userName)|i am disconnecting")
+        guard let payload = try? statusMessage.encode() else {
+            print("Error on get payload from aliveMessage \(statusMessage)")
+            return
+        }
         
-        socket?.write(string: socketMessage, completion: {
-           print("Disconnecting message has sent")
+        let wsMessageCodable = WSMessageHeader(messageType: .Status, subMessageTypeCode: type.code, payload: payload)
+        
+        guard let wsMessage = try? wsMessageCodable.encode() else {
+            print("Error on encode WSMessage: \(wsMessageCodable)")
+            return
+        }
+        
+        socket?.write(string: wsMessage, completion: {
+           print("\(type) message was sent")
         })
     }
     
-    func sendAlive() {
-        let header = WSMessageHeader(messageType: .Status, subMessageType: StatusMessageType.Alive)
-        
-        let socketMessage = getWSMessage(header: header, payload: "\(user.userName)|i am alive")
-        
-        socket?.write(string: socketMessage, completion: {
-           print("Alive message was sent")
-        })
-    }
-        
-    func sendMessageChat(type: ChatMessageType, message: String) {
-        let header = WSMessageHeader(messageType: .Chat, subMessageType: type)
 
-        switch type {
-        case .ContentString:
-            sendContentString(header: header, message: message)
-        case .ContentData:
-            break
-        case .Reaction:
-            break
-        case .Reply:
-            break
-        case .TypingStatus:
-            sendTypingStatus(typingStatus: message)
+    func sendTypingStatus(isTyping: Bool) {
+        let typingMessage = TypingMessage(userID: user.userName, isTyping: isTyping)
+        
+        guard let payload = try? typingMessage.encode() else {
+            print("Error on get payload from aliveMessage \(typingMessage)")
+            return
         }
-    }
-    #warning("Mudar o socketMessage criar funcao para i")
-    func sendTypingStatus(typingStatus: String) {
-        let header = WSMessageHeader(messageType: .Chat, subMessageType: ChatMessageType.TypingStatus)
-        let socketMessage = getWSMessage(header: header, payload: "\(user.userName)|\(typingStatus)")
+        
+        let wsMessageCodable = WSMessageHeader(messageType: .Chat, subMessageTypeCode: ChatMessageType.TypingStatus.code, payload: payload)
 
-        socket?.write(string: socketMessage, completion: {
+        guard let wsMessage = try? wsMessageCodable.encode() else {
+            print("Error on encode WSMessage: \(wsMessageCodable)")
+            return
+        }
+        
+        socket?.write(string: wsMessage, completion: {
             print("Typing message was sent")
         })
         
     }
     
-    func sendContentString(header: WSMessageHeader, message: String) {        
+    func sendContentString(message: String) {
         let messageContent = message.trimmingCharacters(in: .whitespacesAndNewlines)
         let timestamp = Date.now
         
@@ -150,10 +107,20 @@ final class WebsocketViewModel: ObservableObject {
             timestamp: timestamp,
             content: messageContent,
             isSendByUser: true)
+                
+        guard let payload = try? wsMessage.encode() else {
+            print("Error on get payload from aliveMessage \(wsMessage)")
+            return
+        }
         
-        let socketMessage = getWSMessage(header: header, payload: wsMessage.description)
-        
-        socket?.write(string: socketMessage, completion: {
+        let wsMessageCodable = WSMessageHeader(messageType: .Chat, subMessageTypeCode: ChatMessageType.ContentString.code, payload: payload)
+
+        guard let wsMessageEncoded = try? wsMessageCodable.encode() else {
+            print("Error on encode WSMessage: \(wsMessageCodable)")
+            return
+        }
+                
+        socket?.write(string: wsMessageEncoded, completion: {
             DispatchQueue.main.async {
                 withAnimation {
                     self.chatMessage.append(wsMessage)
@@ -164,11 +131,9 @@ final class WebsocketViewModel: ObservableObject {
     }
     
     func sendButtonDidTapped() {
-        
         let newMessageToSend = newMessage.trimmingCharacters(in: .whitespaces)
         if !newMessageToSend.isEmpty {
-            let messageHeader = WSMessageHeader(messageType: .Chat, subMessageType: ChatMessageType.ContentString)
-            sendMessage(messageHeader: messageHeader, message: newMessageToSend)
+            sendContentString(message: newMessageToSend)
         }
     }
 }
@@ -237,35 +202,87 @@ extension WebsocketViewModel {
 
 extension WebsocketViewModel {
     private func handlerWebsocketMessage(message: String) {
-        let messageSplied = message.components(separatedBy: "*|")
         
-        guard messageSplied.count >= 3 else {
-            print("Mensagem Invalida")
-            return
-        }
-        
-        let payload = messageSplied[2]
-
-        guard let messageTypeCode = Int(messageSplied[0]),
-              let messageType = NewMessageType(rawValue: messageTypeCode),
-              let subMessageTypeCode = Int(messageSplied[1])
-        else {
-            return
-        }
-        
-        switch messageType {
-        case .Chat:
-            guard let chatMessageType = ChatMessageType(rawValue: subMessageTypeCode) else {
-                print("Invalid code to chat: \(subMessageTypeCode)")
-                return
-            }
+        do {
+            let wsMessage: WSMessageHeader = try message.decodeWSEncodable(type: WSMessageHeader.self)
             
-            handlerChatMessage(type: chatMessageType, message: payload)
-        case .Status:
-            print("ola")
+            switch wsMessage.messageType {
+                
+            case .Chat:
+                guard let chatMessageType: ChatMessageType = ChatMessageType(rawValue: wsMessage.subMessageTypeCode) else {
+                    print("Invalid chatMessageType code: \(wsMessage.subMessageTypeCode)")
+                    return
+                }
+                
+                handleChatMessageReceived(type: chatMessageType, payload: wsMessage.payload)
+                
+            case .Status:
+                
+                guard let statusMessageType: StatusMessageType = StatusMessageType(rawValue: wsMessage.subMessageTypeCode) else {
+                    print("Invalid statusMessageType code: \(wsMessage.subMessageTypeCode)")
+                    return
+                }
+                
+                handleStatusMessagReceivede(type: statusMessageType, payload: wsMessage.payload)
+            }
+        } catch {
+            
+        }
+
+    }
+    
+    private func handleChatMessageReceived(type: ChatMessageType, payload: String) {
+        switch type {
+        case .ContentString:
+            handleChatContentString(payload: payload)
+        case .ContentData:
+            print("binary")
+        case .Reaction:
+            print("Reaction")
+        case .Reply:
+            print("Reply")
+        case .TypingStatus:
+            handlerTypingStatus(payload: payload)
         }
     }
     
+    private func handleStatusMessagReceivede(type: StatusMessageType, payload: String) {
+        do {
+            let statusMessage: StatusMessage = try payload.decodeWSEncodable(type: StatusMessage.self)
+            switch type {
+            case .Alive:
+                print("Received alive Message: \(statusMessage)")
+            case .Disconnect:
+                print("Received disconnected Message: \(statusMessage)")
+            }
+        } catch {
+            print("Error on \(#function): \(error.localizedDescription)")
+        }
+    }
+    
+    private func handleChatContentString(payload: String) {
+        do {
+            var wsChatMessage: WSChatMessage = try payload.decodeWSEncodable(type: WSChatMessage.self)
+            wsChatMessage.isSendByUser = false
+            
+            self.chatMessage.append(wsChatMessage)
+            
+        } catch {
+            print("Error on decode data: \(payload)")
+        }
+    }
+    
+    private func handlerTypingStatus(payload: String) {
+        
+        do {
+            let typingMessage: TypingMessage = try payload.decodeWSEncodable(type: TypingMessage.self)
+            let wsMessageCodable = WSMessageHeader(messageType: .Chat, subMessageTypeCode: ChatMessageType.TypingStatus.code, payload: payload)
+            
+            isAnotherUserTapping = typingMessage.isTyping
+        } catch {
+            print("Error on \(#function): \(error.localizedDescription)")
+        }
+    }
     
     private func handlerStatusMessage(type: StatusMessageType) {
         switch type {
@@ -285,8 +302,7 @@ extension WebsocketViewModel {
     
     private func connectionConfirmMessage(headers: [String: String]) {
         self.isSockedConnected = true
-        let messageHeader = WSMessageHeader(messageType: .Status, subMessageType: StatusMessageType.Alive)
-        sendAlive()
+        sendStatusMessage(type: .Alive)
         print("websocket is connected: \(headers)")
     }
     
@@ -307,66 +323,6 @@ extension WebsocketViewModel {
     private func handlerCancelConectionMessage() {
         isSockedConnected = false
         print("Websocket canceled connection to app")
-    }
-}
-
-extension WebsocketViewModel {
-    
-    private func handlerChatMessage(type: ChatMessageType, message: String) {
-        switch type {
-        case .ContentString:
-            handlerChatContentStringMessage(message: message)
-        case .ContentData:
-            print("contentData")
-        case .Reaction:
-            print("reaction")
-        case .Reply:
-            print("reply")
-        case .TypingStatus:
-            handlerChatTypingMessage(message: message)
-        }
-    }
-    
-    private func handlerChatContentStringMessage(message: String) {
-        let messageSplited = message.components(separatedBy: "|")
-        
-        guard messageSplited.count >= 4 else {
-            print("Message not enough fields - Expected fiedls: \(3) but received: \(messageSplited.count) - message: \(message)")
-            return
-        }
-        
-        let messageID = messageSplited[0]
-        let sendID = messageSplited[1]
-        let strTimeInterval = messageSplited[2]
-        let content = messageSplited[3]
-        
-        guard let timeInterval = Double(strTimeInterval) else {
-            print("Erro ao converter timestamp value: \(strTimeInterval)")
-            return
-        }
-        
-
-        let timestamp = Date(timeIntervalSince1970: timeInterval)
-
-        let wsMessage = WSChatMessage(messageID: messageID, senderID: sendID, timestamp: timestamp, content: content, isSendByUser: false)
-        
-        withAnimation {
-            self.chatMessage.append(wsMessage)
-        }
-    }
-    
-    private func handlerChatTypingMessage(message: String) {
-        let messageSplited = message.components(separatedBy: "|")
-        
-        guard messageSplited.count >= 2 else {
-            print("Message not enough fields - Expected fiedls: \(3) but received: \(messageSplited.count) - message: \(message)")
-            return
-        }
-        
-        let userID = messageSplited[0]
-        let isTyping = messageSplited[1] == "1"
-        
-        self.isAnotherUserTapping = isTyping
     }
 }
 
