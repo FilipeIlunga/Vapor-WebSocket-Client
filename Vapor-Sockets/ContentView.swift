@@ -39,6 +39,8 @@ struct ContentView: View {
                                 Spacer()
                             }
                         }
+                        .padding(.horizontal)
+                        .padding(.bottom)
                         .listRowSeparator(.hidden)
                         
                     }

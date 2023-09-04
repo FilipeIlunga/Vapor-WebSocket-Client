@@ -5,5 +5,5 @@
 import Foundation
 
 enum APIKeys: String {
-    case websocketAddress = "https://71be-138-122-73-139.ngrok.io"
+    case websocketAddress = "http://127.0.0.1:8080"
 }
