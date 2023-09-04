@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ChatBubbleView: View {
-    @Binding var message: WSMessage
+    @Binding var message: WSChatMessage
     var body: some View {
         VStack(alignment: message.isSendByUser ? .trailing : .leading, spacing: 10) {
             Text(message.content)

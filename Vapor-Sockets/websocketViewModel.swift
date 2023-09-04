@@ -17,7 +17,7 @@ final class WebsocketViewModel: ObservableObject {
     @AppStorage("userID") private var userID = ""
     @Published var user: CurrentUser = CurrentUser(userName: UUID().uuidString)
     
-    @Published var chatMessage: [WSMessage] = []
+    @Published var chatMessage: [WSChatMessage] = []
     @Published var newMessage: String = ""
     @Published var messageReceived = ""
     
@@ -144,7 +144,7 @@ final class WebsocketViewModel: ObservableObject {
         let messageContent = message.trimmingCharacters(in: .whitespacesAndNewlines)
         let timestamp = Date.now
         
-        let wsMessage = WSMessage(
+        let wsMessage = WSChatMessage(
             messageID: UUID().uuidString,
             senderID: user.userName,
             timestamp: timestamp,
@@ -348,7 +348,7 @@ extension WebsocketViewModel {
 
         let timestamp = Date(timeIntervalSince1970: timeInterval)
 
-        let wsMessage = WSMessage(messageID: messageID, senderID: sendID, timestamp: timestamp, content: content, isSendByUser: false)
+        let wsMessage = WSChatMessage(messageID: messageID, senderID: sendID, timestamp: timestamp, content: content, isSendByUser: false)
         
         withAnimation {
             self.chatMessage.append(wsMessage)

@@ -14,7 +14,6 @@ struct TypingAnimationView: View {
         VStack {
             Text("Digitando...")
                 .opacity(isTyping ? 1 : 0)
-                //.animation(Animation.easeInOut(duration: 0.5).repeatForever(autoreverses: true))
                 .onAppear {
                     startTypingAnimation()
                 }
