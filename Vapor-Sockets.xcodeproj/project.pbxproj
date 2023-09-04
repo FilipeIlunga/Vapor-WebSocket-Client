@@ -24,6 +24,9 @@
 		2367C6A72AA550A9006DAEF9 /* WSCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2367C6A62AA550A9006DAEF9 /* WSCodable.swift */; };
 		2367C6A92AA567E1006DAEF9 /* TypingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2367C6A82AA567E0006DAEF9 /* TypingMessage.swift */; };
 		2367C6AB2AA59DBD006DAEF9 /* StatusMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2367C6AA2AA59DBD006DAEF9 /* StatusMessage.swift */; };
+		2367C6AD2AA5AEA3006DAEF9 /* ReactionMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2367C6AC2AA5AEA3006DAEF9 /* ReactionMessage.swift */; };
+		2367C6AF2AA5B606006DAEF9 /* ChatReaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2367C6AE2AA5B606006DAEF9 /* ChatReaction.swift */; };
+		2367C6B32AA5C9C7006DAEF9 /* ChatReactionMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2367C6B22AA5C9C7006DAEF9 /* ChatReactionMenu.swift */; };
 		23C855392AA437C600105B25 /* WSChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C855382AA437C600105B25 /* WSChatMessage.swift */; };
 		23C8553B2AA4413500105B25 /* MessageCodables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C8553A2AA4413500105B25 /* MessageCodables.swift */; };
 		23C855402AA4487700105B25 /* ChatBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C8553F2AA4487700105B25 /* ChatBubbleView.swift */; };
@@ -66,6 +69,9 @@
 		2367C6A62AA550A9006DAEF9 /* WSCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WSCodable.swift; sourceTree = "<group>"; };
 		2367C6A82AA567E0006DAEF9 /* TypingMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingMessage.swift; sourceTree = "<group>"; };
 		2367C6AA2AA59DBD006DAEF9 /* StatusMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMessage.swift; sourceTree = "<group>"; };
+		2367C6AC2AA5AEA3006DAEF9 /* ReactionMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionMessage.swift; sourceTree = "<group>"; };
+		2367C6AE2AA5B606006DAEF9 /* ChatReaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatReaction.swift; sourceTree = "<group>"; };
+		2367C6B22AA5C9C7006DAEF9 /* ChatReactionMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatReactionMenu.swift; sourceTree = "<group>"; };
 		23C855382AA437C600105B25 /* WSChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WSChatMessage.swift; sourceTree = "<group>"; };
 		23C8553A2AA4413500105B25 /* MessageCodables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCodables.swift; sourceTree = "<group>"; };
 		23C8553F2AA4487700105B25 /* ChatBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBubbleView.swift; sourceTree = "<group>"; };
@@ -174,6 +180,7 @@
 			children = (
 				2367C6A62AA550A9006DAEF9 /* WSCodable.swift */,
 				2367C6AA2AA59DBD006DAEF9 /* StatusMessage.swift */,
+				2367C6AE2AA5B606006DAEF9 /* ChatReaction.swift */,
 			);
 			path = WSCodable;
 			sourceTree = "<group>";
@@ -194,6 +201,7 @@
 				23C855382AA437C600105B25 /* WSChatMessage.swift */,
 				23C8553A2AA4413500105B25 /* MessageCodables.swift */,
 				2367C6A82AA567E0006DAEF9 /* TypingMessage.swift */,
+				2367C6AC2AA5AEA3006DAEF9 /* ReactionMessage.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -202,6 +210,7 @@
 			isa = PBXGroup;
 			children = (
 				23C8553F2AA4487700105B25 /* ChatBubbleView.swift */,
+				2367C6B22AA5C9C7006DAEF9 /* ChatReactionMenu.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -352,8 +361,11 @@
 				23C855392AA437C600105B25 /* WSChatMessage.swift in Sources */,
 				2367C6AB2AA59DBD006DAEF9 /* StatusMessage.swift in Sources */,
 				2367C6A42AA4B015006DAEF9 /* APIKeys.swift in Sources */,
+				2367C6AD2AA5AEA3006DAEF9 /* ReactionMessage.swift in Sources */,
 				2300CD422A9FBEE900CA1807 /* websocketViewModel.swift in Sources */,
 				2300CD502AA12AD500CA1807 /* RecycleGameView.swift in Sources */,
+				2367C6B32AA5C9C7006DAEF9 /* ChatReactionMenu.swift in Sources */,
+				2367C6AF2AA5B606006DAEF9 /* ChatReaction.swift in Sources */,
 				2300CD4E2AA12A9E00CA1807 /* SpriteKitGame.swift in Sources */,
 				2367C6A92AA567E1006DAEF9 /* TypingMessage.swift in Sources */,
 				2367C6A72AA550A9006DAEF9 /* WSCodable.swift in Sources */,

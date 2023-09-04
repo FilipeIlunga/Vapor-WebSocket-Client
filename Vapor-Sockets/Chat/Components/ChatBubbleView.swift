@@ -9,17 +9,41 @@ import SwiftUI
 
 struct ChatBubbleView: View {
     @Binding var message: WSChatMessage
+    @State var showView: Bool = false
+    var onTap: (String) -> ()
     var body: some View {
-        VStack(alignment: message.isSendByUser ? .trailing : .leading, spacing: 10) {
-            Text(message.content)
-            
-            Text(dateFormatter.string(from: message.timestamp))
-                .font(.footnote)
-                .foregroundColor(Color(uiColor: UIColor.secondaryLabel))
+    ZStack(alignment: message.isSendByUser ? .bottomTrailing : .bottomLeading) {
+                        
+            VStack(alignment: message.isSendByUser ? .trailing : .leading, spacing: 10) {
+                Text(message.content)
+                
+                Text(dateFormatter.string(from: message.timestamp))
+                    .font(.footnote)
+                    .foregroundColor(Color(uiColor: UIColor.secondaryLabel))
+                
+
+            }
+            .padding(8)
+            .background(message.isSendByUser ? Color.green : Color.gray)
+            .cornerRadius(8)
+        if showView {
+            ChatReactionMenu(showView: $showView) { icon in
+                onTap(icon)
+            }
         }
-        .padding(8)
-        .background(message.isSendByUser ? Color.green : Color.gray)
-        .cornerRadius(8)
+          
+        
+        if !message.reactions.isEmpty {
+            HStack {
+                ForEach(message.isSendByUser ? message.reactions.reversed() : message.reactions , id: \.self) { reaction in
+                    Text(reaction)
+                }
+            }
+        }
+    }.onLongPressGesture {
+        showView.toggle()
+    }
+
     }
     
     let dateFormatter: DateFormatter = {
@@ -29,3 +53,4 @@ struct ChatBubbleView: View {
         return formatter
     }()
 }
+

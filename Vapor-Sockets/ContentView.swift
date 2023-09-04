@@ -17,23 +17,31 @@ struct ContentView: View {
     @StateObject var viewModel: WebsocketViewModel = WebsocketViewModel()
     @State var numberOFLiner = 0
     @State private var calculatedHeight: CGFloat = 35.0
+    @State var selectedMessage: WSChatMessage?
+    
+    @State var icon: String = "😃"
     
     var body: some View {
             
-            VStack(spacing: 0) {
-                List(viewModel.chatMessage.sorted(by: { a, b in
-                    a.timestamp < b.timestamp
-                }), id: \.self) { message in
-                    HStack {
-                        if message.isSendByUser {
-                            Spacer()
-                            ChatBubbleView(message: .constant(message))
-                        } else {
-                            ChatBubbleView(message: .constant(message))
-                            Spacer()
+            VStack(spacing: 12) {
+                ScrollView {
+                    ForEach($viewModel.chatMessage, id: \.self) { message in
+                        HStack {
+                            if message.isSendByUser.wrappedValue {
+                                Spacer()
+                                ChatBubbleView(message: message) { icon in
+                                    viewModel.sendRecation(message: message.wrappedValue, reaction: icon)
+                                }
+                            } else {
+                                ChatBubbleView(message: message) { icon in
+                                    viewModel.sendRecation(message: message.wrappedValue, reaction: icon)
+                                }
+                                Spacer()
+                            }
                         }
+                        .listRowSeparator(.hidden)
+                        
                     }
-                    .listRowSeparator(.hidden)
                 }
                 .lineSpacing(0.0)
                 .listStyle(.plain)
@@ -89,50 +97,69 @@ struct ContentView: View {
                         VStack {
                             Button {
                                 viewModel.sendButtonDidTapped()
+                                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+
                             } label: {
                                 Image(systemName: "arrowshape.turn.up.forward.circle.fill")
                             }.font(.title)
                                 .foregroundColor(.green)
                             
                         }
-                    
+                        
+                    }
+                    .padding(.vertical, 10)
+                    .padding(.bottom, 10)
+                    .onDisappear {
+                        viewModel.sendStatusMessage(type: .Disconnect)
+                    }
                 }
-                .padding(.vertical, 10)
-                .padding(.bottom, 10)
-                .onDisappear {
-                    viewModel.sendStatusMessage(type: .Disconnect)
+            }
+            
+        }
+        
+        private func calculateHeight(_ text: String, geometry: GeometryProxy) {
+            let textWidth = text.sizeThatFits()
+            print("Log: \(textWidth)")
+            if textWidth < 294.5 {
+                calculatedHeight = 35
+            } else if textWidth >= 294.5 && textWidth < 582 {
+                calculatedHeight = 55
+            } else if textWidth >= 582 && textWidth < 870 {
+                calculatedHeight = 75
+            } else if textWidth >= 870 && textWidth < 1158 {
+                calculatedHeight = 95
+            } else {
+                calculatedHeight = 105
+            }
+        }
+        
+        
+        var menuItem: some View {
+            Group {
+                
+                ForEach(ChatReaction.allCases, id: \.self) { reaction in
+                    Button(reaction.rawValue) {
+                        guard let message = selectedMessage else {
+                            print("Message selected is Nil")
+                            return
+                        }
+                        viewModel.sendRecation(message: message, reaction: reaction.rawValue)
+                    }
                 }
             }
         }
         
     }
     
-    private func calculateHeight(_ text: String, geometry: GeometryProxy) {
-          let textWidth = text.sizeThatFits()
-          print("Log: \(textWidth)")
-        if textWidth < 294.5 {
-              calculatedHeight = 35
-          } else if textWidth >= 294.5 && textWidth < 582 {
-              calculatedHeight = 55
-          } else if textWidth >= 582 && textWidth < 870 {
-              calculatedHeight = 75
-          } else if textWidth >= 870 && textWidth < 1158 {
-              calculatedHeight = 95
-          } else {
-              calculatedHeight = 105
-          }
-      }
-}
-
-extension String {
-    func sizeThatFits() -> CGFloat {
-        let fontAttributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 17, weight: .regular)]
-        let size = self.size(withAttributes: fontAttributes)
-        return size.width
+    extension String {
+        func sizeThatFits() -> CGFloat {
+            let fontAttributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 17, weight: .regular)]
+            let size = self.size(withAttributes: fontAttributes)
+            return size.width
+        }
     }
-}
-
-struct User: Codable {
-    let userName: String
-    let message: String
-}
+    
+    struct User: Codable {
+        let userName: String
+        let message: String
+    }

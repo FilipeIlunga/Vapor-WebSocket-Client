@@ -94,6 +94,28 @@ final class WebsocketViewModel: ObservableObject {
         socket?.write(string: wsMessage, completion: {
             print("Typing message was sent")
         })
+    }
+    
+    func sendRecation(message: WSChatMessage, reaction: String) {
+        let reactionMessage = ReactionMessage(userID: user.userName, messageID: UUID().uuidString, messageReacted: message, reactionIcon: reaction)
+        
+        guard let payload = try? reactionMessage.encode() else {
+            print("Error on get payload from reationMessage \(reaction)")
+            return
+        }
+        
+        let wsMessageCodable = WSMessageHeader(messageType: .Chat, subMessageTypeCode: ChatMessageType.Reaction.code, payload: payload)
+
+        
+        guard let wsMessage = try? wsMessageCodable.encode() else {
+            print("Error on encode WSMessage: \(wsMessageCodable)")
+            return
+        }
+        
+        socket?.write(string: wsMessage, completion: {
+            self.setupReaction(to: message, reaction: reaction)
+            print("Reaction message was sent")
+        })
         
     }
     
@@ -106,7 +128,7 @@ final class WebsocketViewModel: ObservableObject {
             senderID: user.userName,
             timestamp: timestamp,
             content: messageContent,
-            isSendByUser: true)
+            isSendByUser: true, reactions: [""])
                 
         guard let payload = try? wsMessage.encode() else {
             print("Error on get payload from aliveMessage \(wsMessage)")
@@ -238,13 +260,15 @@ extension WebsocketViewModel {
         case .ContentData:
             print("binary")
         case .Reaction:
-            print("Reaction")
+            handleChatReactionMessage(payload: payload)
         case .Reply:
             print("Reply")
         case .TypingStatus:
             handlerTypingStatus(payload: payload)
         }
     }
+    
+    
     
     private func handleStatusMessagReceivede(type: StatusMessageType, payload: String) {
         do {
@@ -270,6 +294,33 @@ extension WebsocketViewModel {
         } catch {
             print("Error on decode data: \(payload)")
         }
+    }
+    
+    private func handleChatReactionMessage(payload: String) {
+        do {
+            var reactionMessage = try payload.decodeWSEncodable(type: ReactionMessage.self)
+            
+            setupReaction(to: reactionMessage.messageReacted, reaction: reactionMessage.reactionIcon)
+            
+        } catch {
+            print("Error on decode reaction message")
+        }
+    }
+    
+    private func setupReaction(to message: WSChatMessage, reaction: String) {
+        
+        guard let messageIndex = chatMessage.firstIndex(where: { $0.messageID == message.messageID }) else {
+            print("Message not found in chat")
+            return
+        }
+        
+        withAnimation {
+            DispatchQueue.main.async {
+                self.chatMessage[messageIndex].reactions.append(reaction)
+
+            }
+        }
+        
     }
     
     private func handlerTypingStatus(payload: String) {
