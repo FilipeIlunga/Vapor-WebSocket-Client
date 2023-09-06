@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ChatBubbleView: View {
-    @Binding var message: WSChatMessage
+     var message: WSChatMessage
     @State var showView: Bool = false
     var onTap: (String) -> ()
     var body: some View {

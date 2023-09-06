@@ -14,12 +14,16 @@
 		2300CD292A9FA80800CA1807 /* Vapor_SocketsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD282A9FA80800CA1807 /* Vapor_SocketsTests.swift */; };
 		2300CD332A9FA80800CA1807 /* Vapor_SocketsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD322A9FA80800CA1807 /* Vapor_SocketsUITests.swift */; };
 		2300CD352A9FA80800CA1807 /* Vapor_SocketsUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD342A9FA80800CA1807 /* Vapor_SocketsUITestsLaunchTests.swift */; };
-		2300CD422A9FBEE900CA1807 /* websocketViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD412A9FBEE900CA1807 /* websocketViewModel.swift */; };
+		2300CD422A9FBEE900CA1807 /* WebsocketViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD412A9FBEE900CA1807 /* WebsocketViewModel.swift */; };
 		2300CD442AA003F000CA1807 /* TypingAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD432AA003F000CA1807 /* TypingAnimationView.swift */; };
 		2300CD482AA00F0600CA1807 /* NIOWebSocket in Frameworks */ = {isa = PBXBuildFile; productRef = 2300CD472AA00F0600CA1807 /* NIOWebSocket */; };
 		2300CD4B2AA03E8400CA1807 /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = 2300CD4A2AA03E8400CA1807 /* Starscream */; };
 		2300CD4E2AA12A9E00CA1807 /* SpriteKitGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD4D2AA12A9E00CA1807 /* SpriteKitGame.swift */; };
 		2300CD502AA12AD500CA1807 /* RecycleGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD4F2AA12AD500CA1807 /* RecycleGameView.swift */; };
+		2308528A2AA81CF200C76ABB /* Vapor-Sockets.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 230852882AA81CF200C76ABB /* Vapor-Sockets.xcdatamodeld */; };
+		2308528D2AA81D7600C76ABB /* ChatMessage+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2308528B2AA81D7600C76ABB /* ChatMessage+CoreDataClass.swift */; };
+		2308528E2AA81D7600C76ABB /* ChatMessage+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2308528C2AA81D7600C76ABB /* ChatMessage+CoreDataProperties.swift */; };
+		230852912AA81DD800C76ABB /* PersistenceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230852902AA81DD800C76ABB /* PersistenceProvider.swift */; };
 		2367C6A42AA4B015006DAEF9 /* APIKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2367C6A32AA4B015006DAEF9 /* APIKeys.swift */; };
 		2367C6A72AA550A9006DAEF9 /* WSCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2367C6A62AA550A9006DAEF9 /* WSCodable.swift */; };
 		2367C6A92AA567E1006DAEF9 /* TypingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2367C6A82AA567E0006DAEF9 /* TypingMessage.swift */; };
@@ -60,11 +64,15 @@
 		2300CD2E2A9FA80800CA1807 /* Vapor-SocketsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Vapor-SocketsUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2300CD322A9FA80800CA1807 /* Vapor_SocketsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vapor_SocketsUITests.swift; sourceTree = "<group>"; };
 		2300CD342A9FA80800CA1807 /* Vapor_SocketsUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vapor_SocketsUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		2300CD412A9FBEE900CA1807 /* websocketViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = websocketViewModel.swift; sourceTree = "<group>"; };
+		2300CD412A9FBEE900CA1807 /* WebsocketViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebsocketViewModel.swift; sourceTree = "<group>"; };
 		2300CD432AA003F000CA1807 /* TypingAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingAnimationView.swift; sourceTree = "<group>"; };
 		2300CD452AA00AC000CA1807 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2300CD4D2AA12A9E00CA1807 /* SpriteKitGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpriteKitGame.swift; sourceTree = "<group>"; };
 		2300CD4F2AA12AD500CA1807 /* RecycleGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecycleGameView.swift; sourceTree = "<group>"; };
+		230852892AA81CF200C76ABB /* ChatDataBase.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ChatDataBase.xcdatamodel; sourceTree = "<group>"; };
+		2308528B2AA81D7600C76ABB /* ChatMessage+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatMessage+CoreDataClass.swift"; sourceTree = "<group>"; };
+		2308528C2AA81D7600C76ABB /* ChatMessage+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatMessage+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		230852902AA81DD800C76ABB /* PersistenceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceProvider.swift; sourceTree = "<group>"; };
 		2367C6A32AA4B015006DAEF9 /* APIKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeys.swift; sourceTree = "<group>"; };
 		2367C6A62AA550A9006DAEF9 /* WSCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WSCodable.swift; sourceTree = "<group>"; };
 		2367C6A82AA567E0006DAEF9 /* TypingMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingMessage.swift; sourceTree = "<group>"; };
@@ -107,6 +115,7 @@
 		2300CD0B2A9FA80600CA1807 = {
 			isa = PBXGroup;
 			children = (
+				230852882AA81CF200C76ABB /* Vapor-Sockets.xcdatamodeld */,
 				2300CD162A9FA80600CA1807 /* Vapor-Sockets */,
 				2300CD272A9FA80800CA1807 /* Vapor-SocketsTests */,
 				2300CD312A9FA80800CA1807 /* Vapor-SocketsUITests */,
@@ -127,6 +136,7 @@
 		2300CD162A9FA80600CA1807 /* Vapor-Sockets */ = {
 			isa = PBXGroup;
 			children = (
+				2308528F2AA81D8900C76ABB /* CoreData */,
 				23C855362AA437B400105B25 /* Chat */,
 				2300CD4C2AA12A8600CA1807 /* WebSocketWithGame */,
 				2300CD452AA00AC000CA1807 /* Info.plist */,
@@ -134,7 +144,6 @@
 				2300CD192A9FA80600CA1807 /* ContentView.swift */,
 				2300CD1B2A9FA80800CA1807 /* Assets.xcassets */,
 				2300CD1D2A9FA80800CA1807 /* Preview Content */,
-				2300CD412A9FBEE900CA1807 /* websocketViewModel.swift */,
 				2300CD432AA003F000CA1807 /* TypingAnimationView.swift */,
 				2367C6A32AA4B015006DAEF9 /* APIKeys.swift */,
 			);
@@ -175,6 +184,24 @@
 			path = WebSocketWithGame;
 			sourceTree = "<group>";
 		};
+		2308528F2AA81D8900C76ABB /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				2308528B2AA81D7600C76ABB /* ChatMessage+CoreDataClass.swift */,
+				2308528C2AA81D7600C76ABB /* ChatMessage+CoreDataProperties.swift */,
+				230852902AA81DD800C76ABB /* PersistenceProvider.swift */,
+			);
+			path = CoreData;
+			sourceTree = "<group>";
+		};
+		230852942AA8222700C76ABB /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				2300CD412A9FBEE900CA1807 /* WebsocketViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 		2367C6A52AA5508F006DAEF9 /* WSCodable */ = {
 			isa = PBXGroup;
 			children = (
@@ -188,6 +215,7 @@
 		23C855362AA437B400105B25 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
+				230852942AA8222700C76ABB /* ViewModel */,
 				23C8553C2AA4480F00105B25 /* Components */,
 				23C855372AA437BC00105B25 /* Model */,
 			);
@@ -353,6 +381,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2308528E2AA81D7600C76ABB /* ChatMessage+CoreDataProperties.swift in Sources */,
 				23C855402AA4487700105B25 /* ChatBubbleView.swift in Sources */,
 				2300CD1A2A9FA80600CA1807 /* ContentView.swift in Sources */,
 				2300CD182A9FA80600CA1807 /* Vapor_SocketsApp.swift in Sources */,
@@ -362,13 +391,16 @@
 				2367C6AB2AA59DBD006DAEF9 /* StatusMessage.swift in Sources */,
 				2367C6A42AA4B015006DAEF9 /* APIKeys.swift in Sources */,
 				2367C6AD2AA5AEA3006DAEF9 /* ReactionMessage.swift in Sources */,
-				2300CD422A9FBEE900CA1807 /* websocketViewModel.swift in Sources */,
+				2300CD422A9FBEE900CA1807 /* WebsocketViewModel.swift in Sources */,
 				2300CD502AA12AD500CA1807 /* RecycleGameView.swift in Sources */,
+				230852912AA81DD800C76ABB /* PersistenceProvider.swift in Sources */,
+				2308528A2AA81CF200C76ABB /* Vapor-Sockets.xcdatamodeld in Sources */,
 				2367C6B32AA5C9C7006DAEF9 /* ChatReactionMenu.swift in Sources */,
 				2367C6AF2AA5B606006DAEF9 /* ChatReaction.swift in Sources */,
 				2300CD4E2AA12A9E00CA1807 /* SpriteKitGame.swift in Sources */,
 				2367C6A92AA567E1006DAEF9 /* TypingMessage.swift in Sources */,
 				2367C6A72AA550A9006DAEF9 /* WSCodable.swift in Sources */,
+				2308528D2AA81D7600C76ABB /* ChatMessage+CoreDataClass.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -727,6 +759,19 @@
 			productName = Starscream;
 		};
 /* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		230852882AA81CF200C76ABB /* Vapor-Sockets.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				230852892AA81CF200C76ABB /* ChatDataBase.xcdatamodel */,
+			);
+			currentVersion = 230852892AA81CF200C76ABB /* ChatDataBase.xcdatamodel */;
+			path = "Vapor-Sockets.xcdatamodeld";
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 2300CD0C2A9FA80600CA1807 /* Project object */;
 }

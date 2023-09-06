@@ -8,6 +8,7 @@
 import SwiftUI
 import PhotosUI
 import Starscream
+import CoreData
 
 final class WebsocketViewModel: ObservableObject {
     
@@ -28,6 +29,7 @@ final class WebsocketViewModel: ObservableObject {
     private var socket: WebSocket?
     
     init() {
+        self.chatMessage = getAllMessages()
         initWebSocket()
         startHeartBeatController()
     }
@@ -146,6 +148,7 @@ final class WebsocketViewModel: ObservableObject {
             DispatchQueue.main.async {
                 withAnimation {
                     self.chatMessage.append(wsMessage)
+                    self.saveMessage(wsMessage)
                 }
                 self.newMessage = ""
             }
@@ -289,7 +292,16 @@ extension WebsocketViewModel {
             var wsChatMessage: WSChatMessage = try payload.decodeWSEncodable(type: WSChatMessage.self)
             wsChatMessage.isSendByUser = false
             
+            let isForwardedMessage: Bool = self.chatMessage.filter { message in
+                message.messageID == wsChatMessage.messageID && message.timestamp == wsChatMessage.timestamp
+            }.count >= 1
+            
+            guard  !isForwardedMessage else {
+                print("Messagem reeviada pelo servidor")
+                return
+            }
             self.chatMessage.append(wsChatMessage)
+            self.saveMessage(wsChatMessage)
             
         } catch {
             print("Error on decode data: \(payload)")
@@ -317,7 +329,8 @@ extension WebsocketViewModel {
         withAnimation {
             DispatchQueue.main.async {
                 self.chatMessage[messageIndex].reactions.append(reaction)
-
+                let newReaction: [String] = self.chatMessage[messageIndex].reactions
+                self.updateAddReaction(messageID: self.chatMessage[messageIndex].messageID, reaction: newReaction)
             }
         }
         
@@ -378,7 +391,77 @@ extension WebsocketViewModel {
 }
 
 extension  WebsocketViewModel {
-    private func decodeMessage(message: String) {
+    func getAllMessages() -> [WSChatMessage] {
+
+        let request = ChatMessage.fetchRequest()
+        
+        var fetchedMessages: [ChatMessage] = []
+        
+        do {
+            fetchedMessages = try PersistenceController.shared.viewContext.fetch(request)
+        } catch let error {
+            print("Error while fetching favorite vets: \(error)")
+        }
+        let result: [WSChatMessage] = fetchedMessages.compactMap {$0.toWSMessage()}
+        return result
+    }
+    
+    func getAllCDMessages() -> [ChatMessage] {
+
+        let request = ChatMessage.fetchRequest()
+        
+        var fetchedMessages: [ChatMessage] = []
+        
+        do {
+            fetchedMessages = try PersistenceController.shared.viewContext.fetch(request)
+        } catch let error {
+            print("Error while fetching favorite vets: \(error)")
+        }
+        //let result: [WSChatMessage] = fetchedMessages.compactMap {$0.toWSMessage()}
+        return fetchedMessages
+    }
+    
+    func saveMessage(_ wsMessage: WSChatMessage) {
+        
+        let message = ChatMessage(context: PersistenceController.shared.viewContext)
+        
+        message.id = wsMessage.messageID
+        message.senderID = wsMessage.senderID
+        message.timestamp = wsMessage.timestamp
+        message.content = wsMessage.content
+        message.isSendByUser =  DarwinBoolean(wsMessage.isSendByUser)
+        message.reactions = wsMessage.reactions as NSObject
+        PersistenceController.shared.save()
+    }
+    
+    func updateAddReaction(messageID: String, reaction: [String]) {
+        
+        let context = PersistenceController.shared.viewContext
+                
+        let tempObj = getAllCDMessages().first { m in
+            m.id == messageID
+        }
+        guard let objectToUp = tempObj else {
+            return
+        }
+        
+        context.perform {
+            do {
+                let objectToUpdate = try context.existingObject(with: objectToUp.objectID)
+                
+                guard let chatMessageEntity = objectToUpdate as? ChatMessage else {
+                    print("Error on parse entity")
+                    return
+                }
+                
+                chatMessageEntity.reactions = reaction as NSObject
+                try context.save()
+                
+            } catch {
+                print("Error on \(#function): \(error.localizedDescription)")
+            }
+        }
         
     }
+    
 }

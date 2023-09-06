@@ -18,4 +18,16 @@ struct WSChatMessage: Hashable, WSCodable {
     var description: String {
         return "\(messageID)|\(senderID)|\(timestamp.timeIntervalSince1970)|\(content)"
     }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(messageID)
+        hasher.combine(senderID)
+        hasher.combine(timestamp)
+    }
+    
+    mutating func addReaction(_ reaction: String) {
+        var mutableReactions = reactions
+        mutableReactions.append(reaction)
+        reactions = mutableReactions
+    }
 }

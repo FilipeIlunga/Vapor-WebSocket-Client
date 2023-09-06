@@ -23,17 +23,16 @@ struct ContentView: View {
     
     var body: some View {
             
-            VStack(spacing: 12) {
                 ScrollView {
                     ForEach($viewModel.chatMessage, id: \.self) { message in
                         HStack {
                             if message.isSendByUser.wrappedValue {
                                 Spacer()
-                                ChatBubbleView(message: message) { icon in
+                                ChatBubbleView(message: message.wrappedValue) { icon in
                                     viewModel.sendRecation(message: message.wrappedValue, reaction: icon)
                                 }
                             } else {
-                                ChatBubbleView(message: message) { icon in
+                                ChatBubbleView(message: message.wrappedValue) { icon in
                                     viewModel.sendRecation(message: message.wrappedValue, reaction: icon)
                                 }
                                 Spacer()
@@ -62,6 +61,7 @@ struct ContentView: View {
                     .padding(.bottom, 10)
                 
                 Divider()
+                
                 VStack {
                     
                     HStack {
@@ -115,8 +115,6 @@ struct ContentView: View {
                         viewModel.sendStatusMessage(type: .Disconnect)
                     }
                 }
-            }
-            
         }
         
         private func calculateHeight(_ text: String, geometry: GeometryProxy) {
@@ -132,22 +130,6 @@ struct ContentView: View {
                 calculatedHeight = 95
             } else {
                 calculatedHeight = 105
-            }
-        }
-        
-        
-        var menuItem: some View {
-            Group {
-                
-                ForEach(ChatReaction.allCases, id: \.self) { reaction in
-                    Button(reaction.rawValue) {
-                        guard let message = selectedMessage else {
-                            print("Message selected is Nil")
-                            return
-                        }
-                        viewModel.sendRecation(message: message, reaction: reaction.rawValue)
-                    }
-                }
             }
         }
         
