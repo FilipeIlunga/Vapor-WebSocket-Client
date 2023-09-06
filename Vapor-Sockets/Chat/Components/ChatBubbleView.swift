@@ -29,6 +29,8 @@ struct ChatBubbleView: View {
         if showView {
             ChatReactionMenu(showView: $showView) { icon in
                 onTap(icon)
+                let generator = UIImpactFeedbackGenerator(style: .medium)
+                generator.impactOccurred()
             }
         }
           
@@ -42,6 +44,8 @@ struct ChatBubbleView: View {
         }
     }.onLongPressGesture {
         showView.toggle()
+        let generator = UIImpactFeedbackGenerator(style: .rigid)
+        generator.impactOccurred(intensity: 1.0)
     }
 
     }
