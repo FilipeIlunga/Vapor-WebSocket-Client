@@ -13,7 +13,7 @@ import CoreData
 final class WebsocketViewModel: ObservableObject {
     
     @AppStorage("userID") private var userID = ""
-    @Published var user: CurrentUser = CurrentUser(userName: UUID().uuidString)
+    @Published var user: User = User(userName: UUID().uuidString)
     
     @Published var chatMessage: [WSChatMessage] = []
     @Published var newMessage: String = ""
@@ -32,6 +32,7 @@ final class WebsocketViewModel: ObservableObject {
         self.chatMessage = getAllMessages()
         initWebSocket()
         startHeartBeatController()
+        setupUserInfo()
     }
     
     deinit {
@@ -41,9 +42,9 @@ final class WebsocketViewModel: ObservableObject {
     private func setupUserInfo() {
         if userID.isEmpty {
             self.userID = UUID().uuidString
-            self.user = CurrentUser(userName: userID)
+            self.user = User(userName: userID)
         } else {
-            user = CurrentUser(userName: self.userID)
+            user = User(userName: self.userID)
         }
     }
     
@@ -70,6 +71,14 @@ final class WebsocketViewModel: ObservableObject {
         guard let wsMessage = try? wsMessageCodable.encode() else {
             print("Error on encode WSMessage: \(wsMessageCodable)")
             return
+        }
+        
+        if type == .Disconnect {
+            timer?.invalidate()
+        } else {
+            if timer?.isValid == true {
+                startHeartBeatController()
+            }
         }
         
         socket?.write(string: wsMessage, completion: {

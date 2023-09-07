@@ -9,7 +9,7 @@ protocol ReceivedMessageProtocol: AnyObject {
 
 final class WebsocketGameViewModel: ObservableObject, WebSocketDelegate {
     @AppStorage("userID") var userID = ""
-    @Published var user = CurrentUser(userName: UUID().uuidString)
+    @Published var user = User(userName: UUID().uuidString)
     
     @Published var isSockedConnected: Bool = false
     
@@ -21,9 +21,9 @@ final class WebsocketGameViewModel: ObservableObject, WebSocketDelegate {
         
         if userID.isEmpty {
             self.userID = UUID().uuidString
-            self.user = CurrentUser(userName: userID)
+            self.user = User(userName: userID)
         } else {
-            self.user = CurrentUser(userName: self.userID)
+            self.user = User(userName: self.userID)
 
         }
         

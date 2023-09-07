@@ -42,11 +42,12 @@ struct ChatBubbleView: View {
                 }
             }
         }
-    }.onLongPressGesture {
-        showView.toggle()
-        let generator = UIImpactFeedbackGenerator(style: .rigid)
-        generator.impactOccurred(intensity: 1.0)
-    }
+   }
+ //   .onLongPressGesture {
+//        showView.toggle()
+//        let generator = UIImpactFeedbackGenerator(style: .rigid)
+//        generator.impactOccurred(intensity: 1.0)
+//    }
 
     }
     

@@ -18,11 +18,13 @@ struct Vapor_SocketsApp: App {
 struct MainView: View {
     var body: some View {
         TabView {
-            ContentView().tabItem {
+            ContentView()
+                .tabItem {
                 Text("Chat")
                 Image(systemName: "message.fill")
             }
-            RecycleGameView().tabItem {
+            RecycleGameView()
+                .tabItem {
                 Text("Game")
                 Image(systemName: "gamecontroller.fill")
             }
