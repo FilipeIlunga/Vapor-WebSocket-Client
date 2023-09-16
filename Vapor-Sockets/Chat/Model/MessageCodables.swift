@@ -7,6 +7,17 @@
 
 import Foundation
 
+protocol MessageHeader {
+    associatedtype MessageType
+    var messageType: MessageType { get set}
+    var subMessageTypeCode: Int { get set }
+    
+}
+
+protocol SubMessageType: WSCodable {
+    var code: Int { get }
+}
+
 enum MessageType: Int {
     case alive = 0
     case chatMessage
@@ -39,26 +50,6 @@ enum StatusMessageType: Int, SubMessageType {
 enum NewMessageType: Int, WSCodable {
     case Chat = 0
     case Status
-}
-
-//struct WSMessageHeader {
-//    let messageType: NewMessageType
-//    let subMessageType: SubMessageType
-//    
-//    var wsEncode: String {
-//        return "\(messageType.rawValue)*|\(subMessageType.code)*|"
-//    }
-//}
-
-protocol MessageHeader {
-    associatedtype MessageType
-    var messageType: MessageType { get set}
-    var subMessageTypeCode: Int { get set }
-    
-}
-
-protocol SubMessageType: WSCodable {
-    var code: Int { get }
 }
 
 struct WSMessageHeader: WSCodable, MessageHeader {

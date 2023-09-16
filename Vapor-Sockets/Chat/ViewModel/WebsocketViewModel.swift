@@ -400,33 +400,22 @@ extension WebsocketViewModel {
 }
 
 extension  WebsocketViewModel {
+    
     func getAllMessages() -> [WSChatMessage] {
-
-        let request = ChatMessage.fetchRequest()
-        
-        var fetchedMessages: [ChatMessage] = []
-        
-        do {
-            fetchedMessages = try PersistenceController.shared.viewContext.fetch(request)
-        } catch let error {
-            print("Error while fetching favorite vets: \(error)")
-        }
-        let result: [WSChatMessage] = fetchedMessages.compactMap {$0.toWSMessage()}
+        let result: [WSChatMessage] = getAllStorageMessages().compactMap {$0.toWSMessage()}
         return result
     }
     
-    func getAllCDMessages() -> [ChatMessage] {
+    private func getAllStorageMessages() -> [ChatMessage] {
 
         let request = ChatMessage.fetchRequest()
-        
         var fetchedMessages: [ChatMessage] = []
         
         do {
             fetchedMessages = try PersistenceController.shared.viewContext.fetch(request)
         } catch let error {
-            print("Error while fetching favorite vets: \(error)")
+            print("Error while fetching messages: \(error)")
         }
-        //let result: [WSChatMessage] = fetchedMessages.compactMap {$0.toWSMessage()}
         return fetchedMessages
     }
     
@@ -447,8 +436,8 @@ extension  WebsocketViewModel {
         
         let context = PersistenceController.shared.viewContext
                 
-        let tempObj = getAllCDMessages().first { m in
-            m.id == messageID
+        let tempObj = getAllStorageMessages().first { message in
+            message.id == messageID
         }
         guard let objectToUp = tempObj else {
             return
