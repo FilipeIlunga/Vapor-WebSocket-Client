@@ -12,7 +12,7 @@ struct TypingAnimationView: View {
     
     var body: some View {
         VStack {
-            Text("Digitando...")
+            Text("Typing...")
                 .opacity(isTyping ? 1 : 0)
                 .onAppear {
                     startTypingAnimation()

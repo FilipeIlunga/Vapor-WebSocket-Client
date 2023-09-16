@@ -30,4 +30,15 @@ struct WSChatMessage: Hashable, WSCodable {
         mutableReactions.append(reaction)
         reactions = mutableReactions
     }
+    
+    func getDisplayDate() -> String {
+        let dateFormatter: DateFormatter = {
+            let formatter = DateFormatter()
+            formatter.dateStyle = .short
+            formatter.timeStyle = .short
+            return formatter
+        }()
+        
+        return dateFormatter.string(from: timestamp)
+    }
 }

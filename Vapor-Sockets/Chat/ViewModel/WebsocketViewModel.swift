@@ -462,4 +462,24 @@ extension  WebsocketViewModel {
         
     }
     
+    func isNextMessageFromUser(message: WSChatMessage) -> Bool {
+        // Find the index of the current message in the chatMessage array
+        if let currentIndex = chatMessage.firstIndex(where: { $0.messageID == message.messageID }) {
+            // Check if there is a next message in the array
+            if currentIndex < chatMessage.count - 1 {
+                // Get the next message
+                let nextMessage = chatMessage[currentIndex + 1]
+                
+                // Check if the next message is from the specified user
+                if nextMessage.senderID == message.senderID {
+                    return true
+                }
+            }
+        }
+
+        // No next message from the user found
+        return false
+    }
+
+    
 }

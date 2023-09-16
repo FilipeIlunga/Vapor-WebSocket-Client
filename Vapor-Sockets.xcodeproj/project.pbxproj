@@ -20,6 +20,9 @@
 		2300CD4B2AA03E8400CA1807 /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = 2300CD4A2AA03E8400CA1807 /* Starscream */; };
 		2300CD4E2AA12A9E00CA1807 /* SpriteKitGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD4D2AA12A9E00CA1807 /* SpriteKitGame.swift */; };
 		2300CD502AA12AD500CA1807 /* RecycleGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD4F2AA12AD500CA1807 /* RecycleGameView.swift */; };
+		230532D02AB6619A00D894A1 /* Veiw+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230532CF2AB6619A00D894A1 /* Veiw+Extension.swift */; };
+		230532D22AB6645D00D894A1 /* ChatMessageField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230532D12AB6645D00D894A1 /* ChatMessageField.swift */; };
+		230532D42AB6679400D894A1 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230532D32AB6679400D894A1 /* User.swift */; };
 		2308528A2AA81CF200C76ABB /* Vapor-Sockets.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 230852882AA81CF200C76ABB /* Vapor-Sockets.xcdatamodeld */; };
 		2308528D2AA81D7600C76ABB /* ChatMessage+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2308528B2AA81D7600C76ABB /* ChatMessage+CoreDataClass.swift */; };
 		2308528E2AA81D7600C76ABB /* ChatMessage+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2308528C2AA81D7600C76ABB /* ChatMessage+CoreDataProperties.swift */; };
@@ -69,6 +72,9 @@
 		2300CD452AA00AC000CA1807 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2300CD4D2AA12A9E00CA1807 /* SpriteKitGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpriteKitGame.swift; sourceTree = "<group>"; };
 		2300CD4F2AA12AD500CA1807 /* RecycleGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecycleGameView.swift; sourceTree = "<group>"; };
+		230532CF2AB6619A00D894A1 /* Veiw+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Veiw+Extension.swift"; sourceTree = "<group>"; };
+		230532D12AB6645D00D894A1 /* ChatMessageField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageField.swift; sourceTree = "<group>"; };
+		230532D32AB6679400D894A1 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		230852892AA81CF200C76ABB /* ChatDataBase.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ChatDataBase.xcdatamodel; sourceTree = "<group>"; };
 		2308528B2AA81D7600C76ABB /* ChatMessage+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatMessage+CoreDataClass.swift"; sourceTree = "<group>"; };
 		2308528C2AA81D7600C76ABB /* ChatMessage+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatMessage+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -183,6 +189,14 @@
 			path = WebSocketWithGame;
 			sourceTree = "<group>";
 		};
+		230532CE2AB6618400D894A1 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				230532CF2AB6619A00D894A1 /* Veiw+Extension.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		2308528F2AA81D8900C76ABB /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
@@ -214,6 +228,7 @@
 		23C855362AA437B400105B25 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
+				230532CE2AB6618400D894A1 /* Extensions */,
 				230852942AA8222700C76ABB /* ViewModel */,
 				23C8553C2AA4480F00105B25 /* Components */,
 				23C855372AA437BC00105B25 /* Model */,
@@ -229,6 +244,7 @@
 				23C8553A2AA4413500105B25 /* MessageCodables.swift */,
 				2367C6A82AA567E0006DAEF9 /* TypingMessage.swift */,
 				2367C6AC2AA5AEA3006DAEF9 /* ReactionMessage.swift */,
+				230532D32AB6679400D894A1 /* User.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -239,6 +255,7 @@
 				2300CD432AA003F000CA1807 /* TypingAnimationView.swift */,
 				23C8553F2AA4487700105B25 /* ChatBubbleView.swift */,
 				2367C6B22AA5C9C7006DAEF9 /* ChatReactionMenu.swift */,
+				230532D12AB6645D00D894A1 /* ChatMessageField.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -387,6 +404,8 @@
 				2300CD182A9FA80600CA1807 /* Vapor_SocketsApp.swift in Sources */,
 				2300CD442AA003F000CA1807 /* TypingAnimationView.swift in Sources */,
 				23C8553B2AA4413500105B25 /* MessageCodables.swift in Sources */,
+				230532D22AB6645D00D894A1 /* ChatMessageField.swift in Sources */,
+				230532D02AB6619A00D894A1 /* Veiw+Extension.swift in Sources */,
 				23C855392AA437C600105B25 /* WSChatMessage.swift in Sources */,
 				2367C6AB2AA59DBD006DAEF9 /* StatusMessage.swift in Sources */,
 				2367C6A42AA4B015006DAEF9 /* APIKeys.swift in Sources */,
@@ -401,6 +420,7 @@
 				2367C6A92AA567E1006DAEF9 /* TypingMessage.swift in Sources */,
 				2367C6A72AA550A9006DAEF9 /* WSCodable.swift in Sources */,
 				2308528D2AA81D7600C76ABB /* ChatMessage+CoreDataClass.swift in Sources */,
+				230532D42AB6679400D894A1 /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
