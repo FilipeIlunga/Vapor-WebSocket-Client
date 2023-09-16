@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2300CD182A9FA80600CA1807 /* Vapor_SocketsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD172A9FA80600CA1807 /* Vapor_SocketsApp.swift */; };
-		2300CD1A2A9FA80600CA1807 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD192A9FA80600CA1807 /* ContentView.swift */; };
+		2300CD1A2A9FA80600CA1807 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD192A9FA80600CA1807 /* ChatView.swift */; };
 		2300CD1C2A9FA80800CA1807 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2300CD1B2A9FA80800CA1807 /* Assets.xcassets */; };
 		2300CD1F2A9FA80800CA1807 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2300CD1E2A9FA80800CA1807 /* Preview Assets.xcassets */; };
 		2300CD292A9FA80800CA1807 /* Vapor_SocketsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2300CD282A9FA80800CA1807 /* Vapor_SocketsTests.swift */; };
@@ -59,7 +59,7 @@
 /* Begin PBXFileReference section */
 		2300CD142A9FA80600CA1807 /* Vapor-Sockets.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Vapor-Sockets.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2300CD172A9FA80600CA1807 /* Vapor_SocketsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vapor_SocketsApp.swift; sourceTree = "<group>"; };
-		2300CD192A9FA80600CA1807 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		2300CD192A9FA80600CA1807 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		2300CD1B2A9FA80800CA1807 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2300CD1E2A9FA80800CA1807 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		2300CD242A9FA80800CA1807 /* Vapor-SocketsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Vapor-SocketsTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -147,7 +147,7 @@
 				2300CD4C2AA12A8600CA1807 /* WebSocketWithGame */,
 				2300CD452AA00AC000CA1807 /* Info.plist */,
 				2300CD172A9FA80600CA1807 /* Vapor_SocketsApp.swift */,
-				2300CD192A9FA80600CA1807 /* ContentView.swift */,
+				2300CD192A9FA80600CA1807 /* ChatView.swift */,
 				2300CD1B2A9FA80800CA1807 /* Assets.xcassets */,
 				2300CD1D2A9FA80800CA1807 /* Preview Content */,
 				2367C6A32AA4B015006DAEF9 /* APIKeys.swift */,
@@ -400,7 +400,7 @@
 			files = (
 				2308528E2AA81D7600C76ABB /* ChatMessage+CoreDataProperties.swift in Sources */,
 				23C855402AA4487700105B25 /* ChatBubbleView.swift in Sources */,
-				2300CD1A2A9FA80600CA1807 /* ContentView.swift in Sources */,
+				2300CD1A2A9FA80600CA1807 /* ChatView.swift in Sources */,
 				2300CD182A9FA80600CA1807 /* Vapor_SocketsApp.swift in Sources */,
 				2300CD442AA003F000CA1807 /* TypingAnimationView.swift in Sources */,
 				23C8553B2AA4413500105B25 /* MessageCodables.swift in Sources */,

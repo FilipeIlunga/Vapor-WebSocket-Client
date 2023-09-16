@@ -18,7 +18,7 @@ struct Vapor_SocketsApp: App {
 struct MainView: View {
     var body: some View {
         TabView {
-            ContentView()
+            ChatView()
                 .tabItem {
                 Text("Chat")
                 Image(systemName: "message.fill")
