@@ -10,47 +10,47 @@ import SwiftUI
 
 struct ChatBubbleView: View {
     var message: WSChatMessage
+    let isNextMessageFromUser: Bool
     
     var body: some View {
-    ZStack(alignment: message.isSendByUser ? .bottomTrailing : .bottomLeading) {
-        
-        VStack(alignment: message.isSendByUser ? .trailing : .leading, spacing: 10) {
-            Text(message.content)
+        ZStack(alignment: message.isSendByUser ? .bottomTrailing : .bottomLeading) {
             
-            Text(dateFormatter.string(from: message.timestamp))
-                .font(.footnote)
-                .foregroundColor(Color(uiColor: UIColor.secondaryLabel))
-
-        }
+            VStack(alignment: message.isSendByUser ? .trailing : .leading, spacing: 10) {
+                Text(message.content)
+                
+                Text(message.getDisplayDate())
+                    .font(.footnote)
+                    .foregroundColor(Color(uiColor: UIColor.secondaryLabel))
+                
+            }
             .padding()
-            .background(.blue)
+            .background(message.isSendByUser ? .blue : .gray)
             .foregroundColor(.white)
             .clipShape(RoundedRectangle(cornerRadius: 16.0, style: .continuous))
             .listRowSeparator(.hidden)
             .overlay(alignment: message.isSendByUser ? .bottomTrailing : .bottomLeading) {
-                Image(systemName: "arrowtriangle.down.fill")
-                    .font(.title)
-                    .rotationEffect(.degrees(message.isSendByUser ? -45 : 45))
-                    .offset(x: message.isSendByUser ? 10 : -10, y: 10)
-                    .foregroundColor(.blue)
+                if isNextMessageFromUser {
+                    EmptyView()
+                } else{
+                    Image(systemName: "arrowtriangle.down.fill")
+                        .font(.title)
+                        .rotationEffect(.degrees(message.isSendByUser ? -45 : 45))
+                        .offset(x: message.isSendByUser ? 10 : -10, y: 10)
+                        .foregroundColor(message.isSendByUser ? .blue : .gray)
+                }
+                
             }
-        
-        if !message.reactions.isEmpty {
-            HStack {
-                ForEach(message.isSendByUser ? message.reactions.reversed() : message.reactions , id: \.self) { reaction in
-                    Text(reaction)
+            
+            if !message.reactions.isEmpty {
+                HStack {
+                    ForEach(message.isSendByUser ? message.reactions.reversed() : message.reactions , id: \.self) { reaction in
+                        Text(reaction)
+                    }
                 }
             }
         }
-   }
-
+        
     }
     
-    let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .short
-        formatter.timeStyle = .short
-        return formatter
-    }()
 }
 
