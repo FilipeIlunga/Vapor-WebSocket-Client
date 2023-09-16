@@ -18,17 +18,14 @@ final class WebsocketGameViewModel: ObservableObject, WebSocketDelegate {
     var timer: Timer?
 
     init() {
-        
         if userID.isEmpty {
             self.userID = UUID().uuidString
             self.user = User(userName: userID)
         } else {
             self.user = User(userName: self.userID)
-
         }
         
         setupWebSocket()
-
     }
     
     

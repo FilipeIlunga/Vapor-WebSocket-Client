@@ -7,33 +7,33 @@
 
 import SwiftUI
 
+
 struct ChatBubbleView: View {
-     var message: WSChatMessage
-    @State var showView: Bool = false
-    var onTap: (String) -> ()
+    var message: WSChatMessage
+    
     var body: some View {
     ZStack(alignment: message.isSendByUser ? .bottomTrailing : .bottomLeading) {
-                        
-            VStack(alignment: message.isSendByUser ? .trailing : .leading, spacing: 10) {
-                Text(message.content)
-                
-                Text(dateFormatter.string(from: message.timestamp))
-                    .font(.footnote)
-                    .foregroundColor(Color(uiColor: UIColor.secondaryLabel))
-                
+        
+        VStack(alignment: message.isSendByUser ? .trailing : .leading, spacing: 10) {
+            Text(message.content)
+            
+            Text(dateFormatter.string(from: message.timestamp))
+                .font(.footnote)
+                .foregroundColor(Color(uiColor: UIColor.secondaryLabel))
 
-            }
-            .padding(8)
-            .background(message.isSendByUser ? Color.green : Color.gray)
-            .cornerRadius(8)
-        if showView {
-            ChatReactionMenu(showView: $showView) { icon in
-                onTap(icon)
-                let generator = UIImpactFeedbackGenerator(style: .medium)
-                generator.impactOccurred()
-            }
         }
-          
+            .padding()
+            .background(.blue)
+            .foregroundColor(.white)
+            .clipShape(RoundedRectangle(cornerRadius: 16.0, style: .continuous))
+            .listRowSeparator(.hidden)
+            .overlay(alignment: message.isSendByUser ? .bottomTrailing : .bottomLeading) {
+                Image(systemName: "arrowtriangle.down.fill")
+                    .font(.title)
+                    .rotationEffect(.degrees(message.isSendByUser ? -45 : 45))
+                    .offset(x: message.isSendByUser ? 10 : -10, y: 10)
+                    .foregroundColor(.blue)
+            }
         
         if !message.reactions.isEmpty {
             HStack {
@@ -43,11 +43,6 @@ struct ChatBubbleView: View {
             }
         }
    }
- //   .onLongPressGesture {
-//        showView.toggle()
-//        let generator = UIImpactFeedbackGenerator(style: .rigid)
-//        generator.impactOccurred(intensity: 1.0)
-//    }
 
     }
     

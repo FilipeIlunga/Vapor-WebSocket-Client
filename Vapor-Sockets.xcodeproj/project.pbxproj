@@ -144,7 +144,6 @@
 				2300CD192A9FA80600CA1807 /* ContentView.swift */,
 				2300CD1B2A9FA80800CA1807 /* Assets.xcassets */,
 				2300CD1D2A9FA80800CA1807 /* Preview Content */,
-				2300CD432AA003F000CA1807 /* TypingAnimationView.swift */,
 				2367C6A32AA4B015006DAEF9 /* APIKeys.swift */,
 			);
 			path = "Vapor-Sockets";
@@ -237,6 +236,7 @@
 		23C8553C2AA4480F00105B25 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				2300CD432AA003F000CA1807 /* TypingAnimationView.swift */,
 				23C8553F2AA4487700105B25 /* ChatBubbleView.swift */,
 				2367C6B22AA5C9C7006DAEF9 /* ChatReactionMenu.swift */,
 			);

@@ -19,7 +19,6 @@ struct ContentView: View {
     
     @State var isconnected: Bool = true
 
-    
     @StateObject var viewModel: WebsocketViewModel = WebsocketViewModel()
     @State var numberOFLiner = 0
     @State private var calculatedHeight: CGFloat = 35.0
@@ -34,17 +33,11 @@ struct ContentView: View {
                 HStack {
                     if message.isSendByUser.wrappedValue {
                         Spacer()
-                        ChatBubbleView(message: message.wrappedValue) { icon in
-                            viewModel.sendRecation(message: message.wrappedValue, reaction: icon)
-                        }
+                        ChatBubbleView(message: message.wrappedValue)
                     } else {
-                        ChatBubbleView(message: message.wrappedValue) { icon in
-                            viewModel.sendRecation(message: message.wrappedValue, reaction: icon)
-                        }
+                        ChatBubbleView(message: message.wrappedValue)
                         Spacer()
                     }
-                }.contextMenu {
-                    
                 }
                 .padding(.horizontal)
                 .padding(.bottom)
