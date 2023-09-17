@@ -162,13 +162,6 @@ final class WebsocketViewModel: ObservableObject {
                 self.newMessage = ""
             }
         })
-        DispatchQueue.main.async {
-            withAnimation {
-                self.chatMessage.append(wsMessage)
-                self.saveMessage(wsMessage)
-            }
-            self.newMessage = ""
-        }
     }
     
     func sendButtonDidTapped() {

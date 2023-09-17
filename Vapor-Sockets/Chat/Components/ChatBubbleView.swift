@@ -7,6 +7,11 @@
 
 import SwiftUI
 
+enum ReactionMenuPosition {
+    case top
+    case bottom
+}
+
 
 struct ChatBubbleView: View {
     var message: WSChatMessage
@@ -16,36 +21,35 @@ struct ChatBubbleView: View {
     var onAddEmoji: (String) -> ()
     
     var body: some View {
-        ZStack(alignment: message.isSendByUser ? .bottomTrailing : .bottomLeading) {
-           
+        VStack(alignment: message.isSendByUser ? .trailing : .leading) {
+            
             ZStack(alignment: message.isSendByUser ? .topTrailing : .topLeading){
-
-            VStack(alignment: message.isSendByUser ? .trailing : .leading) {
-                VStack(alignment: message.isSendByUser ? .trailing : .leading, spacing: 10) {
-                    Text(message.content)
-                    
-                    Text(message.getDisplayDate())
-                        .font(.footnote)
-                        .foregroundColor(Color(uiColor: UIColor.secondaryLabel))
-                    
-                }
-                .padding()
-                .background(message.isSendByUser ? .blue : Color(uiColor: UIColor.darkGray))
-                .foregroundColor(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 16.0, style: .continuous))
-                .listRowSeparator(.hidden)
-                .overlay(alignment: message.isSendByUser ? .bottomTrailing : .bottomLeading) {
-                    if isNextMessageFromUser {
-                        EmptyView()
-                    } else{
-                        Image(systemName: "arrowtriangle.down.fill")
-                            .font(.title)
-                            .rotationEffect(.degrees(message.isSendByUser ? -45 : 45))
-                            .offset(x: message.isSendByUser ? 10 : -10, y: 10)
-                            .foregroundColor(message.isSendByUser ? .blue : Color(uiColor: UIColor.darkGray))
+                
+                VStack(alignment: message.isSendByUser ? .trailing : .leading) {
+                    VStack(alignment: message.isSendByUser ? .trailing : .leading, spacing: 10) {
+                        Text(message.content)
+                        
+                        Text(message.getDisplayDate())
+                            .font(.footnote)
+                            .foregroundColor(Color(uiColor: UIColor.secondaryLabel))
+                    }
+                    .padding()
+                    .background(message.isSendByUser ? .blue : Color(uiColor: UIColor.darkGray))
+                    .foregroundColor(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 16.0, style: .continuous))
+                    .listRowSeparator(.hidden)
+                    .overlay(alignment: message.isSendByUser ? .bottomTrailing : .bottomLeading) {
+                        if isNextMessageFromUser {
+                            EmptyView()
+                        } else{
+                            Image(systemName: "arrowtriangle.down.fill")
+                                .font(.title)
+                                .rotationEffect(.degrees(message.isSendByUser ? -45 : 45))
+                                .offset(x: message.isSendByUser ? 10 : -10, y: 10)
+                                .foregroundColor(message.isSendByUser ? .blue : Color(uiColor: UIColor.darkGray))
+                        }
                     }
                 }
-            }
                 
                 if showReactions {
                     ChatReactionMenu(hiddenView: $hiddenReactionMenu) { emoji in
@@ -54,13 +58,28 @@ struct ChatBubbleView: View {
                     .offset( y: -55)
                 }
             }
-            
-            if !message.reactions.isEmpty {
+            if message.reactions.joined() != "" {
                 HStack {
-                    ForEach(message.isSendByUser ? message.reactions.reversed() : message.reactions , id: \.self) { reaction in
+                    ForEach(message.isSendByUser ? message.reactions.suffix(5).reversed() : Array(message.reactions.suffix(5)) , id: \.self) { reaction in
                         Text(reaction)
+                            .padding(.vertical, 6)
+                            .font(.system(size: 12))
                     }
                 }
+                .background(
+                    ZStack {
+                        Capsule()
+                            .fill(Color(uiColor: UIColor.darkGray))
+                            .mask {
+                                Capsule()
+                                    .scaleEffect(1, anchor: .center)
+                            }
+                        Capsule()
+                              .stroke(Color.black, lineWidth: 1)
+                    }
+                )
+                
+                .offset( y: -20)
             }
         }
     }

@@ -23,18 +23,16 @@ struct ChatView: View {
                 HStack {
                     if message.isSendByUser {
                         Spacer()
+                    }
                         ChatBubbleView(message: message, isNextMessageFromUser: viewModel.isNextMessageFromUser(message: message), hiddenReactionMenu: $showHighlight, onAddEmoji: ({_ in}))
-                            .anchorPreference(key: BoundsPreference.self, value: .bounds) { anchor in
-                                return [message.messageID: anchor]
-                            }
-                    } else {
-                        ChatBubbleView(message: message, isNextMessageFromUser: viewModel.isNextMessageFromUser(message: message), hiddenReactionMenu: $showHighlight, onAddEmoji: ({_ in}))
-                            .anchorPreference(key: BoundsPreference.self, value: .bounds) { anchor in
-                                hapticFeedback()
-                                return [message.messageID: anchor]
-                            }
+                          
+                    if !message.isSendByUser {
                         Spacer()
                     }
+                  
+                }
+                .anchorPreference(key: BoundsPreference.self, value: .bounds) { anchor in
+                    return [message.messageID: anchor]
                 }
                 .padding(.horizontal)
                 .listRowSeparator(.hidden)
@@ -115,12 +113,13 @@ struct ChatView: View {
                         viewModel.sendRecation(message: selectedMsg, reaction: emoji)
                     }
                         .id(selectedMsg.messageID)
-                        .frame(width: rect.width, height: rect.height)
+                        //.frame(width: rect.width, height: rect.height)
                         .offset(x: rect.minX, y: rect.minY)
                 }
                 .transition(.asymmetric(insertion: .identity, removal: .offset(x: 1)))
             }
         }
+
     }
     
     private func hapticFeedback() {
