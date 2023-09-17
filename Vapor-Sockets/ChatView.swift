@@ -14,7 +14,6 @@ struct ChatView: View {
     
     @State private var position: Int?
     @State var isconnected: Bool = true
-    
     @State var showHighlight: Bool = false
     
     var body: some View {
@@ -31,6 +30,7 @@ struct ChatView: View {
                     } else {
                         ChatBubbleView(message: message, isNextMessageFromUser: viewModel.isNextMessageFromUser(message: message), hiddenReactionMenu: $showHighlight, onAddEmoji: ({_ in}))
                             .anchorPreference(key: BoundsPreference.self, value: .bounds) { anchor in
+                                hapticFeedback()
                                 return [message.messageID: anchor]
                             }
                         Spacer()
@@ -42,6 +42,8 @@ struct ChatView: View {
                 .listRowInsets(.init(top:  2, leading: 0, bottom: viewModel.isNextMessageFromUser(message: message) ? 2 : 12, trailing: 0))
 
                 .onLongPressGesture {
+                    hapticFeedback()
+
                     withAnimation {
                         withAnimation(.easeInOut) {
                             showHighlight = true
@@ -120,6 +122,12 @@ struct ChatView: View {
             }
         }
     }
+    
+    private func hapticFeedback() {
+        let impactHeavy = UIImpactFeedbackGenerator(style: .heavy)
+        impactHeavy.impactOccurred()
+    }
+    
 }
 
 extension String {
