@@ -9,6 +9,7 @@ import Foundation
 
 protocol MessageHeader {
     associatedtype MessageType
+    var fromUserID: String { get set}
     var messageType: MessageType { get set}
     var subMessageTypeCode: Int { get set }
     
@@ -54,7 +55,7 @@ enum NewMessageType: Int, WSCodable {
 
 struct WSMessageHeader: WSCodable, MessageHeader {
     typealias MessageType = NewMessageType
-    
+    var fromUserID: String
     var messageType: MessageType
     var subMessageTypeCode: Int
     let payload: String

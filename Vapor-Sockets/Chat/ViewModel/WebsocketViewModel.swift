@@ -36,7 +36,12 @@ final class WebsocketViewModel: ObservableObject {
     }
     
     deinit {
+        disconnectSocket()
+    }
+    
+    private func disconnectSocket() {
         socket?.disconnect(closeCode: 0)
+        sendStatusMessage(type: .Disconnect)
     }
     
     private func setupUserInfo() {
@@ -48,7 +53,7 @@ final class WebsocketViewModel: ObservableObject {
         }
     }
     
-    private func initWebSocket() {
+     func initWebSocket() {
         var request = URLRequest(url: URL(string: "\(APIKeys.websocketAddress.rawValue)/chatWS")!)
         request.setValue("chat", forHTTPHeaderField: "Sec-WebSocket-Protocol")
         request.timeoutInterval = 5
@@ -66,7 +71,7 @@ final class WebsocketViewModel: ObservableObject {
             return
         }
         
-        let wsMessageCodable = WSMessageHeader(messageType: .Status, subMessageTypeCode: type.code, payload: payload)
+        let wsMessageCodable = WSMessageHeader(fromUserID: user.userName, messageType: .Status, subMessageTypeCode: type.code, payload: payload)
         
         guard let wsMessage = try? wsMessageCodable.encode() else {
             print("Error on encode WSMessage: \(wsMessageCodable)")
@@ -95,7 +100,7 @@ final class WebsocketViewModel: ObservableObject {
             return
         }
         
-        let wsMessageCodable = WSMessageHeader(messageType: .Chat, subMessageTypeCode: ChatMessageType.TypingStatus.code, payload: payload)
+        let wsMessageCodable = WSMessageHeader(fromUserID: user.userName, messageType: .Chat, subMessageTypeCode: ChatMessageType.TypingStatus.code, payload: payload)
 
         guard let wsMessage = try? wsMessageCodable.encode() else {
             print("Error on encode WSMessage: \(wsMessageCodable)")
@@ -115,7 +120,7 @@ final class WebsocketViewModel: ObservableObject {
             return
         }
         
-        let wsMessageCodable = WSMessageHeader(messageType: .Chat, subMessageTypeCode: ChatMessageType.Reaction.code, payload: payload)
+        let wsMessageCodable = WSMessageHeader(fromUserID: user.userName, messageType: .Chat, subMessageTypeCode: ChatMessageType.Reaction.code, payload: payload)
 
         
         guard let wsMessage = try? wsMessageCodable.encode() else {
@@ -146,7 +151,7 @@ final class WebsocketViewModel: ObservableObject {
             return
         }
         
-        let wsMessageCodable = WSMessageHeader(messageType: .Chat, subMessageTypeCode: ChatMessageType.ContentString.code, payload: payload)
+        let wsMessageCodable = WSMessageHeader(fromUserID: user.userName, messageType: .Chat, subMessageTypeCode: ChatMessageType.ContentString.code, payload: payload)
 
         guard let wsMessageEncoded = try? wsMessageCodable.encode() else {
             print("Error on encode WSMessage: \(wsMessageCodable)")
@@ -348,7 +353,7 @@ extension WebsocketViewModel {
         
         do {
             let typingMessage: TypingMessage = try payload.decodeWSEncodable(type: TypingMessage.self)
-            let wsMessageCodable = WSMessageHeader(messageType: .Chat, subMessageTypeCode: ChatMessageType.TypingStatus.code, payload: payload)
+            let wsMessageCodable = WSMessageHeader(fromUserID: user.userName, messageType: .Chat, subMessageTypeCode: ChatMessageType.TypingStatus.code, payload: payload)
             
             isAnotherUserTapping = typingMessage.isTyping
         } catch {
@@ -469,7 +474,6 @@ extension  WebsocketViewModel {
                 print("Error on \(#function): \(error.localizedDescription)")
             }
         }
-        
     }
     
     func isNextMessageFromUser(message: WSChatMessage) -> Bool {

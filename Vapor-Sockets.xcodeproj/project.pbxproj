@@ -127,10 +127,6 @@
 		2300CD0B2A9FA80600CA1807 = {
 			isa = PBXGroup;
 			children = (
-				2392E1072AB7A4D60048F89E /* ChatMessage+CoreDataClass.swift */,
-				2392E1082AB7A4D60048F89E /* ChatMessage+CoreDataProperties.swift */,
-				2392E1092AB7A4D60048F89E /* Reaction+CoreDataClass.swift */,
-				2392E10A2AB7A4D60048F89E /* Reaction+CoreDataProperties.swift */,
 				230852882AA81CF200C76ABB /* Vapor-Sockets.xcdatamodeld */,
 				2300CD162A9FA80600CA1807 /* Vapor-Sockets */,
 				2300CD272A9FA80800CA1807 /* Vapor-SocketsTests */,
@@ -218,6 +214,7 @@
 		2308528F2AA81D8900C76ABB /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
+				2392E10F2AB7ADCA0048F89E /* Entities */,
 				230852902AA81DD800C76ABB /* PersistenceProvider.swift */,
 			);
 			path = CoreData;
@@ -239,6 +236,17 @@
 				2367C6AE2AA5B606006DAEF9 /* ChatReaction.swift */,
 			);
 			path = WSCodable;
+			sourceTree = "<group>";
+		};
+		2392E10F2AB7ADCA0048F89E /* Entities */ = {
+			isa = PBXGroup;
+			children = (
+				2392E1072AB7A4D60048F89E /* ChatMessage+CoreDataClass.swift */,
+				2392E1082AB7A4D60048F89E /* ChatMessage+CoreDataProperties.swift */,
+				2392E1092AB7A4D60048F89E /* Reaction+CoreDataClass.swift */,
+				2392E10A2AB7A4D60048F89E /* Reaction+CoreDataProperties.swift */,
+			);
+			path = Entities;
 			sourceTree = "<group>";
 		};
 		23C855362AA437B400105B25 /* Chat */ = {
