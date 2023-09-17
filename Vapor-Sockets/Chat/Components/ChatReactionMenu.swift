@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct ChatReactionMenu: View {
-    @Binding var showView: Bool
+    @Binding var hiddenView: Bool 
     var onTap: (String) -> ()
     @State var animateEmoji: [Bool] = Array(repeating: false, count: ChatReaction.allCases.count)
     @State var animateView: Bool = false
+    
     
     var body: some View {
         HStack(spacing: 12) {
@@ -28,7 +29,7 @@ struct ChatReactionMenu: View {
                     }
                     .onTapGesture {
                         onTap(ChatReaction.allCases[index].rawValue)
-                        showView = false
+                      
                     }
             }
         }.padding(.horizontal, 15)
@@ -41,6 +42,25 @@ struct ChatReactionMenu: View {
                         .scaleEffect(animateView ? 1 : 0, anchor: .leading)
                 }
             )
+            .onAppear {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    animateView = true
+                }
+            }
+            .onChange(of: hiddenView) { newValue in
+                if !newValue {
+                    withAnimation(.easeInOut) {
+                        animateView = true
+                    }
+                    
+                    for index in ChatReaction.allCases.indices {
+                        withAnimation(.easeOut) {
+                            animateView = true
+                            animateEmoji[index] = false
+                        }
+                    }
+                }
+            }
     }
 }
 

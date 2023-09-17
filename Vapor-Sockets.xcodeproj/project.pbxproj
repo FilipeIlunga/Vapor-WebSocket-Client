@@ -23,6 +23,7 @@
 		230532D02AB6619A00D894A1 /* Veiw+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230532CF2AB6619A00D894A1 /* Veiw+Extension.swift */; };
 		230532D22AB6645D00D894A1 /* ChatMessageField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230532D12AB6645D00D894A1 /* ChatMessageField.swift */; };
 		230532D42AB6679400D894A1 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230532D32AB6679400D894A1 /* User.swift */; };
+		230532D72AB6975300D894A1 /* BoundsPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230532D62AB6975300D894A1 /* BoundsPreference.swift */; };
 		2308528A2AA81CF200C76ABB /* Vapor-Sockets.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 230852882AA81CF200C76ABB /* Vapor-Sockets.xcdatamodeld */; };
 		2308528D2AA81D7600C76ABB /* ChatMessage+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2308528B2AA81D7600C76ABB /* ChatMessage+CoreDataClass.swift */; };
 		2308528E2AA81D7600C76ABB /* ChatMessage+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2308528C2AA81D7600C76ABB /* ChatMessage+CoreDataProperties.swift */; };
@@ -75,6 +76,7 @@
 		230532CF2AB6619A00D894A1 /* Veiw+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Veiw+Extension.swift"; sourceTree = "<group>"; };
 		230532D12AB6645D00D894A1 /* ChatMessageField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageField.swift; sourceTree = "<group>"; };
 		230532D32AB6679400D894A1 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		230532D62AB6975300D894A1 /* BoundsPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoundsPreference.swift; sourceTree = "<group>"; };
 		230852892AA81CF200C76ABB /* ChatDataBase.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ChatDataBase.xcdatamodel; sourceTree = "<group>"; };
 		2308528B2AA81D7600C76ABB /* ChatMessage+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatMessage+CoreDataClass.swift"; sourceTree = "<group>"; };
 		2308528C2AA81D7600C76ABB /* ChatMessage+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatMessage+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -197,6 +199,14 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		230532D52AB6974200D894A1 /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				230532D62AB6975300D894A1 /* BoundsPreference.swift */,
+			);
+			path = Helper;
+			sourceTree = "<group>";
+		};
 		2308528F2AA81D8900C76ABB /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
@@ -228,6 +238,7 @@
 		23C855362AA437B400105B25 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
+				230532D52AB6974200D894A1 /* Helper */,
 				230532CE2AB6618400D894A1 /* Extensions */,
 				230852942AA8222700C76ABB /* ViewModel */,
 				23C8553C2AA4480F00105B25 /* Components */,
@@ -401,6 +412,7 @@
 				2308528E2AA81D7600C76ABB /* ChatMessage+CoreDataProperties.swift in Sources */,
 				23C855402AA4487700105B25 /* ChatBubbleView.swift in Sources */,
 				2300CD1A2A9FA80600CA1807 /* ChatView.swift in Sources */,
+				230532D72AB6975300D894A1 /* BoundsPreference.swift in Sources */,
 				2300CD182A9FA80600CA1807 /* Vapor_SocketsApp.swift in Sources */,
 				2300CD442AA003F000CA1807 /* TypingAnimationView.swift in Sources */,
 				23C8553B2AA4413500105B25 /* MessageCodables.swift in Sources */,
