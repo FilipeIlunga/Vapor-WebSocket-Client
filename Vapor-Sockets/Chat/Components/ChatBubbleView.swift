@@ -62,10 +62,10 @@ struct ChatBubbleView: View {
                 HStack {
                     ForEach(message.isSendByUser ? message.reactions.suffix(5).reversed() : Array(message.reactions.suffix(5)) , id: \.self) { reaction in
                         Text(reaction)
-                            .padding(.vertical, 6)
                             .font(.system(size: 12))
                     }
-                }
+                }.padding(.horizontal, 10)
+                    .padding(.vertical, 6)
                 .background(
                     ZStack {
                         Capsule()
@@ -78,7 +78,6 @@ struct ChatBubbleView: View {
                               .stroke(Color.black, lineWidth: 1)
                     }
                 )
-                
                 .offset( y: -20)
             }
         }

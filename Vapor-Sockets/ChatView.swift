@@ -18,73 +18,76 @@ struct ChatView: View {
     
     var body: some View {
         ScrollViewReader { scrollView in
-        VStack(spacing: 0) {
-            List(viewModel.chatMessage, id: \.self) {  message in
-                HStack {
-                    if message.isSendByUser {
-                        Spacer()
-                    }
-                        ChatBubbleView(message: message, isNextMessageFromUser: viewModel.isNextMessageFromUser(message: message), hiddenReactionMenu: $showHighlight, onAddEmoji: ({_ in}))
-                          
-                    if !message.isSendByUser {
-                        Spacer()
-                    }
-                  
-                }
-                .anchorPreference(key: BoundsPreference.self, value: .bounds) { anchor in
-                    return [message.messageID: anchor]
-                }
-                .padding(.horizontal)
-                .listRowSeparator(.hidden)
-                .id(message.messageID)
-                .listRowInsets(.init(top:  2, leading: 0, bottom: viewModel.isNextMessageFromUser(message: message) ? 2 : 12, trailing: 0))
-
-                .onLongPressGesture {
-                    hapticFeedback()
-
-                    withAnimation {
-                        withAnimation(.easeInOut) {
-                            showHighlight = true
-                            selectedMessage = message
+            VStack(spacing: 0) {
+                List {
+                    ForEach(viewModel.chatMessage, id: \.self) {  message in
+                        HStack {
+                            if message.isSendByUser {
+                                Spacer()
+                            }
+                            ChatBubbleView(message: message, isNextMessageFromUser: viewModel.isNextMessageFromUser(message: message), hiddenReactionMenu: $showHighlight, onAddEmoji: ({_ in}))
+                                .onTapGesture {}
+                                .onLongPressGesture(minimumDuration: 0.5, maximumDistance: 30) {
+                                    hapticFeedback()
+                                    
+                                    withAnimation {
+                                        withAnimation(.easeInOut) {
+                                            showHighlight = true
+                                            selectedMessage = message
+                                        }
+                                    }
+                                }
+                            
+                            if !message.isSendByUser {
+                                Spacer()
+                            }
+                            
                         }
+                        .anchorPreference(key: BoundsPreference.self, value: .bounds) { anchor in
+                            return [message.messageID: anchor]
+                        }
+                        .padding(.horizontal)
+                        .listRowSeparator(.hidden)
+                        .id(message.messageID)
+                        .listRowInsets(.init(top:  2, leading: 0, bottom: viewModel.isNextMessageFromUser(message: message) ? 2 : 12, trailing: 0))
                     }
                 }
-            }
-            .lineSpacing(0.0)
-            .listStyle(.plain)
-            .onTapGesture {
-                self.hiddenKeyboard()
-            }
-            .onChange(of: viewModel.chatMessage.count) { newValue in
-                withAnimation {
+                .lineSpacing(0.0)
+                .listStyle(.plain)
+                .onTapGesture {
+                    self.hiddenKeyboard()
+                }
+                .onChange(of: viewModel.chatMessage.count) { newValue in
+                    withAnimation {
+                        scrollView.scrollTo(viewModel.chatMessage.last?.messageID, anchor: .top)
+                    }
+                }
+                
+                HStack {
+                    
+                    if viewModel.isAnotherUserTapping {
+                        TypingAnimationView()
+                            .padding(.horizontal)
+                    }
+                    Spacer()
+                }.padding(.leading, 10)
+                
+                VStack {
+                    Divider()
+                    
+                    ChatMessageField(message: $viewModel.newMessage) {
+                        viewModel.sendButtonDidTapped()
+                    } onTapping: { isTapping in
+                        viewModel.sendTypingStatus(isTyping: isTapping)
+                    }.padding(.top)
+                }
+            }.onAppear {
+                withAnimation(.spring()) {
                     scrollView.scrollTo(viewModel.chatMessage.last?.messageID, anchor: .top)
                 }
             }
-
-            HStack {
-
-                if viewModel.isAnotherUserTapping {
-                    TypingAnimationView()
-                        .padding(.horizontal)
-                }
-                Spacer()
-            }.padding(.leading, 10)
-
-            VStack {
-                Divider()
-                
-                ChatMessageField(message: $viewModel.newMessage) {
-                    viewModel.sendButtonDidTapped()
-                } onTapping: { isTapping in
-                    viewModel.sendTypingStatus(isTyping: isTapping)
-                }.padding(.top)
-            }
-        }.onAppear {
-            withAnimation(.spring()) {
-                scrollView.scrollTo(viewModel.chatMessage.last?.messageID, anchor: .top)
-            }
         }
-        }.overlay(content: {
+        .overlay(content: {
             if showHighlight {
                 Rectangle()
                     .fill(.ultraThinMaterial)
@@ -112,14 +115,14 @@ struct ChatView: View {
                         }
                         viewModel.sendRecation(message: selectedMsg, reaction: emoji)
                     }
-                        .id(selectedMsg.messageID)
-                        //.frame(width: rect.width, height: rect.height)
-                        .offset(x: rect.minX, y: rect.minY)
+                    .id(selectedMsg.messageID)
+                    //.frame(width: rect.width, height: rect.height)
+                    .offset(x: selectedMsg.isSendByUser ?  rect.minX + 40 : rect.minX, y: rect.minY)
                 }
                 .transition(.asymmetric(insertion: .identity, removal: .offset(x: 1)))
             }
         }
-
+        
     }
     
     private func hapticFeedback() {
