@@ -4,8 +4,14 @@
         <attribute name="content" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="isSendByUser" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
-        <attribute name="reactions" optional="YES" attributeType="Transformable"/>
         <attribute name="senderID" optional="YES" attributeType="String"/>
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="messageReactions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Reaction" inverseName="message" inverseEntity="Reaction"/>
+    </entity>
+    <entity name="Reaction" representedClassName="Reaction" syncable="YES">
+        <attribute name="count" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="emoji" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="String"/>
+        <relationship name="message" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ChatMessage" inverseName="messageReactions" inverseEntity="ChatMessage"/>
     </entity>
 </model>

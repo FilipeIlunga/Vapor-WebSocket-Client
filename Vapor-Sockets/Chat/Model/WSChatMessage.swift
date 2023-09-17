@@ -7,13 +7,18 @@
 
 import Foundation
 
+struct WSReaction: Hashable, WSCodable {
+    var count: Int
+    var emoji: String
+}
+
 struct WSChatMessage: Hashable, WSCodable {
     let messageID: String
     let senderID: String
     let timestamp: Date
     let content: String
     var isSendByUser: Bool
-    var reactions: [String]
+    var reactions: [WSReaction]
 
     var description: String {
         return "\(messageID)|\(senderID)|\(timestamp.timeIntervalSince1970)|\(content)"
@@ -25,7 +30,7 @@ struct WSChatMessage: Hashable, WSCodable {
         hasher.combine(timestamp)
     }
     
-    mutating func addReaction(_ reaction: String) {
+    mutating func addReaction(_ reaction: WSReaction) {
         var mutableReactions = reactions
         mutableReactions.append(reaction)
         reactions = mutableReactions

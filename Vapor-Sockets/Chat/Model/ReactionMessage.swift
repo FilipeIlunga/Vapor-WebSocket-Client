@@ -11,5 +11,5 @@ struct ReactionMessage: WSCodable {
     let userID: String
     let messageID: String
     let messageReacted: WSChatMessage
-    let reactionIcon: String
+    let reactionIcon: WSReaction
 }

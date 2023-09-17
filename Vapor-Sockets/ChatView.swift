@@ -113,7 +113,8 @@ struct ChatView: View {
                             showHighlight = false
                             selectedMessage = nil
                         }
-                        viewModel.sendRecation(message: selectedMsg, reaction: emoji)
+                        let newReation = WSReaction(count: 1, emoji: emoji)
+                        viewModel.sendRecation(message: selectedMsg, reaction: newReation)
                     }
                     .id(selectedMsg.messageID)
                     //.frame(width: rect.width, height: rect.height)

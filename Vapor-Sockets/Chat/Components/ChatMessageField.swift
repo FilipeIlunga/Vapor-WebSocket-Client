@@ -34,7 +34,7 @@ struct ChatMessageField: View {
             ZStack {
                 RoundedRectangle(cornerRadius: 9)
                     .frame(width: UIScreen.main.bounds.width * 0.75, height: calculatedHeight)
-                    .foregroundColor(.green)
+                    .foregroundColor(.blue)
                     .allowsHitTesting(false)
                 
                 TextEditor(text: $message)
@@ -66,7 +66,7 @@ struct ChatMessageField: View {
                 } label: {
                     Image(systemName: "paperplane.circle.fill")
                 }.font(.title)
-                    .foregroundColor(.green)
+                    .foregroundColor(.blue)
                 
             }
             

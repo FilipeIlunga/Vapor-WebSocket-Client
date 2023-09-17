@@ -107,7 +107,7 @@ final class WebsocketViewModel: ObservableObject {
         })
     }
     
-    func sendRecation(message: WSChatMessage, reaction: String) {
+    func sendRecation(message: WSChatMessage, reaction: WSReaction) {
         let reactionMessage = ReactionMessage(userID: user.userName, messageID: UUID().uuidString, messageReacted: message, reactionIcon: reaction)
         
         guard let payload = try? reactionMessage.encode() else {
@@ -139,7 +139,7 @@ final class WebsocketViewModel: ObservableObject {
             senderID: user.userName,
             timestamp: timestamp,
             content: messageContent,
-            isSendByUser: true, reactions: [""])
+            isSendByUser: true, reactions: [])
                 
         guard let payload = try? wsMessage.encode() else {
             print("Error on get payload from aliveMessage \(wsMessage)")
@@ -328,7 +328,7 @@ extension WebsocketViewModel {
         }
     }
     
-    private func setupReaction(to message: WSChatMessage, reaction: String) {
+    private func setupReaction(to message: WSChatMessage, reaction: WSReaction) {
         
         guard let messageIndex = chatMessage.firstIndex(where: { $0.messageID == message.messageID }) else {
             print("Message not found in chat")
@@ -338,8 +338,7 @@ extension WebsocketViewModel {
         withAnimation {
             DispatchQueue.main.async {
                 self.chatMessage[messageIndex].reactions.append(reaction)
-                let newReaction: [String] = self.chatMessage[messageIndex].reactions
-                self.updateAddReaction(messageID: self.chatMessage[messageIndex].messageID, reaction: newReaction)
+                self.updateAddReaction(messageID: self.chatMessage[messageIndex].messageID, reaction: reaction)
             }
         }
         
@@ -421,18 +420,25 @@ extension  WebsocketViewModel {
     
     func saveMessage(_ wsMessage: WSChatMessage) {
         
-        let message = ChatMessage(context: PersistenceController.shared.viewContext)
+        let context = PersistenceController.shared.viewContext
+        let message = ChatMessage(context: context)
         
         message.id = wsMessage.messageID
         message.senderID = wsMessage.senderID
         message.timestamp = wsMessage.timestamp
         message.content = wsMessage.content
-        message.isSendByUser =  DarwinBoolean(wsMessage.isSendByUser)
-        message.reactions = wsMessage.reactions as NSObject
+        message.isSendByUser =  wsMessage.isSendByUser
+        
+        wsMessage.reactions.forEach { reaction in
+            let messageReaction = Reaction(context: context)
+            messageReaction.count = Int16(reaction.count)
+            messageReaction.emoji = reaction.emoji
+        }
+        
         PersistenceController.shared.save()
     }
     
-    func updateAddReaction(messageID: String, reaction: [String]) {
+    func updateAddReaction(messageID: String, reaction: WSReaction) {
         
         let context = PersistenceController.shared.viewContext
                 
@@ -452,7 +458,11 @@ extension  WebsocketViewModel {
                     return
                 }
                 
-                chatMessageEntity.reactions = reaction as NSObject
+                let reactionToSave = Reaction(context: context)
+                reactionToSave.count = Int16(reaction.count)
+                reactionToSave.emoji = reaction.emoji
+                chatMessageEntity.addToMessageReactions(reactionToSave)
+                
                 try context.save()
                 
             } catch {

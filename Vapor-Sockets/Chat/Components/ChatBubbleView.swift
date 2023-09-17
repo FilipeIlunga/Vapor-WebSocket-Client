@@ -58,10 +58,10 @@ struct ChatBubbleView: View {
                     .offset( y: -55)
                 }
             }
-            if message.reactions.joined() != "" {
+            if !message.reactions.isEmpty {
                 HStack {
                     ForEach(message.isSendByUser ? message.reactions.suffix(5).reversed() : Array(message.reactions.suffix(5)) , id: \.self) { reaction in
-                        Text(reaction)
+                        Text(reaction.emoji)
                             .font(.system(size: 12))
                     }
                 }.padding(.horizontal, 10)
