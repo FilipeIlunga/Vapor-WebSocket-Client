@@ -3,6 +3,8 @@
 # Introduction:
 This project is an in-depth study of how websockets work and the creation of a chat system using WebSockets in conjunction with the Vapor framework on the server. The main goal is to provide a robust and reliable real-time chat experience, equipped with features that meet the needs of modern communication. Feel free to report issues, suggest improvements, or implement a chat system in your own app based on this repository. The project is open to collaboration and external contributions.
 
+The server's codebase can be found in this repository: [Server repository](https://github.com/FilipeIlunga/Vapor-WebSocket-Server).
+
 # Key Features:
 
 ## 1 - Message Persistence with CoreData
