@@ -110,18 +110,28 @@ struct ChatView: View {
             }) {
                 GeometryReader { proxy in
                     let rect = proxy[preference.value]
-                    
-                    ChatBubbleView(message: selectedMsg, isNextMessageFromUser: viewModel.isNextMessageFromUser(message: selectedMsg),showReactions: true, hiddenReactionMenu: $showHighlight) { emoji in
-                        withAnimation(.easeInOut) {
-                            showHighlight = false
-                            selectedMessage = nil
+                    var rectMinY = rect.minY < 0 ?  rect.minY + 100 : rect.minY
+                
+                    HStack {
+                        if selectedMsg.isSendByUser {
+                            Spacer()
                         }
-                        let newReation = WSReaction(count: 1, emoji: emoji)
-                        viewModel.sendRecation(message: selectedMsg, reaction: newReation)
-                    }
-                    .id(selectedMsg.messageID)
-                    //.frame(width: rect.width, height: rect.height)
-                    .offset(x: selectedMsg.isSendByUser ?  rect.minX + 40 : rect.minX, y: rect.minY)
+                        ChatBubbleView(message: selectedMsg, isNextMessageFromUser: viewModel.isNextMessageFromUser(message: selectedMsg),showReactions: true, hiddenReactionMenu: $showHighlight) { emoji in
+                            withAnimation(.easeInOut) {
+                                showHighlight = false
+                                selectedMessage = nil
+                            }
+                            let newReation = WSReaction(count: 1, emoji: emoji)
+                            viewModel.sendRecation(message: selectedMsg, reaction: newReation)
+                        }
+                        .id(selectedMsg.messageID)
+                        .offset(y: rectMinY)
+                        
+                        if !selectedMsg.isSendByUser {
+                            Spacer()
+                        }
+                    }.padding(.horizontal)
+
                 }
                 .transition(.asymmetric(insertion: .identity, removal: .offset(x: 1)))
             }
