@@ -23,4 +23,7 @@ Typing indicators allow users to see when someone is typing a message. This lets
 Users can react to individual messages or to multiple messages in the chat. Reactions are displayed as icons below the message.
 
 
+## ScreenShot
+
+![image](https://github.com/FilipeIlunga/Vapor-WebSocket-Client/assets/45888235/06e14afd-e1fa-47ea-af18-686f97bb3443)
 
