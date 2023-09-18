@@ -39,9 +39,9 @@ final class WebsocketViewModel: ObservableObject {
         disconnectSocket()
     }
     
-    private func disconnectSocket() {
+     func disconnectSocket() {
+         sendStatusMessage(type: .Disconnect)
         socket?.disconnect(closeCode: 0)
-        sendStatusMessage(type: .Disconnect)
     }
     
     private func setupUserInfo() {

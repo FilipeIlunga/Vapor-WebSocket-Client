@@ -31,7 +31,7 @@ struct ChatBubbleView: View {
                         
                         Text(message.getDisplayDate())
                             .font(.footnote)
-                            .foregroundColor(Color(uiColor: UIColor.secondaryLabel))
+                            .foregroundColor(message.isSendByUser ? Color(uiColor: UIColor.secondaryLabel) : .gray)
                     }
                     .padding()
                     .background(message.isSendByUser ? .blue : Color(uiColor: UIColor.darkGray))

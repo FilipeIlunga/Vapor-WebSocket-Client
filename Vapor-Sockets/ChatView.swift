@@ -86,6 +86,9 @@ struct ChatView: View {
                     scrollView.scrollTo(viewModel.chatMessage.last?.messageID, anchor: .top)
                 }
             }
+            .onDisappear {
+                viewModel.disconnectSocket()
+            }
         }
         .overlay(content: {
             if showHighlight {
