@@ -65,14 +65,14 @@ final class WebsocketViewModel: ObservableObject {
     func sendStatusMessage(type: StatusMessageType) {
         let statusMessage = StatusMessage(userID: user.userName, type: type)
         
-        guard let payload = try? statusMessage.encode() else {
+        guard let payload = try? WSCoder.shared.encode(data: statusMessage) else {
             print("Error on get payload from aliveMessage \(statusMessage)")
             return
         }
         
         let wsMessageCodable = WSMessageHeader(fromUserID: user.userName, messageType: .Status, subMessageTypeCode: type.code, payload: payload)
         
-        guard let wsMessage = try? wsMessageCodable.encode() else {
+        guard let wsMessage = try? WSCoder.shared.encode(data: wsMessageCodable) else {
             print("Error on encode WSMessage: \(wsMessageCodable)")
             return
         }
@@ -94,14 +94,14 @@ final class WebsocketViewModel: ObservableObject {
     func sendTypingStatus(isTyping: Bool) {
         let typingMessage = TypingMessage(userID: user.userName, isTyping: isTyping)
         
-        guard let payload = try? typingMessage.encode() else {
+        guard let payload = try?  WSCoder.shared.encode(data: typingMessage) else {
             print("Error on get payload from aliveMessage \(typingMessage)")
             return
         }
         
         let wsMessageCodable = WSMessageHeader(fromUserID: user.userName, messageType: .Chat, subMessageTypeCode: ChatMessageType.TypingStatus.code, payload: payload)
 
-        guard let wsMessage = try? wsMessageCodable.encode() else {
+        guard let wsMessage = try? WSCoder.shared.encode(data: wsMessageCodable) else {
             print("Error on encode WSMessage: \(wsMessageCodable)")
             return
         }
@@ -114,7 +114,7 @@ final class WebsocketViewModel: ObservableObject {
     func sendRecation(message: WSChatMessage, reaction: WSReaction) {
         let reactionMessage = ReactionMessage(userID: user.userName, messageID: UUID().uuidString, messageReacted: message, reactionIcon: reaction)
         
-        guard let payload = try? reactionMessage.encode() else {
+        guard let payload = try? WSCoder.shared.encode(data: reactionMessage) else {
             print("Error on get payload from reationMessage \(reaction)")
             return
         }
@@ -122,7 +122,7 @@ final class WebsocketViewModel: ObservableObject {
         let wsMessageCodable = WSMessageHeader(fromUserID: user.userName, messageType: .Chat, subMessageTypeCode: ChatMessageType.Reaction.code, payload: payload)
 
         
-        guard let wsMessage = try? wsMessageCodable.encode() else {
+        guard let wsMessage = try? WSCoder.shared.encode(data: wsMessageCodable) else {
             print("Error on encode WSMessage: \(wsMessageCodable)")
             return
         }
@@ -137,14 +137,14 @@ final class WebsocketViewModel: ObservableObject {
     func sendDeleteMessage(messageID: String) {
         let wsDeleteMessage = WSDeleteMessage(id: UUID().uuidString, messageTodeleteID: messageID)
         
-        guard let payload = try? wsDeleteMessage.encode() else {
+        guard let payload = try? WSCoder.shared.encode(data: wsDeleteMessage) else {
             print("Error on get payload from aliveMessage \(wsDeleteMessage)")
             return
         }
         
         let wsMessageCodable = WSMessageHeader(fromUserID: user.userName, messageType: .Chat, subMessageTypeCode: ChatMessageType.DeleteMessage.code, payload: payload)
         
-        guard let wsMessageEncoded = try? wsMessageCodable.encode() else {
+        guard let wsMessageEncoded = try? WSCoder.shared.encode(data: wsMessageCodable) else {
             print("Error on encode WSMessage: \(wsMessageCodable)")
             return
         }
@@ -169,14 +169,14 @@ final class WebsocketViewModel: ObservableObject {
             content: messageContent,
             isSendByUser: true, reactions: [])
                 
-        guard let payload = try? wsMessage.encode() else {
+        guard let payload = try? WSCoder.shared.encode(data: wsMessage) else {
             print("Error on get payload from aliveMessage \(wsMessage)")
             return
         }
         
         let wsMessageCodable = WSMessageHeader(fromUserID: user.userName, messageType: .Chat, subMessageTypeCode: ChatMessageType.ContentString.code, payload: payload)
 
-        guard let wsMessageEncoded = try? wsMessageCodable.encode() else {
+        guard let wsMessageEncoded = try? WSCoder.shared.encode(data: wsMessageCodable) else {
             print("Error on encode WSMessage: \(wsMessageCodable)")
             return
         }
@@ -266,7 +266,7 @@ extension WebsocketViewModel {
     private func handlerWebsocketMessage(message: String) {
         
         do {
-            let wsMessage: WSMessageHeader = try message.decodeWSEncodable(type: WSMessageHeader.self)
+            let wsMessage: WSMessageHeader = try  WSCoder.shared.decode(type: WSMessageHeader.self, from: message)
             
             switch wsMessage.messageType {
                 
@@ -314,7 +314,7 @@ extension WebsocketViewModel {
     
     private func handleStatusMessagReceivede(type: StatusMessageType, payload: String) {
         do {
-            let statusMessage: StatusMessage = try payload.decodeWSEncodable(type: StatusMessage.self)
+            let statusMessage: StatusMessage = try WSCoder.shared.decode(type: StatusMessage.self, from: payload)
             switch type {
             case .Alive:
                 print("Received alive Message: \(statusMessage)")
@@ -328,7 +328,7 @@ extension WebsocketViewModel {
     
     private func handleDeleteMessageReceived(payload: String) {
         do {
-            var wsDeleteMessage: WSDeleteMessage = try payload.decodeWSEncodable(type: WSDeleteMessage.self)
+            var wsDeleteMessage: WSDeleteMessage = try WSCoder.shared.decode(type: WSDeleteMessage.self, from: payload)
             deleteMessage(messageID: wsDeleteMessage.messageTodeleteID)
         } catch {
             print("Error on \(#function): \(error)")
@@ -338,7 +338,7 @@ extension WebsocketViewModel {
    
     private func handleChatContentString(payload: String) {
         do {
-            var wsChatMessage: WSChatMessage = try payload.decodeWSEncodable(type: WSChatMessage.self)
+            var wsChatMessage: WSChatMessage = try WSCoder.shared.decode(type: WSChatMessage.self, from: payload)
             wsChatMessage.isSendByUser = false
             
             let isForwardedMessage: Bool = self.chatMessage.filter { message in
@@ -359,8 +359,8 @@ extension WebsocketViewModel {
     
     private func handleChatReactionMessage(payload: String) {
         do {
-            let reactionMessage = try payload.decodeWSEncodable(type: ReactionMessage.self)
-            
+            let reactionMessage = try WSCoder.shared.decode(type: ReactionMessage.self, from: payload)
+           
             setupReaction(to: reactionMessage.messageReacted, reaction: reactionMessage.reactionIcon)
             
         } catch {
@@ -387,7 +387,8 @@ extension WebsocketViewModel {
     private func handlerTypingStatus(payload: String) {
         
         do {
-            let typingMessage: TypingMessage = try payload.decodeWSEncodable(type: TypingMessage.self)
+            let typingMessage: TypingMessage = try WSCoder.shared.decode(type: TypingMessage.self, from: payload)
+            
             let wsMessageCodable = WSMessageHeader(fromUserID: user.userName, messageType: .Chat, subMessageTypeCode: ChatMessageType.TypingStatus.code, payload: payload)
             
             isAnotherUserTapping = typingMessage.isTyping
