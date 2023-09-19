@@ -20,6 +20,7 @@ final class WebsocketViewModel: ObservableObject {
     
     @Published var chatMessage: [WSChatMessage] = []
     @Published var newMessage: String = ""
+    @Published var imageToSend: UIImage?
     @Published var messageReceived = ""
     
     @Published var isSockedConnected: Bool = false
@@ -165,7 +166,6 @@ final class WebsocketViewModel: ObservableObject {
     func sendContentString(message: String) {
         let messageContent = message.trimmingCharacters(in: .whitespacesAndNewlines)
         let timestamp = Date.now
-        sendImage()
         let wsMessage = WSChatMessage(
             messageID: UUID().uuidString,
             senderID: user.userName,
@@ -195,43 +195,64 @@ final class WebsocketViewModel: ObservableObject {
             }
         })
     }
-    
+
     func sendImage() {
-        guard let image = UIImage(named: "Home3.png"), let imageData = image.jpegData(compressionQuality: 0.9) else {
+        guard let image = imageToSend, let imageData = image.jpegData(compressionQuality: 0.9) else {
+            print("Error on compress image")
             return
         }
-        let thread = DispatchQueue(label: "ola", qos: .background)
-        
-        let chunkSize = 2048
+
+        var chunkSize = 2048
         let totalSize = imageData.count
-        
+        let restSize = totalSize % chunkSize
+
         // Divida a imagem em pacotes
         var offset = 0
-        thread.async {
-            while offset < totalSize {
-                let chunkRange = offset..<(offset + min(chunkSize, totalSize - offset))
-                let chunkData = imageData.subdata(in: chunkRange)
-                
-                let isLast = offset + chunkData.count >= totalSize
-                
-                let packet = Packet(userID: self.userID, totalSize: totalSize, currentSize: offset, isLast: isLast, data: [UInt8](chunkData))
-                
-                do {
-                    let bytes = try BinaryEncoder.encode(packet)
-                    
-                    self.socket?.write(data: Data(bytes), completion: {
-                        print("Sent package")
-                    })
-                    
-                    offset += chunkData.count
-                } catch {
-                    print("Error on send packet: \(error.localizedDescription)")
-                    break
-                }
+        while offset < totalSize {
+            let chunkRange = offset..<(offset + min(chunkSize, totalSize - offset))
+            let chunkData = imageData.subdata(in: chunkRange)
+
+            // Verifica se é o último pacote
+            let isLast = offset + chunkData.count >= totalSize
+
+            // Cria um novo pacote
+            let packet = Packet(userID: self.userID, totalSize: totalSize, currentSize: offset, isLast: isLast, data: [UInt8](chunkData))
+
+            do {
+                // Encodifica o pacote
+                let bytes = try BinaryEncoder.encode(packet)
+
+                // Envia o pacote
+                self.socket?.write(data: Data(bytes), completion: {
+                    print("Sent package")
+                })
+
+                offset += chunkData.count
+            } catch {
+                print("Error on send packet: \(error.localizedDescription)")
+                break
             }
         }
-    }
 
+        if restSize > 0 {
+            let restChunkRange = (offset - restSize)..<imageData.count
+            let restChunkData = imageData.subdata(in: restChunkRange)
+
+            let packet = Packet(userID: self.userID, totalSize: totalSize, currentSize: offset, isLast: true, data: [UInt8](restChunkData))
+
+            do {
+                let bytes = try BinaryEncoder.encode(packet)
+
+                self.socket?.write(data: Data(bytes), completion: {
+                    print("Sent last package")
+                })
+            } catch {
+                print("Error on send packet: \(error.localizedDescription)")
+            }
+        }
+        
+        imageToSend = nil
+    }
     
     func sendButtonDidTapped() {
         let newMessageToSend = newMessage.trimmingCharacters(in: .whitespaces)
@@ -470,6 +491,7 @@ extension WebsocketViewModel {
             if decode.isLast {
                 pack.append(decode)
                 image = assembleImage(from: pack)
+                pack = []
                 return
             } else {
                 pack.append(decode)

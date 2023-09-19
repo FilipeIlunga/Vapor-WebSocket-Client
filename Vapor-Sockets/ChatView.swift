@@ -75,13 +75,7 @@ struct ChatView: View {
                 
                 VStack {
                     Divider()
-                    
-                    if let image = viewModel.image  {
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFill()
-                    }
-                    
+                                        
                     ChatMessageField(message: $viewModel.newMessage) {
                         viewModel.sendButtonDidTapped()
                     } onTapping: { isTapping in
