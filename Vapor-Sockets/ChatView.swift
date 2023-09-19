@@ -25,10 +25,11 @@ struct ChatView: View {
                             if message.isSendByUser {
                                 Spacer()
                             }
-                            ChatBubbleView(message: message, isNextMessageFromUser: viewModel.isNextMessageFromUser(message: message), hiddenReactionMenu: $showHighlight, onAddEmoji: ({_ in}))
+                            ChatBubbleView(message: message, isNextMessageFromUser: viewModel.isNextMessageFromUser(message: message), hiddenReactionMenu: $showHighlight, onAddEmoji: ({_ in}), onDeleteMessage: ({_ in}))
                                 .onTapGesture {}
                                 .onLongPressGesture(minimumDuration: 0.5, maximumDistance: 30) {
                                     hapticFeedback()
+                                    
                                     
                                     withAnimation {
                                         withAnimation(.easeInOut) {
@@ -123,6 +124,12 @@ struct ChatView: View {
                             }
                             let newReation = WSReaction(count: 1, emoji: emoji)
                             viewModel.sendRecation(message: selectedMsg, reaction: newReation)
+                        } onDeleteMessage: { messageID in
+                            viewModel.sendDeleteMessage(messageID: messageID)
+                            withAnimation(.easeInOut) {
+                                showHighlight = false
+                                selectedMessage = nil
+                            }
                         }
                         .id(selectedMsg.messageID)
                         .offset(y: rectMinY)

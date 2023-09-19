@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import PhotosUI
 import Starscream
 import CoreData
 
@@ -133,6 +132,30 @@ final class WebsocketViewModel: ObservableObject {
             print("Reaction message was sent")
         })
         
+    }
+    
+    func sendDeleteMessage(messageID: String) {
+        let wsDeleteMessage = WSDeleteMessage(id: UUID().uuidString, messageTodeleteID: messageID)
+        
+        guard let payload = try? wsDeleteMessage.encode() else {
+            print("Error on get payload from aliveMessage \(wsDeleteMessage)")
+            return
+        }
+        
+        let wsMessageCodable = WSMessageHeader(fromUserID: user.userName, messageType: .Chat, subMessageTypeCode: ChatMessageType.DeleteMessage.code, payload: payload)
+        
+        guard let wsMessageEncoded = try? wsMessageCodable.encode() else {
+            print("Error on encode WSMessage: \(wsMessageCodable)")
+            return
+        }
+        
+        socket?.write(string: wsMessageEncoded, completion: {
+            DispatchQueue.main.async {
+                withAnimation {
+                    self.deleteMessage(messageID: messageID)
+                }
+            }
+        })
     }
     
     func sendContentString(message: String) {
@@ -282,6 +305,8 @@ extension WebsocketViewModel {
             print("Reply")
         case .TypingStatus:
             handlerTypingStatus(payload: payload)
+        case .DeleteMessage:
+            handleDeleteMessageReceived(payload: payload)
         }
     }
     
@@ -301,6 +326,16 @@ extension WebsocketViewModel {
         }
     }
     
+    private func handleDeleteMessageReceived(payload: String) {
+        do {
+            var wsDeleteMessage: WSDeleteMessage = try payload.decodeWSEncodable(type: WSDeleteMessage.self)
+            deleteMessage(messageID: wsDeleteMessage.messageTodeleteID)
+        } catch {
+            print("Error on \(#function): \(error)")
+        }
+    }
+    
+   
     private func handleChatContentString(payload: String) {
         do {
             var wsChatMessage: WSChatMessage = try payload.decodeWSEncodable(type: WSChatMessage.self)
@@ -324,7 +359,7 @@ extension WebsocketViewModel {
     
     private func handleChatReactionMessage(payload: String) {
         do {
-            var reactionMessage = try payload.decodeWSEncodable(type: ReactionMessage.self)
+            let reactionMessage = try payload.decodeWSEncodable(type: ReactionMessage.self)
             
             setupReaction(to: reactionMessage.messageReacted, reaction: reactionMessage.reactionIcon)
             
@@ -450,9 +485,8 @@ extension  WebsocketViewModel {
         let tempObj = getAllStorageMessages().first { message in
             message.id == messageID
         }
-        guard let objectToUp = tempObj else {
-            return
-        }
+        
+        guard let objectToUp = tempObj else { return }
         
         context.perform {
             do {
@@ -475,6 +509,46 @@ extension  WebsocketViewModel {
             }
         }
     }
+    
+    private func deleteMessage(messageID: String) {
+        withAnimation {
+            self.chatMessage.removeAll { message in
+                message.messageID == messageID
+            }
+        }
+        deleteCoreDataMessage(messageID: messageID)
+    }
+    
+    private func deleteCoreDataMessage(messageID: String) {
+        let context = PersistenceController.shared.viewContext
+                
+        let tempObj = getAllStorageMessages().first { message in
+            message.id == messageID
+        }
+        guard let objectToUp = tempObj else {
+            return
+        }
+        
+        context.perform {
+            do {
+                let objectToUpdate = try context.existingObject(with: objectToUp.objectID)
+                
+                guard let chatMessageEntity = objectToUpdate as? ChatMessage else {
+                    print("Error on parse entity")
+                    return
+                }
+               
+                context.delete(chatMessageEntity)
+                
+                try context.save()
+                
+            } catch {
+                print("Error on \(#function): \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    
     
     func isNextMessageFromUser(message: WSChatMessage) -> Bool {
         if let currentIndex = chatMessage.firstIndex(where: { $0.messageID == message.messageID }) {

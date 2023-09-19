@@ -19,13 +19,6 @@ protocol SubMessageType: WSCodable {
     var code: Int { get }
 }
 
-enum MessageType: Int {
-    case alive = 0
-    case chatMessage
-    case disconnecting
-    case typingStatus
-}
-
 enum ChatMessageType: Int, SubMessageType {
     
     case ContentString = 0
@@ -33,6 +26,7 @@ enum ChatMessageType: Int, SubMessageType {
     case Reaction
     case Reply
     case TypingStatus
+    case DeleteMessage
     
     var code: Int {
         return self.rawValue
