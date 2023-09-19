@@ -41,6 +41,7 @@
 		2392E1142AB935A10048F89E /* BinaryDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2392E1132AB935A00048F89E /* BinaryDecoder.swift */; };
 		2392E1162AB935C60048F89E /* BinaryCodable+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2392E1152AB935C60048F89E /* BinaryCodable+Extension.swift */; };
 		2392E1192AB935E70048F89E /* BinaryCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2392E1182AB935E70048F89E /* BinaryCodable.swift */; };
+		2392E11C2AB94D080048F89E /* Packet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2392E11B2AB94D080048F89E /* Packet.swift */; };
 		23C855392AA437C600105B25 /* WSChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C855382AA437C600105B25 /* WSChatMessage.swift */; };
 		23C8553B2AA4413500105B25 /* MessageCodables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C8553A2AA4413500105B25 /* MessageCodables.swift */; };
 		23C855402AA4487700105B25 /* ChatBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C8553F2AA4487700105B25 /* ChatBubbleView.swift */; };
@@ -100,6 +101,7 @@
 		2392E1132AB935A00048F89E /* BinaryDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinaryDecoder.swift; sourceTree = "<group>"; };
 		2392E1152AB935C60048F89E /* BinaryCodable+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BinaryCodable+Extension.swift"; sourceTree = "<group>"; };
 		2392E1182AB935E70048F89E /* BinaryCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinaryCodable.swift; sourceTree = "<group>"; };
+		2392E11B2AB94D080048F89E /* Packet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Packet.swift; sourceTree = "<group>"; };
 		23C855382AA437C600105B25 /* WSChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WSChatMessage.swift; sourceTree = "<group>"; };
 		23C8553A2AA4413500105B25 /* MessageCodables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCodables.swift; sourceTree = "<group>"; };
 		23C8553F2AA4487700105B25 /* ChatBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBubbleView.swift; sourceTree = "<group>"; };
@@ -214,6 +216,7 @@
 		230532D52AB6974200D894A1 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				2392E11A2AB94CFC0048F89E /* Packet */,
 				2392E1102AB935650048F89E /* BinaryCodable */,
 				230532D62AB6975300D894A1 /* BoundsPreference.swift */,
 			);
@@ -267,6 +270,14 @@
 				2392E1182AB935E70048F89E /* BinaryCodable.swift */,
 			);
 			path = BinaryCodable;
+			sourceTree = "<group>";
+		};
+		2392E11A2AB94CFC0048F89E /* Packet */ = {
+			isa = PBXGroup;
+			children = (
+				2392E11B2AB94D080048F89E /* Packet.swift */,
+			);
+			path = Packet;
 			sourceTree = "<group>";
 		};
 		23C855362AA437B400105B25 /* Chat */ = {
@@ -448,6 +459,7 @@
 				230532D72AB6975300D894A1 /* BoundsPreference.swift in Sources */,
 				2300CD182A9FA80600CA1807 /* Vapor_SocketsApp.swift in Sources */,
 				2300CD442AA003F000CA1807 /* TypingAnimationView.swift in Sources */,
+				2392E11C2AB94D080048F89E /* Packet.swift in Sources */,
 				23C8553B2AA4413500105B25 /* MessageCodables.swift in Sources */,
 				230532D22AB6645D00D894A1 /* ChatMessageField.swift in Sources */,
 				2392E1192AB935E70048F89E /* BinaryCodable.swift in Sources */,
