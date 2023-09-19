@@ -9,34 +9,34 @@ import Foundation
 
 struct Packet: BinaryCodable {
 
+    let userID: String
     let totalSize: Int
     let currentSize: Int
-    let data: Data
+    let isLast: Bool
+    let data: [UInt8]
 
-    init(totalSize: Int, currentSize: Int, data: Data) {
+    init(userID: String, totalSize: Int, currentSize: Int, isLast: Bool,data: [UInt8]) {
+        self.userID = userID
         self.totalSize = totalSize
         self.currentSize = currentSize
+        self.isLast = isLast
         self.data = data
     }
-
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.userID = try container.decode(String.self, forKey: .userID)
+        totalSize = try container.decode(Int.self, forKey: .totalSize)
+        currentSize = try container.decode(Int.self, forKey: .currentSize)
+        isLast = try container.decode(Bool.self, forKey: .isLast)
+        data = try container.decode([UInt8].self, forKey: .data)
+    }
 
     enum CodingKeys: String, CodingKey {
+        case userID
         case totalSize
         case currentSize
+        case isLast
         case data
     }
 
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(totalSize, forKey: .totalSize)
-        try container.encode(currentSize, forKey: .currentSize)
-        try container.encode(data, forKey: .data)
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        totalSize = try container.decode(Int.self, forKey: .totalSize)
-        currentSize = try container.decode(Int.self, forKey: .currentSize)
-        data = try container.decode(Data.self, forKey: .data)
-    }
 }

@@ -6,7 +6,7 @@
 //
 
 import CoreFoundation
-
+import Foundation
 /// A protocol for types which can be encoded to binary.
 public protocol BinaryEncodable: Encodable {
     func binaryEncode(to encoder: BinaryEncoder) throws

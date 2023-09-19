@@ -11,8 +11,12 @@ import CoreData
 
 final class WebsocketViewModel: ObservableObject {
     
+    var pack: [Packet] = []
+    
     @AppStorage("userID") private var userID = ""
     @Published var user: User = User(userName: UUID().uuidString)
+    
+    @Published var image: UIImage?
     
     @Published var chatMessage: [WSChatMessage] = []
     @Published var newMessage: String = ""
@@ -161,7 +165,7 @@ final class WebsocketViewModel: ObservableObject {
     func sendContentString(message: String) {
         let messageContent = message.trimmingCharacters(in: .whitespacesAndNewlines)
         let timestamp = Date.now
-        
+        sendImage()
         let wsMessage = WSChatMessage(
             messageID: UUID().uuidString,
             senderID: user.userName,
@@ -191,6 +195,43 @@ final class WebsocketViewModel: ObservableObject {
             }
         })
     }
+    
+    func sendImage() {
+        guard let image = UIImage(named: "Home3.png"), let imageData = image.jpegData(compressionQuality: 0.9) else {
+            return
+        }
+        let thread = DispatchQueue(label: "ola", qos: .background)
+        
+        let chunkSize = 2048
+        let totalSize = imageData.count
+        
+        // Divida a imagem em pacotes
+        var offset = 0
+        thread.async {
+            while offset < totalSize {
+                let chunkRange = offset..<(offset + min(chunkSize, totalSize - offset))
+                let chunkData = imageData.subdata(in: chunkRange)
+                
+                let isLast = offset + chunkData.count >= totalSize
+                
+                let packet = Packet(userID: self.userID, totalSize: totalSize, currentSize: offset, isLast: isLast, data: [UInt8](chunkData))
+                
+                do {
+                    let bytes = try BinaryEncoder.encode(packet)
+                    
+                    self.socket?.write(data: Data(bytes), completion: {
+                        print("Sent package")
+                    })
+                    
+                    offset += chunkData.count
+                } catch {
+                    print("Error on send packet: \(error.localizedDescription)")
+                    break
+                }
+            }
+        }
+    }
+
     
     func sendButtonDidTapped() {
         let newMessageToSend = newMessage.trimmingCharacters(in: .whitespaces)
@@ -389,8 +430,6 @@ extension WebsocketViewModel {
         do {
             let typingMessage: TypingMessage = try WSCoder.shared.decode(type: TypingMessage.self, from: payload)
             
-            let wsMessageCodable = WSMessageHeader(fromUserID: user.userName, messageType: .Chat, subMessageTypeCode: ChatMessageType.TypingStatus.code, payload: payload)
-            
             isAnotherUserTapping = typingMessage.isTyping
         } catch {
             print("Error on \(#function): \(error.localizedDescription)")
@@ -425,7 +464,42 @@ extension WebsocketViewModel {
     }
     
     private func handlerWebsocketMessage(message: Data) {
+        do {
+            let decode = try BinaryDecoder.decode(Packet.self, data: [UInt8](message))
+            
+            if decode.isLast {
+                pack.append(decode)
+                image = assembleImage(from: pack)
+                return
+            } else {
+                pack.append(decode)
+            }
+            
+        } catch {
+            
+        }
         print("Received binary message: \(message)")
+    }
+    
+    func assembleImage(from packets: [Packet]) -> UIImage? {
+        guard let firstPacket = packets.first, firstPacket.currentSize == 0 else {
+            return nil
+        }
+
+        let totalSize = firstPacket.totalSize
+        var imageData = Data(capacity: totalSize)
+
+        var offset = 0
+        for packet in packets {
+            imageData.append(contentsOf: packet.data)
+            offset += packet.data.count
+        }
+
+        guard offset == totalSize else {
+            return nil
+        }
+
+        return UIImage(data: imageData)
     }
     
     private func handlerErrorMessage(error: Error?) {
