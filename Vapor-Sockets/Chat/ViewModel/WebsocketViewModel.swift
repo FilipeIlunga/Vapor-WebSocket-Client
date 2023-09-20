@@ -8,6 +8,42 @@
 import SwiftUI
 import Starscream
 import CoreData
+import _PhotosUI_SwiftUI
+
+struct SendableImage: Transferable {
+    let image: Image
+    
+    static var transferRepresentation: some TransferRepresentation {
+        DataRepresentation(importedContentType: .image) { data in
+        #if canImport(AppKit)
+            guard let nsImage = NSImage(data: data) else {
+                throw TransferError.importFailed
+            }
+            let image = Image(nsImage: nsImage)
+            return ProfileImage(image: image)
+        #elseif canImport(UIKit)
+            guard let uiImage = UIImage(data: data) else {
+                throw TransferError.importFailed
+            }
+            let image = Image(uiImage: uiImage)
+            return SendableImage(image: image)
+        #else
+            throw TransferError.importFailed
+        #endif
+        }
+    }
+}
+
+enum ImageState {
+    case empty
+    case loading(Progress)
+    case success(Image)
+    case failure(Error)
+}
+
+enum TransferError: Error {
+    case importFailed
+}
 
 final class WebsocketViewModel: ObservableObject {
     
@@ -20,7 +56,22 @@ final class WebsocketViewModel: ObservableObject {
     
     @Published var chatMessage: [WSChatMessage] = []
     @Published var newMessage: String = ""
+    
     @Published var imageToSend: UIImage?
+    
+    @Published private(set) var imageState: ImageState = .empty
+
+    @Published var imageSelection: PhotosPickerItem? = nil {
+        didSet {
+            if let imageSelection {
+                let progress = loadTransferable(from: imageSelection)
+                imageState = .loading(progress)
+            } else {
+                imageState = .empty
+            }
+        }
+    }
+    
     @Published var messageReceived = ""
     
     @Published var isSockedConnected: Bool = false
@@ -166,13 +217,16 @@ final class WebsocketViewModel: ObservableObject {
     func sendContentString(message: String) {
         let messageContent = message.trimmingCharacters(in: .whitespacesAndNewlines)
         let timestamp = Date.now
+        let messageID = UUID().uuidString
         let wsMessage = WSChatMessage(
-            messageID: UUID().uuidString,
+            messageID: messageID, imageDate: nil,
             senderID: user.userName,
             timestamp: timestamp,
             content: messageContent,
             isSendByUser: true, reactions: [])
-                
+        
+        sendImage(messageID: messageID)
+
         guard let payload = try? WSCoder.shared.encode(data: wsMessage) else {
             print("Error on get payload from aliveMessage \(wsMessage)")
             return
@@ -196,13 +250,44 @@ final class WebsocketViewModel: ObservableObject {
         })
     }
 
-    func sendImage() {
-        guard let image = imageToSend, let imageData = image.jpegData(compressionQuality: 0.9) else {
-            print("Error on compress image")
-            return
+    func sendImage(messageID: String) {
+        
+        imageSelection?.loadTransferable(type: Data.self, completionHandler: { result in
+            switch result {
+            case .success(let imageData):
+                guard let imageData = imageData else {
+                    print("Error on \(#function): Erron on get image data")
+                    return
+                }
+                self.encodeAndSendImageData(imageData: imageData, messageID: messageID)
+            case .failure(let error):
+                print("Error on \(#function): \(error.localizedDescription)")
+            }
+        })
+        
+    }
+    
+    private func loadTransferable(from imageSelection: PhotosPickerItem) -> Progress {
+        return imageSelection.loadTransferable(type: SendableImage.self) { result in
+            DispatchQueue.main.async {
+                guard imageSelection == self.imageSelection else {
+                    print("Failed to get the selected item.")
+                    return
+                }
+                switch result {
+                case .success(let sendableImage?):
+                    self.imageState = .success(sendableImage.image)
+                case .success(nil):
+                    self.imageState = .empty
+                case .failure(let error):
+                    self.imageState = .failure(error)
+                }
+            }
         }
-
-        var chunkSize = 2048
+    }
+    
+    func encodeAndSendImageData(imageData: Data, messageID: String) {
+        let chunkSize = 1024
         let totalSize = imageData.count
         let restSize = totalSize % chunkSize
 
@@ -213,10 +298,10 @@ final class WebsocketViewModel: ObservableObject {
             let chunkData = imageData.subdata(in: chunkRange)
 
             // Verifica se é o último pacote
-            let isLast = offset + chunkData.count >= totalSize
+            let isLast = offset + chunkData.count >= totalSize && restSize == 0
 
             // Cria um novo pacote
-            let packet = Packet(userID: self.userID, totalSize: totalSize, currentSize: offset, isLast: isLast, data: [UInt8](chunkData))
+            let packet = Packet(userID: self.userID, messageID: messageID, totalSize: totalSize, currentSize: offset, isLast: isLast, data: [UInt8](chunkData))
 
             do {
                 // Encodifica o pacote
@@ -238,7 +323,7 @@ final class WebsocketViewModel: ObservableObject {
             let restChunkRange = (offset - restSize)..<imageData.count
             let restChunkData = imageData.subdata(in: restChunkRange)
 
-            let packet = Packet(userID: self.userID, totalSize: totalSize, currentSize: offset, isLast: true, data: [UInt8](restChunkData))
+            let packet = Packet(userID: self.userID, messageID: messageID, totalSize: totalSize, currentSize: offset, isLast: true, data: [UInt8](restChunkData))
 
             do {
                 let bytes = try BinaryEncoder.encode(packet)
@@ -250,8 +335,6 @@ final class WebsocketViewModel: ObservableObject {
                 print("Error on send packet: \(error.localizedDescription)")
             }
         }
-        
-        imageToSend = nil
     }
     
     func sendButtonDidTapped() {
@@ -486,21 +569,40 @@ extension WebsocketViewModel {
     
     private func handlerWebsocketMessage(message: Data) {
         do {
-            let decode = try BinaryDecoder.decode(Packet.self, data: [UInt8](message))
+            let packet = try BinaryDecoder.decode(Packet.self, data: [UInt8](message))
             
-            if decode.isLast {
-                pack.append(decode)
+            if packet.isLast {
+                pack.append(packet)
                 image = assembleImage(from: pack)
+                      
+                let imageData = image?.jpegData(compressionQuality: 0.9)
+                guard let data = imageData else {
+                    print("Error on \(#function): Error on get imageData")
+                    return
+                }
+                setImageToMessage(messageID: packet.messageID, data: data)
                 pack = []
                 return
             } else {
-                pack.append(decode)
+                pack.append(packet)
             }
             
         } catch {
             
         }
         print("Received binary message: \(message)")
+    }
+    
+    func setImageToMessage(messageID: String, data: Data) {
+        let messageIndex = chatMessage.firstIndex { message in
+            message.messageID == messageID
+        }
+        guard let index = messageIndex else {
+            print("Error on get message index: \(messageIndex)")
+            return
+        }
+        
+        chatMessage[index].imageDate = data
     }
     
     func assembleImage(from packets: [Packet]) -> UIImage? {
@@ -510,15 +612,10 @@ extension WebsocketViewModel {
 
         let totalSize = firstPacket.totalSize
         var imageData = Data(capacity: totalSize)
-
-        var offset = 0
-        for packet in packets {
+        
+        packets.forEach { packet in
             imageData.append(contentsOf: packet.data)
-            offset += packet.data.count
-        }
 
-        guard offset == totalSize else {
-            return nil
         }
 
         return UIImage(data: imageData)

@@ -19,6 +19,7 @@ struct WSDeleteMessage: WSCodable {
 
 struct WSChatMessage: Hashable, WSCodable {
     let messageID: String
+    var imageDate: Data?
     let senderID: String
     let timestamp: Date
     let content: String

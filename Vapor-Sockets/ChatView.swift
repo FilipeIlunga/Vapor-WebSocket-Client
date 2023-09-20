@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct ChatView: View {
     
@@ -75,12 +76,20 @@ struct ChatView: View {
                 
                 VStack {
                     Divider()
-                                        
-                    ChatMessageField(message: $viewModel.newMessage) {
-                        viewModel.sendButtonDidTapped()
-                    } onTapping: { isTapping in
-                        viewModel.sendTypingStatus(isTyping: isTapping)
-                    }.padding(.top)
+                    HStack {
+                        
+                    //photoLibrary: .shared()
+                        PhotosPicker(selection: $viewModel.imageSelection ,matching: .images,label: {
+                           Image(systemName: "square.and.arrow.up")
+                        })
+
+                        ChatMessageField(message: $viewModel.newMessage) {
+                            viewModel.sendButtonDidTapped()
+                        } onTapping: { isTapping in
+                            viewModel.sendTypingStatus(isTyping: isTapping)
+                        }.padding(.top)
+                    }
+
                 }
             }.onAppear {
                 withAnimation(.spring()) {

@@ -17,6 +17,7 @@ extension ChatMessage {
     }
 
     @NSManaged public var content: String?
+    @NSManaged public var imageData: NSObject?
     @NSManaged public var id: String?
     @NSManaged public var isSendByUser: Bool
     @NSManaged public var senderID: String?
@@ -58,7 +59,13 @@ extension ChatMessage {
 
         let reactions = self.messageReactions?.allObjects as? [Reaction] ?? []
 
-        let wsChatMessage = WSChatMessage(messageID: messageID, senderID: senderID, timestamp: timestamp, content: content, isSendByUser: isSendByUser, reactions: reactions.compactMap {$0.toWSReaction()} )
+        var imageD: Data?
+        
+        if let data = self.imageData as? Data {
+            imageD = data
+        }
+        
+        let wsChatMessage = WSChatMessage(messageID: messageID, imageDate: imageD, senderID: senderID, timestamp: timestamp, content: content, isSendByUser: isSendByUser, reactions: reactions.compactMap {$0.toWSReaction()} )
 
         return wsChatMessage
     }

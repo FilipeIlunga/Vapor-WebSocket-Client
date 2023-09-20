@@ -29,6 +29,13 @@ struct ChatBubbleView: View {
                         VStack(alignment: message.isSendByUser ? .trailing : .leading, spacing: 10) {
                             Text(message.content)
                             
+                            if let imageData = message.imageDate, let uiimage = UIImage(data: imageData) {
+                                Image(uiImage: uiimage)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 200, height: 100)
+                            }
+                            
                             Text(message.getDisplayDate())
                                 .font(.footnote)
                                 .foregroundColor(message.isSendByUser ? Color(uiColor: UIColor.secondaryLabel) : .gray)
