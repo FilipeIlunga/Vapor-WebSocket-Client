@@ -17,76 +17,86 @@ struct ChatBubbleView: View {
     let isNextMessageFromUser: Bool
     var showReactions: Bool = false
     @Binding var  hiddenReactionMenu: Bool
+    @State private var isImagePresented = false
     var onAddEmoji: (String) -> ()
     var onDeleteMessage: (String) -> ()
     
     var body: some View {
         VStack(alignment: message.isSendByUser ? .trailing : .leading, spacing: 0) {
-                            
-                ZStack(alignment: message.isSendByUser ? .topTrailing : .topLeading) {
-                    
-                    VStack(alignment: message.isSendByUser ? .trailing : .leading) {
-                        VStack(alignment: message.isSendByUser ? .trailing : .leading, spacing: 10) {
-                            Text(message.content)
-                            
-                            if let imageData = message.imageDate, let uiimage = UIImage(data: imageData) {
-                                Image(uiImage: uiimage)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 200, height: 100)
-                            }
-                            
-                            Text(message.getDisplayDate())
-                                .font(.footnote)
-                                .foregroundColor(message.isSendByUser ? Color(uiColor: UIColor.secondaryLabel) : .gray)
+            
+            ZStack(alignment: message.isSendByUser ? .topTrailing : .topLeading) {
+                
+                VStack(alignment: message.isSendByUser ? .trailing : .leading) {
+                    VStack(alignment: message.isSendByUser ? .trailing : .leading, spacing: 10) {
+                        Text(message.content)
+                        
+                        if let imageData = message.imageDate, let uiimage = UIImage(data: imageData) {
+                            Image(uiImage: uiimage)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 100, height: 50)
+                                .onTapGesture {
+                                    isImagePresented = true
+                                }
+                                .fullScreenCover(isPresented: $isImagePresented) {
+                                    SwiftUIImageViewer(image: Image(uiImage: uiimage))
+                                        .overlay(alignment: .topTrailing) {
+                                            closeButton
+                                        }
+                                }
                         }
-                        .padding()
-                        .background(message.isSendByUser ? .blue : Color(uiColor: UIColor.darkGray))
-                        .foregroundColor(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 16.0, style: .continuous))
-                        .listRowSeparator(.hidden)
-                        .overlay(alignment: message.isSendByUser ? .bottomTrailing : .bottomLeading) {
-                            if isNextMessageFromUser {
-                                EmptyView()
-                            } else{
-                                Image(systemName: "arrowtriangle.down.fill")
-                                    .font(.title)
-                                    .rotationEffect(.degrees(message.isSendByUser ? -45 : 45))
-                                    .offset(x: message.isSendByUser ? 10 : -10, y: 10)
-                                    .foregroundColor(message.isSendByUser ? .blue : Color(uiColor: UIColor.darkGray))
-                            }
+                        
+                        Text(message.getDisplayDate())
+                            .font(.footnote)
+                            .foregroundColor(message.isSendByUser ? Color(uiColor: UIColor.secondaryLabel) : .gray)
+                    }
+                    .padding()
+                    .background(message.isSendByUser ? .blue : Color(uiColor: UIColor.darkGray))
+                    .foregroundColor(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 16.0, style: .continuous))
+                    .listRowSeparator(.hidden)
+                    .overlay(alignment: message.isSendByUser ? .bottomTrailing : .bottomLeading) {
+                        if isNextMessageFromUser {
+                            EmptyView()
+                        } else{
+                            Image(systemName: "arrowtriangle.down.fill")
+                                .font(.title)
+                                .rotationEffect(.degrees(message.isSendByUser ? -45 : 45))
+                                .offset(x: message.isSendByUser ? 10 : -10, y: 10)
+                                .foregroundColor(message.isSendByUser ? .blue : Color(uiColor: UIColor.darkGray))
                         }
                     }
-                    
-                    if showReactions {
-                        ChatReactionMenu(hiddenView: $hiddenReactionMenu) { emoji in
-                            onAddEmoji(emoji)
-                        }
-                        .offset( y: -55)
+                }
+                
+                if showReactions {
+                    ChatReactionMenu(hiddenView: $hiddenReactionMenu) { emoji in
+                        onAddEmoji(emoji)
                     }
+                    .offset( y: -55)
                 }
-                if !message.reactions.isEmpty {
-                    HStack {
-                        ForEach(message.isSendByUser ? message.reactions.suffix(5).reversed() : Array(message.reactions.suffix(5)) , id: \.self) { reaction in
-                            Text(reaction.emoji)
-                                .font(.system(size: 12))
+            }
+            if !message.reactions.isEmpty {
+                HStack {
+                    ForEach(message.isSendByUser ? message.reactions.suffix(5).reversed() : Array(message.reactions.suffix(5)) , id: \.self) { reaction in
+                        Text(reaction.emoji)
+                            .font(.system(size: 12))
+                    }
+                }.padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(
+                        ZStack {
+                            Capsule()
+                                .fill(Color(uiColor: UIColor.darkGray))
+                                .mask {
+                                    Capsule()
+                                        .scaleEffect(1, anchor: .center)
+                                }
+                            Capsule()
+                                .stroke(Color.black, lineWidth: 1)
                         }
-                    }.padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .background(
-                            ZStack {
-                                Capsule()
-                                    .fill(Color(uiColor: UIColor.darkGray))
-                                    .mask {
-                                        Capsule()
-                                            .scaleEffect(1, anchor: .center)
-                                    }
-                                Capsule()
-                                    .stroke(Color.black, lineWidth: 1)
-                            }
-                        )
-                        .offset( y: -20)
-                }
+                    )
+                    .offset( y: -20)
+            }
             
             if showReactions && message.isSendByUser {
                 Button(role: .destructive, action: {
@@ -108,6 +118,17 @@ struct ChatBubbleView: View {
                 )
             }
         }
+    }
+    
+    private var closeButton: some View {
+        Button {
+            isImagePresented = false
+        } label: {
+            Image(systemName: "xmark.circle.fill")
+                .font(.title)
+        }
+        .foregroundColor(.blue)
+        .padding()
     }
 }
 
