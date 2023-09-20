@@ -15,21 +15,11 @@ struct SendableImage: Transferable {
     
     static var transferRepresentation: some TransferRepresentation {
         DataRepresentation(importedContentType: .image) { data in
-        #if canImport(AppKit)
-            guard let nsImage = NSImage(data: data) else {
-                throw TransferError.importFailed
-            }
-            let image = Image(nsImage: nsImage)
-            return ProfileImage(image: image)
-        #elseif canImport(UIKit)
             guard let uiImage = UIImage(data: data) else {
                 throw TransferError.importFailed
             }
             let image = Image(uiImage: uiImage)
             return SendableImage(image: image)
-        #else
-            throw TransferError.importFailed
-        #endif
         }
     }
 }
@@ -46,9 +36,7 @@ enum TransferError: Error {
 }
 
 final class WebsocketViewModel: ObservableObject {
-    
-    var pack: [Packet] = []
-    
+        
     @AppStorage("userID") private var userID = ""
     @Published var user: User = User(userName: UUID().uuidString)
     
@@ -60,7 +48,7 @@ final class WebsocketViewModel: ObservableObject {
     @Published var imageToSend: UIImage?
     
     @Published private(set) var imageState: ImageState = .empty
-
+    
     @Published var imageSelection: PhotosPickerItem? = nil {
         didSet {
             if let imageSelection {
@@ -77,6 +65,8 @@ final class WebsocketViewModel: ObservableObject {
     @Published var isSockedConnected: Bool = false
     @Published var isAnotherUserTapping: Bool = false
     
+    private  var pack: [String: [Packet]] = [:]
+
     private var hasReceivedPong: Bool = false
     private var isFirstPing: Bool = true
     
@@ -94,8 +84,8 @@ final class WebsocketViewModel: ObservableObject {
         disconnectSocket()
     }
     
-     func disconnectSocket() {
-         sendStatusMessage(type: .Disconnect)
+    func disconnectSocket() {
+        sendStatusMessage(type: .Disconnect)
         socket?.disconnect(closeCode: 0)
     }
     
@@ -108,16 +98,15 @@ final class WebsocketViewModel: ObservableObject {
         }
     }
     
-     func initWebSocket() {
+    func initWebSocket() {
         var request = URLRequest(url: URL(string: "\(APIKeys.websocketAddress.rawValue)/chatWS")!)
         request.setValue("chat", forHTTPHeaderField: "Sec-WebSocket-Protocol")
         request.timeoutInterval = 5
         socket = WebSocket(request: request)
-        // socket?.callbackQueue = DispatchQueue(label: "com.vluxe.starscream.myapp")
         socket?.delegate = self
         socket?.connect()
     }
-
+    
     func sendStatusMessage(type: StatusMessageType) {
         let statusMessage = StatusMessage(userID: user.userName, type: type)
         
@@ -142,11 +131,11 @@ final class WebsocketViewModel: ObservableObject {
         }
         
         socket?.write(string: wsMessage, completion: {
-           print("\(type) message was sent")
+            print("\(type) message was sent")
         })
     }
     
-
+    
     func sendTypingStatus(isTyping: Bool) {
         let typingMessage = TypingMessage(userID: user.userName, isTyping: isTyping)
         
@@ -156,7 +145,7 @@ final class WebsocketViewModel: ObservableObject {
         }
         
         let wsMessageCodable = WSMessageHeader(fromUserID: user.userName, messageType: .Chat, subMessageTypeCode: ChatMessageType.TypingStatus.code, payload: payload)
-
+        
         guard let wsMessage = try? WSCoder.shared.encode(data: wsMessageCodable) else {
             print("Error on encode WSMessage: \(wsMessageCodable)")
             return
@@ -176,7 +165,6 @@ final class WebsocketViewModel: ObservableObject {
         }
         
         let wsMessageCodable = WSMessageHeader(fromUserID: user.userName, messageType: .Chat, subMessageTypeCode: ChatMessageType.Reaction.code, payload: payload)
-
         
         guard let wsMessage = try? WSCoder.shared.encode(data: wsMessageCodable) else {
             print("Error on encode WSMessage: \(wsMessageCodable)")
@@ -187,7 +175,6 @@ final class WebsocketViewModel: ObservableObject {
             self.setupReaction(messageID: messageID, reaction: reaction)
             print("Reaction message was sent")
         })
-        
     }
     
     func sendDeleteMessage(messageID: String) {
@@ -226,19 +213,19 @@ final class WebsocketViewModel: ObservableObject {
             isSendByUser: true, reactions: [])
         
         sendImage(messageID: messageID)
-
+        
         guard let payload = try? WSCoder.shared.encode(data: wsMessage) else {
             print("Error on get payload from aliveMessage \(wsMessage)")
             return
         }
         
         let wsMessageCodable = WSMessageHeader(fromUserID: user.userName, messageType: .Chat, subMessageTypeCode: ChatMessageType.ContentString.code, payload: payload)
-
+        
         guard let wsMessageEncoded = try? WSCoder.shared.encode(data: wsMessageCodable) else {
             print("Error on encode WSMessage: \(wsMessageCodable)")
             return
         }
-                
+        
         socket?.write(string: wsMessageEncoded, completion: {
             DispatchQueue.main.async {
                 withAnimation {
@@ -248,23 +235,6 @@ final class WebsocketViewModel: ObservableObject {
                 self.newMessage = ""
             }
         })
-    }
-
-    func sendImage(messageID: String) {
-        
-        imageSelection?.loadTransferable(type: Data.self, completionHandler: { result in
-            switch result {
-            case .success(let imageData):
-                guard let imageData = imageData else {
-                    print("Error on \(#function): Erron on get image data")
-                    return
-                }
-                self.encodeAndSendImageData(imageData: imageData, messageID: messageID)
-            case .failure(let error):
-                print("Error on \(#function): \(error.localizedDescription)")
-            }
-        })
-        
     }
     
     private func loadTransferable(from imageSelection: PhotosPickerItem) -> Progress {
@@ -286,54 +256,28 @@ final class WebsocketViewModel: ObservableObject {
         }
     }
     
-    func encodeAndSendImageData(imageData: Data, messageID: String) {
-        let chunkSize = 1024
-        let totalSize = imageData.count
-        let restSize = totalSize % chunkSize
-
-        // Divida a imagem em pacotes
-        var offset = 0
-        while offset < totalSize {
-            let chunkRange = offset..<(offset + min(chunkSize, totalSize - offset))
-            let chunkData = imageData.subdata(in: chunkRange)
-
-            // Verifica se é o último pacote
-            let isLast = offset + chunkData.count >= totalSize && restSize == 0
-
-            // Cria um novo pacote
-            let packet = Packet(userID: self.userID, messageID: messageID, totalSize: totalSize, currentSize: offset, isLast: isLast, data: [UInt8](chunkData))
-
-            do {
-                // Encodifica o pacote
-                let bytes = try BinaryEncoder.encode(packet)
-
-                // Envia o pacote
-                self.socket?.write(data: Data(bytes), completion: {
-                    print("Sent package")
-                })
-
-                offset += chunkData.count
-            } catch {
-                print("Error on send packet: \(error.localizedDescription)")
-                break
+    func sendImage(messageID: String) {
+        imageSelection?.loadTransferable(type: Data.self, completionHandler: { result in
+            switch result {
+            case .success(let imageData):
+                self.handleImageData(imageData, messageID: messageID)
+            case .failure(let error):
+                print("Error on \(#function): \(error.localizedDescription)")
             }
+        })
+    }
+    
+    private func handleImageData(_ imageData: Data?, messageID: String) {
+        guard let imageData = imageData else {
+            print("Error on \(#function): Error on get image data")
+            return
         }
-
-        if restSize > 0 {
-            let restChunkRange = (offset - restSize)..<imageData.count
-            let restChunkData = imageData.subdata(in: restChunkRange)
-
-            let packet = Packet(userID: self.userID, messageID: messageID, totalSize: totalSize, currentSize: offset, isLast: true, data: [UInt8](restChunkData))
-
-            do {
-                let bytes = try BinaryEncoder.encode(packet)
-
-                self.socket?.write(data: Data(bytes), completion: {
-                    print("Sent last package")
-                })
-            } catch {
-                print("Error on send packet: \(error.localizedDescription)")
-            }
+        
+        do {
+            try encodeAndSendImageData(imageData: imageData, messageID: messageID)
+            setImageToMessage(messageID: messageID, data: imageData)
+        } catch {
+            print("Error on \(#function): \(error.localizedDescription)")
         }
     }
     
@@ -357,7 +301,7 @@ extension WebsocketViewModel: WebSocketDelegate {
         case .text(let message):
             handlerWebsocketMessage(message: message)
         case .binary(let data):
-            handlerWebsocketMessage(message: data)
+            handleWebSocketMessage(data)
         case .ping(_):
             print("Received ping")
         case .pong(let pong):
@@ -435,7 +379,7 @@ extension WebsocketViewModel {
         } catch {
             
         }
-
+        
     }
     
     private func handleChatMessageReceived(type: ChatMessageType, payload: String) {
@@ -473,14 +417,14 @@ extension WebsocketViewModel {
     
     private func handleDeleteMessageReceived(payload: String) {
         do {
-            var wsDeleteMessage: WSDeleteMessage = try WSCoder.shared.decode(type: WSDeleteMessage.self, from: payload)
+            let wsDeleteMessage: WSDeleteMessage = try WSCoder.shared.decode(type: WSDeleteMessage.self, from: payload)
             deleteMessage(messageID: wsDeleteMessage.messageTodeleteID)
         } catch {
             print("Error on \(#function): \(error)")
         }
     }
     
-   
+    
     private func handleChatContentString(payload: String) {
         do {
             var wsChatMessage: WSChatMessage = try WSCoder.shared.decode(type: WSChatMessage.self, from: payload)
@@ -505,7 +449,7 @@ extension WebsocketViewModel {
     private func handleChatReactionMessage(payload: String) {
         do {
             let reactionMessage = try WSCoder.shared.decode(type: ReactionMessage.self, from: payload)
-           
+            
             setupReaction(messageID: reactionMessage.messageReactedID, reaction: reactionMessage.reactionIcon)
             
         } catch {
@@ -567,61 +511,6 @@ extension WebsocketViewModel {
         print("websocket is disconnected: \(reason) with code: \(code)")
     }
     
-    private func handlerWebsocketMessage(message: Data) {
-        do {
-            let packet = try BinaryDecoder.decode(Packet.self, data: [UInt8](message))
-            
-            if packet.isLast {
-                pack.append(packet)
-                image = assembleImage(from: pack)
-                      
-                let imageData = image?.jpegData(compressionQuality: 0.9)
-                guard let data = imageData else {
-                    print("Error on \(#function): Error on get imageData")
-                    return
-                }
-                setImageToMessage(messageID: packet.messageID, data: data)
-                pack = []
-                return
-            } else {
-                pack.append(packet)
-            }
-            
-        } catch {
-            
-        }
-        print("Received binary message: \(message)")
-    }
-    
-    func setImageToMessage(messageID: String, data: Data) {
-        let messageIndex = chatMessage.firstIndex { message in
-            message.messageID == messageID
-        }
-        guard let index = messageIndex else {
-            print("Error on get message index: \(messageIndex)")
-            return
-        }
-        
-        chatMessage[index].imageDate = data
-        saveImage(messageID: chatMessage[index].messageID, imageData: data)
-    }
-    
-    func assembleImage(from packets: [Packet]) -> UIImage? {
-        guard let firstPacket = packets.first, firstPacket.currentSize == 0 else {
-            return nil
-        }
-
-        let totalSize = firstPacket.totalSize
-        var imageData = Data(capacity: totalSize)
-        
-        packets.forEach { packet in
-            imageData.append(contentsOf: packet.data)
-
-        }
-
-        return UIImage(data: imageData)
-    }
-    
     private func handlerErrorMessage(error: Error?) {
         isSockedConnected = false
         print("Error: \(String(describing: error?.localizedDescription))")
@@ -631,6 +520,7 @@ extension WebsocketViewModel {
         isSockedConnected = false
         print("Websocket canceled connection to app")
     }
+    
 }
 
 extension  WebsocketViewModel {
@@ -641,7 +531,7 @@ extension  WebsocketViewModel {
     }
     
     private func getAllStorageMessages() -> [ChatMessage] {
-
+        
         let request = ChatMessage.fetchRequest()
         var fetchedMessages: [ChatMessage] = []
         
@@ -676,7 +566,7 @@ extension  WebsocketViewModel {
     func updateAddReaction(messageID: String, reaction: WSReaction) {
         
         let context = PersistenceController.shared.viewContext
-                
+        
         let tempObj = getAllStorageMessages().first { message in
             message.id == messageID
         }
@@ -707,13 +597,13 @@ extension  WebsocketViewModel {
     
     func saveImage(messageID: String, imageData: Data) {
         let context = PersistenceController.shared.viewContext
-                
+        
         let tempObj = getAllStorageMessages().first { message in
             message.id == messageID
         }
         
         guard let objectToUp = tempObj else { return }
-
+        
         context.perform {
             do {
                 let objectToUpdate = try context.existingObject(with: objectToUp.objectID)
@@ -722,7 +612,7 @@ extension  WebsocketViewModel {
                     print("Error on parse entity")
                     return
                 }
-               
+                
                 chatMessageEntity.imageData = imageData as NSObject
                 
                 try context.save()
@@ -744,7 +634,7 @@ extension  WebsocketViewModel {
     
     private func deleteCoreDataMessage(messageID: String) {
         let context = PersistenceController.shared.viewContext
-                
+        
         let tempObj = getAllStorageMessages().first { message in
             message.id == messageID
         }
@@ -760,7 +650,7 @@ extension  WebsocketViewModel {
                     print("Error on parse entity")
                     return
                 }
-               
+                
                 context.delete(chatMessageEntity)
                 
                 try context.save()
@@ -783,13 +673,125 @@ extension  WebsocketViewModel {
                 }
             }
         }
-
+        
         return false
     }
     
     func isFirstMessage(_ message: WSChatMessage) -> Bool {
         return  chatMessage.first == message
     }
-
     
+    
+}
+
+extension WebsocketViewModel {
+    
+    func handleWebSocketMessage(_ message: Data) {
+        do {
+            let packet = try BinaryDecoder.decode(Packet.self, data: [UInt8](message))
+            handlePacket(packet)
+        } catch {
+            print("Error on \(#function): \(error.localizedDescription)")
+        }
+    }
+        
+    private func handlePacket(_ packet: Packet) {
+        if packet.isLast {
+            handleLastPacket(packet)
+        } else {
+            handleNonLastPacket(packet)
+        }
+    }
+    
+    private func handleLastPacket(_ packet: Packet) {
+        guard var existingPackets = pack[packet.messageID] else {
+            print("Error on \(#function): last packet does not exist")
+            return
+        }
+        
+        existingPackets.append(packet)
+        pack[packet.messageID] = existingPackets
+        image = assembleImage(from: existingPackets)
+        
+        guard let imageData = image?.jpegData(compressionQuality: 0.9) else {
+            print("Error on \(#function): Error on getting imageData")
+            return
+        }
+        
+        setImageToMessage(messageID: packet.messageID, data: imageData)
+        pack[packet.messageID] = []
+    }
+    
+    private func handleNonLastPacket(_ packet: Packet) {
+        if var existingPackets = pack[packet.messageID] {
+            existingPackets.append(packet)
+            pack[packet.messageID] = existingPackets
+        } else {
+            pack[packet.messageID] = [packet]
+        }
+    }
+    
+    private func setImageToMessage(messageID: String, data: Data) {
+        guard let messageIndex = chatMessage.firstIndex(where: { $0.messageID == messageID }) else {
+            print("Error on \(#function): message not found for messageID \(messageID)")
+            return
+        }
+        
+        chatMessage[messageIndex].imageDate = data
+        saveImage(messageID: messageID, imageData: data)
+    }
+    
+    private func assembleImage(from packets: [Packet]) -> UIImage? {
+        guard let firstPacket = packets.first, firstPacket.currentSize == 0 else {
+            return nil
+        }
+        
+        let totalSize = firstPacket.totalSize
+        var imageData = Data(capacity: totalSize)
+        
+        packets.forEach { packet in
+            imageData.append(contentsOf: packet.data)
+        }
+        
+        return UIImage(data: imageData)
+    }
+}
+
+extension WebsocketViewModel {
+    func encodeAndSendImageData(imageData: Data, messageID: String) throws {
+        let chunkSize = 1024
+        let totalSize = imageData.count
+        let restSize = totalSize % chunkSize
+        
+        var offset = 0
+        
+            while offset < totalSize {
+                let chunkRange = offset..<(offset + min(chunkSize, totalSize - offset))
+                let chunkData = imageData.subdata(in: chunkRange)
+                let isLast = offset + chunkData.count >= totalSize && restSize == 0
+                
+                try self.sendImageChunk(chunkData, isLast: isLast, messageID: messageID, offset: offset)
+                
+                offset += chunkData.count
+            }
+            
+            // Send the remaining chunk if any
+            if restSize > 0 {
+                let restChunkRange = (offset - restSize)..<imageData.count
+                let restChunkData = imageData.subdata(in: restChunkRange)
+                try self.sendImageChunk(restChunkData, isLast: true, messageID: messageID, offset: offset)
+            }
+    }
+    
+    private func sendImageChunk(_ chunkData: Data, isLast: Bool, messageID: String, offset: Int) throws {
+        let packet = Packet(userID: self.userID, messageID: messageID, totalSize: chunkData.count, currentSize: offset, isLast: isLast, data: [UInt8](chunkData))
+        
+        let bytes = try BinaryEncoder.encode(packet)
+        
+        self.socket?.write(data: Data(bytes), completion: {
+            if isLast {
+                print("Sent last package")
+            }
+        })
+    }
 }
