@@ -9,7 +9,7 @@ import Foundation
 
 struct ReactionMessage: WSCodable {
     let userID: String
-    let messageID: String
-    let messageReacted: WSChatMessage
+    let id: String
+    let messageReactedID: String
     let reactionIcon: WSReaction
 }

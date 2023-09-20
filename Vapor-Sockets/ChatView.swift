@@ -132,7 +132,7 @@ struct ChatView: View {
                                 selectedMessage = nil
                             }
                             let newReation = WSReaction(count: 1, emoji: emoji)
-                            viewModel.sendRecation(message: selectedMsg, reaction: newReation)
+                            viewModel.sendRecation(messageID: selectedMsg.messageID, reaction: newReation)
                         } onDeleteMessage: { messageID in
                             viewModel.sendDeleteMessage(messageID: messageID)
                             withAnimation(.easeInOut) {

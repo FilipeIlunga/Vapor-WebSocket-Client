@@ -167,8 +167,8 @@ final class WebsocketViewModel: ObservableObject {
         })
     }
     
-    func sendRecation(message: WSChatMessage, reaction: WSReaction) {
-        let reactionMessage = ReactionMessage(userID: user.userName, messageID: UUID().uuidString, messageReacted: message, reactionIcon: reaction)
+    func sendRecation(messageID: String, reaction: WSReaction) {
+        let reactionMessage = ReactionMessage(userID: user.userName, id: UUID().uuidString, messageReactedID: messageID, reactionIcon: reaction)
         
         guard let payload = try? WSCoder.shared.encode(data: reactionMessage) else {
             print("Error on get payload from reationMessage \(reaction)")
@@ -184,7 +184,7 @@ final class WebsocketViewModel: ObservableObject {
         }
         
         socket?.write(string: wsMessage, completion: {
-            self.setupReaction(to: message, reaction: reaction)
+            self.setupReaction(messageID: messageID, reaction: reaction)
             print("Reaction message was sent")
         })
         
@@ -506,16 +506,16 @@ extension WebsocketViewModel {
         do {
             let reactionMessage = try WSCoder.shared.decode(type: ReactionMessage.self, from: payload)
            
-            setupReaction(to: reactionMessage.messageReacted, reaction: reactionMessage.reactionIcon)
+            setupReaction(messageID: reactionMessage.messageReactedID, reaction: reactionMessage.reactionIcon)
             
         } catch {
             print("Error on decode reaction message")
         }
     }
     
-    private func setupReaction(to message: WSChatMessage, reaction: WSReaction) {
+    private func setupReaction(messageID: String, reaction: WSReaction) {
         
-        guard let messageIndex = chatMessage.firstIndex(where: { $0.messageID == message.messageID }) else {
+        guard let messageIndex = chatMessage.firstIndex(where: { $0.messageID == messageID }) else {
             print("Message not found in chat")
             return
         }
@@ -603,6 +603,7 @@ extension WebsocketViewModel {
         }
         
         chatMessage[index].imageDate = data
+        saveImage(messageID: chatMessage[index].messageID, imageData: data)
     }
     
     func assembleImage(from packets: [Packet]) -> UIImage? {
@@ -695,6 +696,34 @@ extension  WebsocketViewModel {
                 reactionToSave.count = Int16(reaction.count)
                 reactionToSave.emoji = reaction.emoji
                 chatMessageEntity.addToMessageReactions(reactionToSave)
+                
+                try context.save()
+                
+            } catch {
+                print("Error on \(#function): \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func saveImage(messageID: String, imageData: Data) {
+        let context = PersistenceController.shared.viewContext
+                
+        let tempObj = getAllStorageMessages().first { message in
+            message.id == messageID
+        }
+        
+        guard let objectToUp = tempObj else { return }
+
+        context.perform {
+            do {
+                let objectToUpdate = try context.existingObject(with: objectToUp.objectID)
+                
+                guard let chatMessageEntity = objectToUpdate as? ChatMessage else {
+                    print("Error on parse entity")
+                    return
+                }
+               
+                chatMessageEntity.imageData = imageData as NSObject
                 
                 try context.save()
                 
