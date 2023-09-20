@@ -12,8 +12,14 @@ struct WSReaction: Hashable, WSCodable {
     var emoji: String
 }
 
+struct WSDeleteMessage: WSCodable {
+    let id: String
+    let messageTodeleteID: String
+}
+
 struct WSChatMessage: Hashable, WSCodable {
     let messageID: String
+    var imageDate: Data?
     let senderID: String
     let timestamp: Date
     let content: String

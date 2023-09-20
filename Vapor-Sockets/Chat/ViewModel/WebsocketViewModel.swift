@@ -6,17 +6,72 @@
 //
 
 import SwiftUI
-import PhotosUI
 import Starscream
 import CoreData
+import _PhotosUI_SwiftUI
+
+struct SendableImage: Transferable {
+    let image: Image
+    
+    static var transferRepresentation: some TransferRepresentation {
+        DataRepresentation(importedContentType: .image) { data in
+        #if canImport(AppKit)
+            guard let nsImage = NSImage(data: data) else {
+                throw TransferError.importFailed
+            }
+            let image = Image(nsImage: nsImage)
+            return ProfileImage(image: image)
+        #elseif canImport(UIKit)
+            guard let uiImage = UIImage(data: data) else {
+                throw TransferError.importFailed
+            }
+            let image = Image(uiImage: uiImage)
+            return SendableImage(image: image)
+        #else
+            throw TransferError.importFailed
+        #endif
+        }
+    }
+}
+
+enum ImageState {
+    case empty
+    case loading(Progress)
+    case success(Image)
+    case failure(Error)
+}
+
+enum TransferError: Error {
+    case importFailed
+}
 
 final class WebsocketViewModel: ObservableObject {
+    
+    var pack: [Packet] = []
     
     @AppStorage("userID") private var userID = ""
     @Published var user: User = User(userName: UUID().uuidString)
     
+    @Published var image: UIImage?
+    
     @Published var chatMessage: [WSChatMessage] = []
     @Published var newMessage: String = ""
+    
+    @Published var imageToSend: UIImage?
+    
+    @Published private(set) var imageState: ImageState = .empty
+
+    @Published var imageSelection: PhotosPickerItem? = nil {
+        didSet {
+            if let imageSelection {
+                let progress = loadTransferable(from: imageSelection)
+                imageState = .loading(progress)
+            } else {
+                imageState = .empty
+            }
+        }
+    }
+    
     @Published var messageReceived = ""
     
     @Published var isSockedConnected: Bool = false
@@ -66,14 +121,14 @@ final class WebsocketViewModel: ObservableObject {
     func sendStatusMessage(type: StatusMessageType) {
         let statusMessage = StatusMessage(userID: user.userName, type: type)
         
-        guard let payload = try? statusMessage.encode() else {
+        guard let payload = try? WSCoder.shared.encode(data: statusMessage) else {
             print("Error on get payload from aliveMessage \(statusMessage)")
             return
         }
         
         let wsMessageCodable = WSMessageHeader(fromUserID: user.userName, messageType: .Status, subMessageTypeCode: type.code, payload: payload)
         
-        guard let wsMessage = try? wsMessageCodable.encode() else {
+        guard let wsMessage = try? WSCoder.shared.encode(data: wsMessageCodable) else {
             print("Error on encode WSMessage: \(wsMessageCodable)")
             return
         }
@@ -95,14 +150,14 @@ final class WebsocketViewModel: ObservableObject {
     func sendTypingStatus(isTyping: Bool) {
         let typingMessage = TypingMessage(userID: user.userName, isTyping: isTyping)
         
-        guard let payload = try? typingMessage.encode() else {
+        guard let payload = try?  WSCoder.shared.encode(data: typingMessage) else {
             print("Error on get payload from aliveMessage \(typingMessage)")
             return
         }
         
         let wsMessageCodable = WSMessageHeader(fromUserID: user.userName, messageType: .Chat, subMessageTypeCode: ChatMessageType.TypingStatus.code, payload: payload)
 
-        guard let wsMessage = try? wsMessageCodable.encode() else {
+        guard let wsMessage = try? WSCoder.shared.encode(data: wsMessageCodable) else {
             print("Error on encode WSMessage: \(wsMessageCodable)")
             return
         }
@@ -112,10 +167,10 @@ final class WebsocketViewModel: ObservableObject {
         })
     }
     
-    func sendRecation(message: WSChatMessage, reaction: WSReaction) {
-        let reactionMessage = ReactionMessage(userID: user.userName, messageID: UUID().uuidString, messageReacted: message, reactionIcon: reaction)
+    func sendRecation(messageID: String, reaction: WSReaction) {
+        let reactionMessage = ReactionMessage(userID: user.userName, id: UUID().uuidString, messageReactedID: messageID, reactionIcon: reaction)
         
-        guard let payload = try? reactionMessage.encode() else {
+        guard let payload = try? WSCoder.shared.encode(data: reactionMessage) else {
             print("Error on get payload from reationMessage \(reaction)")
             return
         }
@@ -123,37 +178,63 @@ final class WebsocketViewModel: ObservableObject {
         let wsMessageCodable = WSMessageHeader(fromUserID: user.userName, messageType: .Chat, subMessageTypeCode: ChatMessageType.Reaction.code, payload: payload)
 
         
-        guard let wsMessage = try? wsMessageCodable.encode() else {
+        guard let wsMessage = try? WSCoder.shared.encode(data: wsMessageCodable) else {
             print("Error on encode WSMessage: \(wsMessageCodable)")
             return
         }
         
         socket?.write(string: wsMessage, completion: {
-            self.setupReaction(to: message, reaction: reaction)
+            self.setupReaction(messageID: messageID, reaction: reaction)
             print("Reaction message was sent")
         })
         
     }
     
+    func sendDeleteMessage(messageID: String) {
+        let wsDeleteMessage = WSDeleteMessage(id: UUID().uuidString, messageTodeleteID: messageID)
+        
+        guard let payload = try? WSCoder.shared.encode(data: wsDeleteMessage) else {
+            print("Error on get payload from aliveMessage \(wsDeleteMessage)")
+            return
+        }
+        
+        let wsMessageCodable = WSMessageHeader(fromUserID: user.userName, messageType: .Chat, subMessageTypeCode: ChatMessageType.DeleteMessage.code, payload: payload)
+        
+        guard let wsMessageEncoded = try? WSCoder.shared.encode(data: wsMessageCodable) else {
+            print("Error on encode WSMessage: \(wsMessageCodable)")
+            return
+        }
+        
+        socket?.write(string: wsMessageEncoded, completion: {
+            DispatchQueue.main.async {
+                withAnimation {
+                    self.deleteMessage(messageID: messageID)
+                }
+            }
+        })
+    }
+    
     func sendContentString(message: String) {
         let messageContent = message.trimmingCharacters(in: .whitespacesAndNewlines)
         let timestamp = Date.now
-        
+        let messageID = UUID().uuidString
         let wsMessage = WSChatMessage(
-            messageID: UUID().uuidString,
+            messageID: messageID, imageDate: nil,
             senderID: user.userName,
             timestamp: timestamp,
             content: messageContent,
             isSendByUser: true, reactions: [])
-                
-        guard let payload = try? wsMessage.encode() else {
+        
+        sendImage(messageID: messageID)
+
+        guard let payload = try? WSCoder.shared.encode(data: wsMessage) else {
             print("Error on get payload from aliveMessage \(wsMessage)")
             return
         }
         
         let wsMessageCodable = WSMessageHeader(fromUserID: user.userName, messageType: .Chat, subMessageTypeCode: ChatMessageType.ContentString.code, payload: payload)
 
-        guard let wsMessageEncoded = try? wsMessageCodable.encode() else {
+        guard let wsMessageEncoded = try? WSCoder.shared.encode(data: wsMessageCodable) else {
             print("Error on encode WSMessage: \(wsMessageCodable)")
             return
         }
@@ -167,6 +248,93 @@ final class WebsocketViewModel: ObservableObject {
                 self.newMessage = ""
             }
         })
+    }
+
+    func sendImage(messageID: String) {
+        
+        imageSelection?.loadTransferable(type: Data.self, completionHandler: { result in
+            switch result {
+            case .success(let imageData):
+                guard let imageData = imageData else {
+                    print("Error on \(#function): Erron on get image data")
+                    return
+                }
+                self.encodeAndSendImageData(imageData: imageData, messageID: messageID)
+            case .failure(let error):
+                print("Error on \(#function): \(error.localizedDescription)")
+            }
+        })
+        
+    }
+    
+    private func loadTransferable(from imageSelection: PhotosPickerItem) -> Progress {
+        return imageSelection.loadTransferable(type: SendableImage.self) { result in
+            DispatchQueue.main.async {
+                guard imageSelection == self.imageSelection else {
+                    print("Failed to get the selected item.")
+                    return
+                }
+                switch result {
+                case .success(let sendableImage?):
+                    self.imageState = .success(sendableImage.image)
+                case .success(nil):
+                    self.imageState = .empty
+                case .failure(let error):
+                    self.imageState = .failure(error)
+                }
+            }
+        }
+    }
+    
+    func encodeAndSendImageData(imageData: Data, messageID: String) {
+        let chunkSize = 1024
+        let totalSize = imageData.count
+        let restSize = totalSize % chunkSize
+
+        // Divida a imagem em pacotes
+        var offset = 0
+        while offset < totalSize {
+            let chunkRange = offset..<(offset + min(chunkSize, totalSize - offset))
+            let chunkData = imageData.subdata(in: chunkRange)
+
+            // Verifica se é o último pacote
+            let isLast = offset + chunkData.count >= totalSize && restSize == 0
+
+            // Cria um novo pacote
+            let packet = Packet(userID: self.userID, messageID: messageID, totalSize: totalSize, currentSize: offset, isLast: isLast, data: [UInt8](chunkData))
+
+            do {
+                // Encodifica o pacote
+                let bytes = try BinaryEncoder.encode(packet)
+
+                // Envia o pacote
+                self.socket?.write(data: Data(bytes), completion: {
+                    print("Sent package")
+                })
+
+                offset += chunkData.count
+            } catch {
+                print("Error on send packet: \(error.localizedDescription)")
+                break
+            }
+        }
+
+        if restSize > 0 {
+            let restChunkRange = (offset - restSize)..<imageData.count
+            let restChunkData = imageData.subdata(in: restChunkRange)
+
+            let packet = Packet(userID: self.userID, messageID: messageID, totalSize: totalSize, currentSize: offset, isLast: true, data: [UInt8](restChunkData))
+
+            do {
+                let bytes = try BinaryEncoder.encode(packet)
+
+                self.socket?.write(data: Data(bytes), completion: {
+                    print("Sent last package")
+                })
+            } catch {
+                print("Error on send packet: \(error.localizedDescription)")
+            }
+        }
     }
     
     func sendButtonDidTapped() {
@@ -243,7 +411,7 @@ extension WebsocketViewModel {
     private func handlerWebsocketMessage(message: String) {
         
         do {
-            let wsMessage: WSMessageHeader = try message.decodeWSEncodable(type: WSMessageHeader.self)
+            let wsMessage: WSMessageHeader = try  WSCoder.shared.decode(type: WSMessageHeader.self, from: message)
             
             switch wsMessage.messageType {
                 
@@ -282,6 +450,8 @@ extension WebsocketViewModel {
             print("Reply")
         case .TypingStatus:
             handlerTypingStatus(payload: payload)
+        case .DeleteMessage:
+            handleDeleteMessageReceived(payload: payload)
         }
     }
     
@@ -289,7 +459,7 @@ extension WebsocketViewModel {
     
     private func handleStatusMessagReceivede(type: StatusMessageType, payload: String) {
         do {
-            let statusMessage: StatusMessage = try payload.decodeWSEncodable(type: StatusMessage.self)
+            let statusMessage: StatusMessage = try WSCoder.shared.decode(type: StatusMessage.self, from: payload)
             switch type {
             case .Alive:
                 print("Received alive Message: \(statusMessage)")
@@ -301,9 +471,19 @@ extension WebsocketViewModel {
         }
     }
     
+    private func handleDeleteMessageReceived(payload: String) {
+        do {
+            var wsDeleteMessage: WSDeleteMessage = try WSCoder.shared.decode(type: WSDeleteMessage.self, from: payload)
+            deleteMessage(messageID: wsDeleteMessage.messageTodeleteID)
+        } catch {
+            print("Error on \(#function): \(error)")
+        }
+    }
+    
+   
     private func handleChatContentString(payload: String) {
         do {
-            var wsChatMessage: WSChatMessage = try payload.decodeWSEncodable(type: WSChatMessage.self)
+            var wsChatMessage: WSChatMessage = try WSCoder.shared.decode(type: WSChatMessage.self, from: payload)
             wsChatMessage.isSendByUser = false
             
             let isForwardedMessage: Bool = self.chatMessage.filter { message in
@@ -324,18 +504,18 @@ extension WebsocketViewModel {
     
     private func handleChatReactionMessage(payload: String) {
         do {
-            var reactionMessage = try payload.decodeWSEncodable(type: ReactionMessage.self)
-            
-            setupReaction(to: reactionMessage.messageReacted, reaction: reactionMessage.reactionIcon)
+            let reactionMessage = try WSCoder.shared.decode(type: ReactionMessage.self, from: payload)
+           
+            setupReaction(messageID: reactionMessage.messageReactedID, reaction: reactionMessage.reactionIcon)
             
         } catch {
             print("Error on decode reaction message")
         }
     }
     
-    private func setupReaction(to message: WSChatMessage, reaction: WSReaction) {
+    private func setupReaction(messageID: String, reaction: WSReaction) {
         
-        guard let messageIndex = chatMessage.firstIndex(where: { $0.messageID == message.messageID }) else {
+        guard let messageIndex = chatMessage.firstIndex(where: { $0.messageID == messageID }) else {
             print("Message not found in chat")
             return
         }
@@ -352,8 +532,7 @@ extension WebsocketViewModel {
     private func handlerTypingStatus(payload: String) {
         
         do {
-            let typingMessage: TypingMessage = try payload.decodeWSEncodable(type: TypingMessage.self)
-            let wsMessageCodable = WSMessageHeader(fromUserID: user.userName, messageType: .Chat, subMessageTypeCode: ChatMessageType.TypingStatus.code, payload: payload)
+            let typingMessage: TypingMessage = try WSCoder.shared.decode(type: TypingMessage.self, from: payload)
             
             isAnotherUserTapping = typingMessage.isTyping
         } catch {
@@ -389,7 +568,58 @@ extension WebsocketViewModel {
     }
     
     private func handlerWebsocketMessage(message: Data) {
+        do {
+            let packet = try BinaryDecoder.decode(Packet.self, data: [UInt8](message))
+            
+            if packet.isLast {
+                pack.append(packet)
+                image = assembleImage(from: pack)
+                      
+                let imageData = image?.jpegData(compressionQuality: 0.9)
+                guard let data = imageData else {
+                    print("Error on \(#function): Error on get imageData")
+                    return
+                }
+                setImageToMessage(messageID: packet.messageID, data: data)
+                pack = []
+                return
+            } else {
+                pack.append(packet)
+            }
+            
+        } catch {
+            
+        }
         print("Received binary message: \(message)")
+    }
+    
+    func setImageToMessage(messageID: String, data: Data) {
+        let messageIndex = chatMessage.firstIndex { message in
+            message.messageID == messageID
+        }
+        guard let index = messageIndex else {
+            print("Error on get message index: \(messageIndex)")
+            return
+        }
+        
+        chatMessage[index].imageDate = data
+        saveImage(messageID: chatMessage[index].messageID, imageData: data)
+    }
+    
+    func assembleImage(from packets: [Packet]) -> UIImage? {
+        guard let firstPacket = packets.first, firstPacket.currentSize == 0 else {
+            return nil
+        }
+
+        let totalSize = firstPacket.totalSize
+        var imageData = Data(capacity: totalSize)
+        
+        packets.forEach { packet in
+            imageData.append(contentsOf: packet.data)
+
+        }
+
+        return UIImage(data: imageData)
     }
     
     private func handlerErrorMessage(error: Error?) {
@@ -450,9 +680,8 @@ extension  WebsocketViewModel {
         let tempObj = getAllStorageMessages().first { message in
             message.id == messageID
         }
-        guard let objectToUp = tempObj else {
-            return
-        }
+        
+        guard let objectToUp = tempObj else { return }
         
         context.perform {
             do {
@@ -475,6 +704,74 @@ extension  WebsocketViewModel {
             }
         }
     }
+    
+    func saveImage(messageID: String, imageData: Data) {
+        let context = PersistenceController.shared.viewContext
+                
+        let tempObj = getAllStorageMessages().first { message in
+            message.id == messageID
+        }
+        
+        guard let objectToUp = tempObj else { return }
+
+        context.perform {
+            do {
+                let objectToUpdate = try context.existingObject(with: objectToUp.objectID)
+                
+                guard let chatMessageEntity = objectToUpdate as? ChatMessage else {
+                    print("Error on parse entity")
+                    return
+                }
+               
+                chatMessageEntity.imageData = imageData as NSObject
+                
+                try context.save()
+                
+            } catch {
+                print("Error on \(#function): \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    private func deleteMessage(messageID: String) {
+        withAnimation {
+            self.chatMessage.removeAll { message in
+                message.messageID == messageID
+            }
+        }
+        deleteCoreDataMessage(messageID: messageID)
+    }
+    
+    private func deleteCoreDataMessage(messageID: String) {
+        let context = PersistenceController.shared.viewContext
+                
+        let tempObj = getAllStorageMessages().first { message in
+            message.id == messageID
+        }
+        guard let objectToUp = tempObj else {
+            return
+        }
+        
+        context.perform {
+            do {
+                let objectToUpdate = try context.existingObject(with: objectToUp.objectID)
+                
+                guard let chatMessageEntity = objectToUpdate as? ChatMessage else {
+                    print("Error on parse entity")
+                    return
+                }
+               
+                context.delete(chatMessageEntity)
+                
+                try context.save()
+                
+            } catch {
+                print("Error on \(#function): \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    
     
     func isNextMessageFromUser(message: WSChatMessage) -> Bool {
         if let currentIndex = chatMessage.firstIndex(where: { $0.messageID == message.messageID }) {

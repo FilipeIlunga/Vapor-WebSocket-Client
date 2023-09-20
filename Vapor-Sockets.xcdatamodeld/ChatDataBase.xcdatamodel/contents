@@ -3,6 +3,7 @@
     <entity name="ChatMessage" representedClassName="ChatMessage" isAbstract="YES" syncable="YES">
         <attribute name="content" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="imageData" optional="YES" attributeType="Binary"/>
         <attribute name="isSendByUser" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="senderID" optional="YES" attributeType="String"/>
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>

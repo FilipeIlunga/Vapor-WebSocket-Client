@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct ChatView: View {
     
@@ -25,10 +26,11 @@ struct ChatView: View {
                             if message.isSendByUser {
                                 Spacer()
                             }
-                            ChatBubbleView(message: message, isNextMessageFromUser: viewModel.isNextMessageFromUser(message: message), hiddenReactionMenu: $showHighlight, onAddEmoji: ({_ in}))
+                            ChatBubbleView(message: message, isNextMessageFromUser: viewModel.isNextMessageFromUser(message: message), hiddenReactionMenu: $showHighlight, onAddEmoji: ({_ in}), onDeleteMessage: ({_ in}))
                                 .onTapGesture {}
                                 .onLongPressGesture(minimumDuration: 0.5, maximumDistance: 30) {
                                     hapticFeedback()
+                                    
                                     
                                     withAnimation {
                                         withAnimation(.easeInOut) {
@@ -74,12 +76,20 @@ struct ChatView: View {
                 
                 VStack {
                     Divider()
-                    
-                    ChatMessageField(message: $viewModel.newMessage) {
-                        viewModel.sendButtonDidTapped()
-                    } onTapping: { isTapping in
-                        viewModel.sendTypingStatus(isTyping: isTapping)
-                    }.padding(.top)
+                    HStack {
+                        
+                    //photoLibrary: .shared()
+                        PhotosPicker(selection: $viewModel.imageSelection ,matching: .images,label: {
+                           Image(systemName: "square.and.arrow.up")
+                        })
+
+                        ChatMessageField(message: $viewModel.newMessage) {
+                            viewModel.sendButtonDidTapped()
+                        } onTapping: { isTapping in
+                            viewModel.sendTypingStatus(isTyping: isTapping)
+                        }.padding(.top)
+                    }
+
                 }
             }.onAppear {
                 withAnimation(.spring()) {
@@ -110,18 +120,34 @@ struct ChatView: View {
             }) {
                 GeometryReader { proxy in
                     let rect = proxy[preference.value]
-                    
-                    ChatBubbleView(message: selectedMsg, isNextMessageFromUser: viewModel.isNextMessageFromUser(message: selectedMsg),showReactions: true, hiddenReactionMenu: $showHighlight) { emoji in
-                        withAnimation(.easeInOut) {
-                            showHighlight = false
-                            selectedMessage = nil
+                    var rectMinY = rect.minY < 0 ?  rect.minY + 100 : rect.minY
+                
+                    HStack {
+                        if selectedMsg.isSendByUser {
+                            Spacer()
                         }
-                        let newReation = WSReaction(count: 1, emoji: emoji)
-                        viewModel.sendRecation(message: selectedMsg, reaction: newReation)
-                    }
-                    .id(selectedMsg.messageID)
-                    //.frame(width: rect.width, height: rect.height)
-                    .offset(x: selectedMsg.isSendByUser ?  rect.minX + 40 : rect.minX, y: rect.minY)
+                        ChatBubbleView(message: selectedMsg, isNextMessageFromUser: viewModel.isNextMessageFromUser(message: selectedMsg),showReactions: true, hiddenReactionMenu: $showHighlight) { emoji in
+                            withAnimation(.easeInOut) {
+                                showHighlight = false
+                                selectedMessage = nil
+                            }
+                            let newReation = WSReaction(count: 1, emoji: emoji)
+                            viewModel.sendRecation(messageID: selectedMsg.messageID, reaction: newReation)
+                        } onDeleteMessage: { messageID in
+                            viewModel.sendDeleteMessage(messageID: messageID)
+                            withAnimation(.easeInOut) {
+                                showHighlight = false
+                                selectedMessage = nil
+                            }
+                        }
+                        .id(selectedMsg.messageID)
+                        .offset(y: rectMinY)
+                        
+                        if !selectedMsg.isSendByUser {
+                            Spacer()
+                        }
+                    }.padding(.horizontal)
+
                 }
                 .transition(.asymmetric(insertion: .identity, removal: .offset(x: 1)))
             }
