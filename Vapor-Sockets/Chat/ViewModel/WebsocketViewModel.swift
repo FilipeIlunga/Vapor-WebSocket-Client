@@ -8,32 +8,8 @@
 import SwiftUI
 import Starscream
 import CoreData
-import _PhotosUI_SwiftUI
+import PhotosUI
 
-struct SendableImage: Transferable {
-    let image: Image
-    
-    static var transferRepresentation: some TransferRepresentation {
-        DataRepresentation(importedContentType: .image) { data in
-            guard let uiImage = UIImage(data: data) else {
-                throw TransferError.importFailed
-            }
-            let image = Image(uiImage: uiImage)
-            return SendableImage(image: image)
-        }
-    }
-}
-
-enum ImageState {
-    case empty
-    case loading(Progress)
-    case success(Image)
-    case failure(Error)
-}
-
-enum TransferError: Error {
-    case importFailed
-}
 
 final class WebsocketViewModel: ObservableObject {
         
@@ -742,7 +718,7 @@ extension WebsocketViewModel {
     }
     
     private func assembleImage(from packets: [Packet]) -> UIImage? {
-        guard let firstPacket = packets.first, firstPacket.currentSize == 0 else {
+        guard let firstPacket = packets.first, firstPacket.currentOffset == 0 else {
             return nil
         }
         
@@ -770,7 +746,7 @@ extension WebsocketViewModel {
                 let chunkData = imageData.subdata(in: chunkRange)
                 let isLast = offset + chunkData.count >= totalSize && restSize == 0
                 
-                try self.sendImageChunk(chunkData, isLast: isLast, messageID: messageID, offset: offset)
+                try self.sendImageChunk(chunkData, isLast: isLast, messageID: messageID, offset: offset, totalSize: imageData.count)
                 
                 offset += chunkData.count
             }
@@ -779,12 +755,12 @@ extension WebsocketViewModel {
             if restSize > 0 {
                 let restChunkRange = (offset - restSize)..<imageData.count
                 let restChunkData = imageData.subdata(in: restChunkRange)
-                try self.sendImageChunk(restChunkData, isLast: true, messageID: messageID, offset: offset)
+                try self.sendImageChunk(restChunkData, isLast: true, messageID: messageID, offset: offset, totalSize: imageData.count)
             }
     }
     
-    private func sendImageChunk(_ chunkData: Data, isLast: Bool, messageID: String, offset: Int) throws {
-        let packet = Packet(userID: self.userID, messageID: messageID, totalSize: chunkData.count, currentSize: offset, isLast: isLast, data: [UInt8](chunkData))
+    private func sendImageChunk(_ chunkData: Data, isLast: Bool, messageID: String, offset: Int, totalSize: Int) throws {
+        let packet = Packet(userID: self.userID, messageID: messageID, totalSize: totalSize, currentSize: chunkData.count, currentOffset: offset, isLast: isLast, data: [UInt8](chunkData))
         
         let bytes = try BinaryEncoder.encode(packet)
         

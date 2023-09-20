@@ -44,6 +44,7 @@
 		2392E11C2AB94D080048F89E /* Packet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2392E11B2AB94D080048F89E /* Packet.swift */; };
 		2392E11E2AB94E950048F89E /* Data+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2392E11D2AB94E950048F89E /* Data+Extension.swift */; };
 		2392E1202ABAA0AE0048F89E /* ImageViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2392E11F2ABAA0AE0048F89E /* ImageViewer.swift */; };
+		2392E1232ABB72970048F89E /* SendableImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2392E1222ABB72970048F89E /* SendableImage.swift */; };
 		23C855392AA437C600105B25 /* WSChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C855382AA437C600105B25 /* WSChatMessage.swift */; };
 		23C8553B2AA4413500105B25 /* MessageCodables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C8553A2AA4413500105B25 /* MessageCodables.swift */; };
 		23C855402AA4487700105B25 /* ChatBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C8553F2AA4487700105B25 /* ChatBubbleView.swift */; };
@@ -106,6 +107,7 @@
 		2392E11B2AB94D080048F89E /* Packet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Packet.swift; sourceTree = "<group>"; };
 		2392E11D2AB94E950048F89E /* Data+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Extension.swift"; sourceTree = "<group>"; };
 		2392E11F2ABAA0AE0048F89E /* ImageViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewer.swift; sourceTree = "<group>"; };
+		2392E1222ABB72970048F89E /* SendableImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendableImage.swift; sourceTree = "<group>"; };
 		23C855382AA437C600105B25 /* WSChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WSChatMessage.swift; sourceTree = "<group>"; };
 		23C8553A2AA4413500105B25 /* MessageCodables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCodables.swift; sourceTree = "<group>"; };
 		23C8553F2AA4487700105B25 /* ChatBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBubbleView.swift; sourceTree = "<group>"; };
@@ -221,6 +223,7 @@
 		230532D52AB6974200D894A1 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				2392E1212ABB728F0048F89E /* SendableImage */,
 				2392E11A2AB94CFC0048F89E /* Packet */,
 				2392E1102AB935650048F89E /* BinaryCodable */,
 				230532D62AB6975300D894A1 /* BoundsPreference.swift */,
@@ -283,6 +286,14 @@
 				2392E11B2AB94D080048F89E /* Packet.swift */,
 			);
 			path = Packet;
+			sourceTree = "<group>";
+		};
+		2392E1212ABB728F0048F89E /* SendableImage */ = {
+			isa = PBXGroup;
+			children = (
+				2392E1222ABB72970048F89E /* SendableImage.swift */,
+			);
+			path = SendableImage;
 			sourceTree = "<group>";
 		};
 		23C855362AA437B400105B25 /* Chat */ = {
@@ -481,6 +492,7 @@
 				2392E11E2AB94E950048F89E /* Data+Extension.swift in Sources */,
 				2392E10E2AB7A4D60048F89E /* Reaction+CoreDataProperties.swift in Sources */,
 				2367C6A42AA4B015006DAEF9 /* APIKeys.swift in Sources */,
+				2392E1232ABB72970048F89E /* SendableImage.swift in Sources */,
 				2367C6AD2AA5AEA3006DAEF9 /* ReactionMessage.swift in Sources */,
 				2300CD422A9FBEE900CA1807 /* WebsocketViewModel.swift in Sources */,
 				2300CD502AA12AD500CA1807 /* RecycleGameView.swift in Sources */,
