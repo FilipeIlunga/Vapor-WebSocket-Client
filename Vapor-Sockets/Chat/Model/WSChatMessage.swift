@@ -7,6 +7,11 @@
 
 import Foundation
 
+enum DataType: Int, WSCodable {
+    case image = 0
+    case document
+}
+
 struct WSReaction: Hashable, WSCodable {
     var count: Int
     var emoji: String
@@ -19,7 +24,8 @@ struct WSDeleteMessage: WSCodable {
 
 struct WSChatMessage: Hashable, WSCodable {
     let messageID: String
-    var imageDate: Data?
+    var data: Data?
+    var dataType: DataType?
     let senderID: String
     let timestamp: Date
     let content: String

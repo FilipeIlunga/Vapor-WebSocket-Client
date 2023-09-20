@@ -15,10 +15,11 @@ extension ChatMessage {
     @nonobjc public class func fetchRequest() -> NSFetchRequest<ChatMessage> {
         return NSFetchRequest<ChatMessage>(entityName: "ChatMessage")
     }
-
-    @NSManaged public var content: String?
-    @NSManaged public var imageData: NSObject?
+    
     @NSManaged public var id: String?
+    @NSManaged public var content: String?
+    @NSManaged public var data: NSObject?
+    @NSManaged public var dataType: Int16
     @NSManaged public var isSendByUser: Bool
     @NSManaged public var senderID: String?
     @NSManaged public var timestamp: Date?
@@ -60,12 +61,16 @@ extension ChatMessage {
         let reactions = self.messageReactions?.allObjects as? [Reaction] ?? []
 
         var imageD: Data?
+        var dataType: DataType?
         
-        if let data = self.imageData as? Data {
+        if let data = self.data as? Data {
             imageD = data
         }
         
-        let wsChatMessage = WSChatMessage(messageID: messageID, imageDate: imageD, senderID: senderID, timestamp: timestamp, content: content, isSendByUser: isSendByUser, reactions: reactions.compactMap {$0.toWSReaction()} )
+            
+        dataType = DataType(rawValue: Int(self.dataType))
+        
+        let wsChatMessage = WSChatMessage(messageID: messageID, data: imageD, dataType: dataType, senderID: senderID, timestamp: timestamp, content: content, isSendByUser: isSendByUser, reactions: reactions.compactMap {$0.toWSReaction()} )
 
         return wsChatMessage
     }

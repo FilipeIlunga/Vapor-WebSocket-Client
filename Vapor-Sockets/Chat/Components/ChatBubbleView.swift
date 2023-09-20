@@ -30,20 +30,25 @@ struct ChatBubbleView: View {
                     VStack(alignment: message.isSendByUser ? .trailing : .leading, spacing: 10) {
                         Text(message.content)
                         
-                        if let imageData = message.imageDate, let uiimage = UIImage(data: imageData) {
-                            Image(uiImage: uiimage)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 100, height: 50)
-                                .onTapGesture {
-                                    isImagePresented = true
-                                }
-                                .fullScreenCover(isPresented: $isImagePresented) {
-                                    SwiftUIImageViewer(image: Image(uiImage: uiimage))
-                                        .overlay(alignment: .topTrailing) {
-                                            closeButton
-                                        }
-                                }
+                        if let imageData = message.data, let uiimage = UIImage(data: imageData), let dataType = message.dataType {
+                            switch dataType {
+                            case .image:
+                                Image(uiImage: uiimage)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 100, height: 50)
+                                    .onTapGesture {
+                                        isImagePresented = true
+                                    }
+                                    .fullScreenCover(isPresented: $isImagePresented) {
+                                        SwiftUIImageViewer(image: Image(uiImage: uiimage))
+                                            .overlay(alignment: .topTrailing) {
+                                                closeButton
+                                            }
+                                    }
+                            case .document:
+                                EmptyView()
+                            }
                         }
                         
                         Text(message.getDisplayDate())
