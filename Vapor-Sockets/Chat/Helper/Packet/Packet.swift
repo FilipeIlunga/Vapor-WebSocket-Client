@@ -13,16 +13,20 @@ struct Packet: BinaryCodable {
     let messageID: String
     let totalSize: Int
     let currentSize: Int
+    let currentOffset: Int
     let isLast: Bool
     let data: [UInt8]
+    let dataType: Int
 
-    init(userID: String, messageID: String, totalSize: Int, currentSize: Int, isLast: Bool,data: [UInt8]) {
+    init(userID: String, messageID: String, totalSize: Int, currentSize: Int,currentOffset: Int, isLast: Bool,data: [UInt8], dataType: Int) {
         self.userID = userID
         self.messageID = messageID
         self.totalSize = totalSize
         self.currentSize = currentSize
+        self.currentOffset = currentOffset
         self.isLast = isLast
         self.data = data
+        self.dataType = dataType
     }
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -30,8 +34,11 @@ struct Packet: BinaryCodable {
         self.messageID = try container.decode(String.self, forKey: .messageID)
         totalSize = try container.decode(Int.self, forKey: .totalSize)
         currentSize = try container.decode(Int.self, forKey: .currentSize)
+        currentOffset = try container.decode(Int.self, forKey: .currentOffset)
         isLast = try container.decode(Bool.self, forKey: .isLast)
         data = try container.decode([UInt8].self, forKey: .data)
+        dataType = try container.decode(Int.self, forKey: .dataType)
+        
     }
 
     enum CodingKeys: String, CodingKey {
@@ -39,8 +46,9 @@ struct Packet: BinaryCodable {
         case messageID
         case totalSize
         case currentSize
+        case currentOffset
         case isLast
         case data
+        case dataType
     }
-
 }

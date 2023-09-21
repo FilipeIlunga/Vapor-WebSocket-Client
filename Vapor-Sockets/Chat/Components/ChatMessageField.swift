@@ -6,10 +6,16 @@
 //
 
 import SwiftUI
+import PhotosUI
+import PDFKit
 
 struct ChatMessageField: View {
     
+    @State var openFile = false
+
     @Binding var message: String
+    @Binding var data: Data?
+    @Binding var imageSelection: PhotosPickerItem?
     let sendMessage: () -> ()
     var onTapping: (Bool) -> ()
     
@@ -17,19 +23,17 @@ struct ChatMessageField: View {
 
     var body: some View {
         HStack {
+            
+            Button {
+                openFile.toggle()
+            } label: {
+                Image(systemName: "doc.fill")
+            }
 
-//            Button {
-//                if isconnected {
-//                    viewModel.sendStatusMessage(type: .Disconnect)
-//                } else {
-//                    viewModel.sendStatusMessage(type: .Alive)
-//                }
-//                isconnected.toggle()
-//
-//            } label: {
-//                Image(systemName: "circle.circle.fill")
-//                    .foregroundColor(.pink)
-//            }
+            
+            PhotosPicker(selection: $imageSelection ,matching: .images,label: {
+               Image(systemName: "square.and.arrow.up")
+            })
             
             ZStack {
                 RoundedRectangle(cornerRadius: 9)
@@ -55,7 +59,6 @@ struct ChatMessageField: View {
                                 }
                         }
                     }
-
             }
             
             VStack {
@@ -70,7 +73,21 @@ struct ChatMessageField: View {
                 
             }
             
-        }
+        }.fileImporter(isPresented: $openFile, allowedContentTypes: [.pdf, .mp3], onCompletion: { result in
+            switch result {
+            case .success(let dataURL):
+                dataURL.startAccessingSecurityScopedResource()
+                        if let pDFDocument = PDFDocument(url: dataURL) {
+                            // this is nil
+                            if let dataRepresentation = pDFDocument.dataRepresentation() {
+                                data = dataRepresentation
+                            }
+                        }
+                
+            case .failure(let error):
+                print("Error on import file: \(error.localizedDescription)")
+            }
+        })
     }
     
     private func calculateHeight(_ text: String, geometry: GeometryProxy) {
