@@ -31,6 +31,9 @@ struct WSChatMessage: Hashable, WSCodable {
     let content: String
     var isSendByUser: Bool
     var reactions: [WSReaction]
+    
+    var totalDataSize: Int?
+    var currentDataSize: Int?
 
     var description: String {
         return "\(messageID)|\(senderID)|\(timestamp.timeIntervalSince1970)|\(content)"

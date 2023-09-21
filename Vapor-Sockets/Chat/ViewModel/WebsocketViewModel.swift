@@ -242,6 +242,21 @@ final class WebsocketViewModel: ObservableObject {
         }
     }
     
+    func setLoadDataInfo(messageID: String, currentSize: Int, totalSize: Int) {
+        let messageIndex = chatMessage.firstIndex(where: { message in
+            message.messageID == messageID
+        })
+        
+        guard let index = messageIndex else {
+            return
+        }
+        
+        chatMessage[index].currentDataSize = currentSize
+        chatMessage[index].totalDataSize = totalSize
+        
+        
+    }
+    
     func sendImage(messageID: String) {
         imageSelection?.loadTransferable(type: Data.self, completionHandler: { result in
             switch result {
@@ -692,6 +707,8 @@ extension WebsocketViewModel {
     }
         
     private func handlePacket(_ packet: Packet) {
+        setLoadDataInfo(messageID: packet.messageID, currentSize: packet.currentOffset, totalSize: packet.totalSize)
+
         if packet.isLast {
             handleLastPacket(packet)
         } else {
@@ -707,7 +724,7 @@ extension WebsocketViewModel {
         
         existingPackets.append(packet)
         pack[packet.messageID] = existingPackets
-        var receivedData = assembleData(from: existingPackets)
+        let receivedData = assembleData(from: existingPackets)
         
         guard let data = receivedData else {
             print("Error on \(#function): Error on getting data")

@@ -31,35 +31,7 @@ struct ChatBubbleView: View {
                     VStack(alignment: message.isSendByUser ? .trailing : .leading, spacing: 10) {
                         Text(message.content)
                         
-                        if let data = message.data, let dataType = message.dataType {
-                            switch dataType {
-                            case .image:
-                                if let uiimage = UIImage(data: data) {
-                                    Image(uiImage: uiimage)
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: 100, height: 50)
-                                        .onTapGesture {
-                                            isImagePresented = true
-                                        }
-                                        .fullScreenCover(isPresented: $isImagePresented) {
-                                            SwiftUIImageViewer(image: Image(uiImage: uiimage))
-                                                .overlay(alignment: .topTrailing) {
-                                                    closeButton
-                                                }
-                                        }
-                                }
-
-                            case .document:
-                                
-                                Button {
-                                    showDocView.toggle()
-                                } label: {
-                                    Text("PDF")
-                                }.buttonStyle(.borderedProminent)
-
-                            }
-                        }
+                        dataView()
                         
                         Text(message.getDisplayDate())
                             .font(.footnote)
@@ -138,6 +110,47 @@ struct ChatBubbleView: View {
             }
         }
     }
+    
+    @ViewBuilder
+    private func imageView(data: Data) -> some View {
+        
+        if let uiimage = UIImage(data: data) {
+            Image(uiImage: uiimage)
+                  .resizable()
+                  .scaledToFill()
+                  .frame(width: 100, height: 50)
+                  .onTapGesture {
+                      isImagePresented = true
+                  }
+                  .fullScreenCover(isPresented: $isImagePresented) {
+                      SwiftUIImageViewer(image: Image(uiImage: uiimage))
+                          .overlay(alignment: .topTrailing) {
+                              closeButton
+                          }
+                  }
+        }
+
+    }
+    
+    @ViewBuilder
+    private func dataView() -> some View {
+        if let data = message.data, let dataType = message.dataType {
+            switch dataType {
+            case .image:
+                imageView(data: data)
+            case .document:
+                Button {
+                    showDocView.toggle()
+                } label: {
+                    Text("PDF")
+                }
+                .buttonStyle(.borderedProminent)
+            }
+        } else if let currentSize = message.currentDataSize, let totalSize = message.totalDataSize {
+            ProgressView(value: Double(currentSize), total: Double(totalSize))
+        }
+    }
+
     
     private var closeButton: some View {
         Button {

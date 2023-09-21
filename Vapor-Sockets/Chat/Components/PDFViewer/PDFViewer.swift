@@ -15,8 +15,6 @@ struct PDFKitView: UIViewRepresentable {
         self.pdfDocument = pdfDoc
     }
 
-    //you could also have inits that take a URL or Data
-
     func makeUIView(context: Context) -> PDFView {
         let pdfView = PDFView()
         pdfView.document = pdfDocument
@@ -38,7 +36,6 @@ struct PDFUIView: View {
     init(showPDF: Binding<Bool>, data: Data) {
         self._showPDF = showPDF
         self.data = data
-        
         pdfDoc = PDFDocument(data: self.data)!
     }
 
