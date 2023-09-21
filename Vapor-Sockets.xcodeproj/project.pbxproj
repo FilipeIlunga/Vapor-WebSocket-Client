@@ -45,6 +45,7 @@
 		2392E11E2AB94E950048F89E /* Data+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2392E11D2AB94E950048F89E /* Data+Extension.swift */; };
 		2392E1202ABAA0AE0048F89E /* ImageViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2392E11F2ABAA0AE0048F89E /* ImageViewer.swift */; };
 		2392E1232ABB72970048F89E /* SendableImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2392E1222ABB72970048F89E /* SendableImage.swift */; };
+		2392E1262ABB841F0048F89E /* PDFViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2392E1252ABB841E0048F89E /* PDFViewer.swift */; };
 		23C855392AA437C600105B25 /* WSChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C855382AA437C600105B25 /* WSChatMessage.swift */; };
 		23C8553B2AA4413500105B25 /* MessageCodables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C8553A2AA4413500105B25 /* MessageCodables.swift */; };
 		23C855402AA4487700105B25 /* ChatBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C8553F2AA4487700105B25 /* ChatBubbleView.swift */; };
@@ -108,6 +109,7 @@
 		2392E11D2AB94E950048F89E /* Data+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Extension.swift"; sourceTree = "<group>"; };
 		2392E11F2ABAA0AE0048F89E /* ImageViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewer.swift; sourceTree = "<group>"; };
 		2392E1222ABB72970048F89E /* SendableImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendableImage.swift; sourceTree = "<group>"; };
+		2392E1252ABB841E0048F89E /* PDFViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFViewer.swift; sourceTree = "<group>"; };
 		23C855382AA437C600105B25 /* WSChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WSChatMessage.swift; sourceTree = "<group>"; };
 		23C8553A2AA4413500105B25 /* MessageCodables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCodables.swift; sourceTree = "<group>"; };
 		23C8553F2AA4487700105B25 /* ChatBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBubbleView.swift; sourceTree = "<group>"; };
@@ -296,6 +298,14 @@
 			path = SendableImage;
 			sourceTree = "<group>";
 		};
+		2392E1242ABB840E0048F89E /* PDFViewer */ = {
+			isa = PBXGroup;
+			children = (
+				2392E1252ABB841E0048F89E /* PDFViewer.swift */,
+			);
+			path = PDFViewer;
+			sourceTree = "<group>";
+		};
 		23C855362AA437B400105B25 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
@@ -324,6 +334,7 @@
 		23C8553C2AA4480F00105B25 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				2392E1242ABB840E0048F89E /* PDFViewer */,
 				2300CD432AA003F000CA1807 /* TypingAnimationView.swift */,
 				23C8553F2AA4487700105B25 /* ChatBubbleView.swift */,
 				2367C6B22AA5C9C7006DAEF9 /* ChatReactionMenu.swift */,
@@ -504,6 +515,7 @@
 				2300CD4E2AA12A9E00CA1807 /* SpriteKitGame.swift in Sources */,
 				2367C6A92AA567E1006DAEF9 /* TypingMessage.swift in Sources */,
 				2367C6A72AA550A9006DAEF9 /* WSCodable.swift in Sources */,
+				2392E1262ABB841F0048F89E /* PDFViewer.swift in Sources */,
 				230532D42AB6679400D894A1 /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

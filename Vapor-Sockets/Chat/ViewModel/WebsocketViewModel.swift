@@ -9,6 +9,7 @@ import SwiftUI
 import Starscream
 import CoreData
 import PhotosUI
+import PDFKit
 
 
 final class WebsocketViewModel: ObservableObject {
@@ -20,6 +21,7 @@ final class WebsocketViewModel: ObservableObject {
     
     @Published var chatMessage: [WSChatMessage] = []
     @Published var newMessage: String = ""
+    @Published var dataPicker: Data?
     
     @Published var imageToSend: UIImage?
     
@@ -178,6 +180,8 @@ final class WebsocketViewModel: ObservableObject {
     }
     
     func sendContentString(message: String) {
+        let sendThread = DispatchQueue(label: "com.sendMessage-thread", qos: .background)
+        
         let messageContent = message.trimmingCharacters(in: .whitespacesAndNewlines)
         let timestamp = Date.now
         let messageID = UUID().uuidString
@@ -188,8 +192,14 @@ final class WebsocketViewModel: ObservableObject {
             content: messageContent,
             isSendByUser: true, reactions: [])
         
-        sendImage(messageID: messageID)
-        
+        sendThread.async {
+            if let data = self.dataPicker {
+                self.sendDataMessage(data, messageID: messageID, dataType: .document)
+            } else if self.imageSelection != nil {
+                self.sendImage(messageID: messageID)
+            }
+        }
+              
         guard let payload = try? WSCoder.shared.encode(data: wsMessage) else {
             print("Error on get payload from aliveMessage \(wsMessage)")
             return
@@ -249,6 +259,15 @@ final class WebsocketViewModel: ObservableObject {
             return
         }
         
+        sendDataMessage(data, messageID: messageID, dataType: dataType)
+ 
+    }
+    
+    func sendDataMessage(_ dataToSend: Data?, messageID: String, dataType: DataType) {
+        guard let data = dataToSend else {
+            print("Error on \(#function): Error on get image data")
+            return
+        }
         do {
             try encodeAndSendData(data: data, messageID: messageID, dataType: dataType)
             setDataToMessage(messageID: messageID, data: data, dataType: dataType)
@@ -688,17 +707,17 @@ extension WebsocketViewModel {
         
         existingPackets.append(packet)
         pack[packet.messageID] = existingPackets
-        image = assembleImage(from: existingPackets)
+        var receivedData = assembleData(from: existingPackets)
         
-        guard let imageData = image?.jpegData(compressionQuality: 0.9) else {
-            print("Error on \(#function): Error on getting imageData")
+        guard let data = receivedData else {
+            print("Error on \(#function): Error on getting data")
             return
         }
         guard let dataType = DataType(rawValue: packet.dataType) else {
             print("Error on \(#function): Invalid dataType code: \(packet.dataType)")
             return
         }
-        setDataToMessage(messageID: packet.messageID, data: imageData, dataType: dataType)
+        setDataToMessage(messageID: packet.messageID, data: data, dataType: dataType)
         
         pack[packet.messageID] = []
     }
@@ -713,35 +732,47 @@ extension WebsocketViewModel {
     }
     
     private func setDataToMessage(messageID: String, data: Data, dataType: DataType) {
-        guard let messageIndex = chatMessage.firstIndex(where: { $0.messageID == messageID }) else {
-            print("Error on \(#function): message not found for messageID \(messageID)")
-            return
-        }
+        let waitThread = DispatchQueue(label: "com.waitThread", qos: .userInitiated)
         
-        chatMessage[messageIndex].data = data
-        chatMessage[messageIndex].dataType = dataType
-        saveData(messageID: messageID, data: data, dataType: dataType)
+        waitThread.async {
+            while !self.chatMessage.map({$0.messageID}).contains(messageID) {
+                
+            }
+            guard let messageIndex = self.chatMessage.firstIndex(where: { $0.messageID == messageID }) else {
+                print("Error on \(#function): message not found for messageID \(messageID)")
+                return
+            }
+            withAnimation {
+                self.chatMessage[messageIndex].data = data
+                self.chatMessage[messageIndex].dataType = dataType
+            }
+
+            self.saveData(messageID: messageID, data: data, dataType: dataType)
+        }
+
     }
     
-    private func assembleImage(from packets: [Packet]) -> UIImage? {
+    private func assembleData(from packets: [Packet]) -> Data? {
         guard let firstPacket = packets.first, firstPacket.currentOffset == 0 else {
             return nil
         }
         
         let totalSize = firstPacket.totalSize
-        var imageData = Data(capacity: totalSize)
+        var data = Data(capacity: totalSize)
         
         packets.forEach { packet in
-            imageData.append(contentsOf: packet.data)
+            data.append(contentsOf: packet.data)
         }
         
-        return UIImage(data: imageData)
+        return data
     }
 }
 
 extension WebsocketViewModel {
     func encodeAndSendData(data: Data, messageID: String, dataType: DataType) throws {
-        let chunkSize = 1024
+        
+        
+        let chunkSize = dataType == .image ? 1024 : 4086
         let totalSize = data.count
         let restSize = totalSize % chunkSize
         

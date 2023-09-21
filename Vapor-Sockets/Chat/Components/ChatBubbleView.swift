@@ -15,6 +15,7 @@ enum ReactionMenuPosition {
 struct ChatBubbleView: View {
     var message: WSChatMessage
     let isNextMessageFromUser: Bool
+    @State private var showDocView: Bool = false
     var showReactions: Bool = false
     @Binding var  hiddenReactionMenu: Bool
     @State private var isImagePresented = false
@@ -30,24 +31,33 @@ struct ChatBubbleView: View {
                     VStack(alignment: message.isSendByUser ? .trailing : .leading, spacing: 10) {
                         Text(message.content)
                         
-                        if let imageData = message.data, let uiimage = UIImage(data: imageData), let dataType = message.dataType {
+                        if let data = message.data, let dataType = message.dataType {
                             switch dataType {
                             case .image:
-                                Image(uiImage: uiimage)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 100, height: 50)
-                                    .onTapGesture {
-                                        isImagePresented = true
-                                    }
-                                    .fullScreenCover(isPresented: $isImagePresented) {
-                                        SwiftUIImageViewer(image: Image(uiImage: uiimage))
-                                            .overlay(alignment: .topTrailing) {
-                                                closeButton
-                                            }
-                                    }
+                                if let uiimage = UIImage(data: data) {
+                                    Image(uiImage: uiimage)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 100, height: 50)
+                                        .onTapGesture {
+                                            isImagePresented = true
+                                        }
+                                        .fullScreenCover(isPresented: $isImagePresented) {
+                                            SwiftUIImageViewer(image: Image(uiImage: uiimage))
+                                                .overlay(alignment: .topTrailing) {
+                                                    closeButton
+                                                }
+                                        }
+                                }
+
                             case .document:
-                                EmptyView()
+                                
+                                Button {
+                                    showDocView.toggle()
+                                } label: {
+                                    Text("PDF")
+                                }.buttonStyle(.borderedProminent)
+
                             }
                         }
                         
@@ -121,6 +131,10 @@ struct ChatBubbleView: View {
                         }
                     
                 )
+            }
+        }.fullScreenCover(isPresented: $showDocView) {
+            if let data = message.data {
+                PDFUIView(showPDF: $showDocView, data: data)
             }
         }
     }

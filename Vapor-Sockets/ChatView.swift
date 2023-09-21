@@ -76,20 +76,14 @@ struct ChatView: View {
                 
                 VStack {
                     Divider()
-                    HStack {
-                        
-                    //photoLibrary: .shared()
-                        PhotosPicker(selection: $viewModel.imageSelection ,matching: .images,label: {
-                           Image(systemName: "square.and.arrow.up")
-                        })
-
-                        ChatMessageField(message: $viewModel.newMessage) {
-                            viewModel.sendButtonDidTapped()
-                        } onTapping: { isTapping in
-                            viewModel.sendTypingStatus(isTyping: isTapping)
-                        }.padding(.top)
-                    }
-
+                    
+                    ChatMessageField(message: $viewModel.newMessage, data: $viewModel.dataPicker, imageSelection: $viewModel.imageSelection) {
+                        viewModel.sendButtonDidTapped()
+                    } onTapping: { isTapping in
+                        viewModel.sendTypingStatus(isTyping: isTapping)
+                    }.padding(.top)
+                    
+                    
                 }
             }.onAppear {
                 withAnimation(.spring()) {
@@ -120,8 +114,8 @@ struct ChatView: View {
             }) {
                 GeometryReader { proxy in
                     let rect = proxy[preference.value]
-                    var rectMinY = rect.minY < 0 ?  rect.minY + 100 : rect.minY
-                
+                    let rectMinY = rect.minY < 0 ?  rect.minY + 100 : rect.minY
+                    
                     HStack {
                         if selectedMsg.isSendByUser {
                             Spacer()
@@ -147,7 +141,7 @@ struct ChatView: View {
                             Spacer()
                         }
                     }.padding(.horizontal)
-
+                    
                 }
                 .transition(.asymmetric(insertion: .identity, removal: .offset(x: 1)))
             }
