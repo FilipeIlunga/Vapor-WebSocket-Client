@@ -118,7 +118,7 @@ struct ChatBubbleView: View {
             Image(uiImage: uiimage)
                   .resizable()
                   .scaledToFill()
-                  .frame(width: 100, height: 50)
+                  .frame(width: UIScreen.main.bounds.width*0.65, height: 100)
                   .onTapGesture {
                       isImagePresented = true
                   }
